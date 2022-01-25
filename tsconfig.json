@@ -10,5 +10,5 @@
     "typeRoots": ["@types", "./node_modules/@types"],
     "resolveJsonModule": true,
   },
-  "include": ["./lib/**/*"]
+  "include": ["./lib/**/*", "./example/**/*"]
 }

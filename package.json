@@ -21,7 +21,12 @@
   },
   "homepage": "https://github.com/o-development/solidshape#readme",
   "devDependencies": {
+    "@rdfjs/types": "^1.0.1",
     "@types/jest": "^27.0.3",
+    "@types/jsonld": "^1.5.6",
+    "@types/rdfjs__dataset": "^1.0.5",
+    "@types/rdfjs__serializer-jsonld-ext": "^2.0.5",
+    "@types/shexj": "^2.1.1",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
     "eslint": "^8.5.0",
@@ -39,5 +44,10 @@
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "@rdfjs/data-model": "^2.0.0",
+    "@rdfjs/serializer-jsonld-ext": "^3.0.0",
+    "jsonld2graphobject": "^0.0.4",
+    "o-dataset-pack": "^0.2.1"
+  }
 }
