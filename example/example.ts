@@ -1,11 +1,7 @@
 import { profile as profileData } from "./testData";
 import SerializerJsonld from "@rdfjs/serializer-jsonld-ext";
 import { Dataset, NamedNode } from "@rdfjs/types";
-import {
-  ContextDefinition,
-  ExpandedTermDefinition,
-  JsonLdDocument,
-} from "jsonld";
+import { ContextDefinition, JsonLdDocument } from "jsonld";
 import { namedNode, defaultGraph, quad, literal } from "@rdfjs/dataset";
 import { SolidProfileShape } from "./profileTypes";
 import { serializedToSubscribableDataset } from "o-dataset-pack";
