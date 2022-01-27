@@ -35,10 +35,10 @@ export function objectToJsonldRepresentation(
       case "http://www.w3.org/2001/XMLSchema#gYearMonth":
       case "http://www.w3.org/2001/XMLSchema#time":
         return quad.object.value;
+      case "http://www.w3.org/2001/XMLSchema#integer":
       case "http://www.w3.org/2001/XMLSchema#byte":
       case "http://www.w3.org/2001/XMLSchema#decimal":
       case "http://www.w3.org/2001/XMLSchema#int":
-      case "http://www.w3.org/2001/XMLSchema#integer":
       case "http://www.w3.org/2001/XMLSchema#long":
       case "http://www.w3.org/2001/XMLSchema#negativeInteger":
       case "http://www.w3.org/2001/XMLSchema#nonNegativeInteger":
