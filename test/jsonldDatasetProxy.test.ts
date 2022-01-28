@@ -8,6 +8,7 @@ import {
   PatientShapeDefinition,
   patientContext,
   tinyPatientData,
+  tinyArrayPatientData,
 } from "./patientExampleData";
 import { namedNode, quad, literal } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
@@ -32,6 +33,16 @@ describe("jsonldDatasetProxy", () => {
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
+  }
+
+  async function getArrayLoadedDataset(): Promise<[Dataset, PatientShape]> {
+    const dataset = await serializedToDataset(tinyArrayPatientData);
+    const patient = await jsonldDatasetProxy(
+      dataset,
+      PatientShapeDefinition,
+      namedNode("http://example.com/Patient1")
+    );
+    return [dataset, patient];
   }
 
   async function getEmptyObservationDataset(): Promise<
@@ -475,42 +486,75 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
-    // describe("Array Methods", () => {
-    //   it("handles copyWithin", () => {
+    it("Adds elements to the array even if they were modified by the datastore", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.name = ["Joe", "Blow"];
+      dataset.add(
+        quad(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("Tow")
+        )
+      );
+      expect(patient.name).toEqual(["Joe", "Blow", "Tow"]);
+    });
 
-    //   });
+    it("Removes elements from the array even if they were modified by the datastore", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.name = ["Joe", "Blow"];
+      dataset.delete(
+        quad(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("Blow")
+        )
+      );
+      expect(patient.name).toEqual(["Joe"]);
+    });
 
-    //   it("handles fill", () => {
+    it("Removes and adds from the array even if they were modified by the datastore", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.name = ["Joe", "Blow"];
+      dataset.delete(
+        quad(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("Blow")
+        )
+      );
+      dataset.add(
+        quad(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("Tow")
+        )
+      );
+      expect(patient.name).toEqual(["Joe", "Tow"]);
+    });
 
-    //   });
-
-    //   it("handles pop", () => {
-
-    //   });
-
-    //   it("handles push", () => {
-
-    //   });
-
-    //   it("handles reverse", () => {
-
-    //   })
-
-    //   it("handles shift", () => {
-
-    //   });
-
-    //   it("handles sort", () => {
-
-    //   });
-
-    //   it("handles splice", () => {
-
-    //   });
-
-    //   it("handles unshift", () => {
-
-    //   });
-    // });
+    describe("Array Methods", () => {
+      //   it("handles copyWithin", () => {
+      //   });
+      //   it("handles fill", () => {
+      //   });
+      //   it("handles pop", () => {
+      //   });
+      //   it("handles push", () => {
+      //   });
+      // it("handles reverse", async () => {
+      //   const [dataset, patient] = await getArrayLoadedDataset();
+      //   patient.name?.reverse();
+      //   expect(patient.name).toEqual(["Ferguson", "Bobby", "Garrett"]);
+      //   console.log(JSON.stringify(dataset.toString()));
+      // });
+      //   it("handles shift", () => {
+      //   });
+      //   it("handles sort", () => {
+      //   });
+      //   it("handles splice", () => {
+      //   });
+      //   it("handles unshift", () => {
+      //   });
+    });
   });
 });

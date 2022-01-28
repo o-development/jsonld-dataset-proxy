@@ -1,27 +1,49 @@
 import { Dataset, NamedNode } from "@rdfjs/types";
 import { addObjectToDataset } from "./addObjectToDataset";
 import { ContextUtil } from "./ContextUtil";
-import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
+import {
+  ObjectJsonRepresentation,
+  objectToJsonldRepresentation,
+} from "./objectToJsonRepresentation";
 import { ProxyCreator } from "./ProxyCreator";
 import { quad } from "@rdfjs/dataset";
 
 export type QuadMatch = Parameters<Dataset["match"]>;
 
+export type ArrayProxyTarget = [
+  quadMatch: QuadMatch,
+  curArray: ObjectJsonRepresentation[]
+];
+
 function getProcessedObjects(
   dataset: Dataset,
   contextUtil: ContextUtil,
   proxyCreator: ProxyCreator,
-  target: QuadMatch
-) {
-  const objects = dataset.match(...target);
-  const processedObjects = objects.toArray().map((quad) => {
-    return objectToJsonldRepresentation(
-      quad,
-      dataset,
-      contextUtil,
-      proxyCreator
-    );
+  target: ArrayProxyTarget
+): ObjectJsonRepresentation[] {
+  const objects = dataset.match(...target[0]);
+  const datasetObjects = new Set(
+    objects.toArray().map((quad) => {
+      return objectToJsonldRepresentation(
+        quad,
+        dataset,
+        contextUtil,
+        proxyCreator
+      );
+    })
+  );
+  const processedObjects: ObjectJsonRepresentation[] = [];
+  target[1].forEach((arrItem) => {
+    if (datasetObjects.has(arrItem)) {
+      processedObjects.push(arrItem);
+      datasetObjects.delete(arrItem);
+    }
   });
+  Array.from(datasetObjects).forEach((datasetObject) => {
+    processedObjects.push(datasetObject);
+  });
+  target[1] = processedObjects;
+
   return processedObjects;
 }
 
@@ -29,7 +51,7 @@ export function createArrayHandler(
   dataset: Dataset,
   contextUtil: ContextUtil,
   proxyCreator: ProxyCreator
-): ProxyHandler<QuadMatch> {
+): ProxyHandler<ArrayProxyTarget> {
   return {
     get(target, key, ...rest) {
       const processedObjects = getProcessedObjects(
@@ -81,15 +103,15 @@ export function createArrayHandler(
         return false;
       }
       if (!isNaN(parseInt(key as string))) {
-        const objectQuad = dataset.match(...target).toArray()[parseInt(key)];
+        const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (objectQuad) {
           dataset.delete(objectQuad);
         }
-        if (target[0] && target[1]) {
+        if (target[0][0] && target[0][1]) {
           addObjectToDataset(
             {
-              "@id": target[0].value,
-              [contextUtil.iriToKey(target[1].value)]: value,
+              "@id": target[0][0].value,
+              [contextUtil.iriToKey(target[0][1].value)]: value,
             },
             dataset,
             contextUtil,
@@ -106,14 +128,14 @@ export function createArrayHandler(
         return true;
       }
       if (!isNaN(parseInt(key as string))) {
-        const objectQuad = dataset.match(...target).toArray()[parseInt(key)];
+        const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (!objectQuad) {
           return true;
         }
         const term = objectQuad.object;
         if (term.termType === "Literal") {
-          const subject = target[0] as NamedNode;
-          const predicate = target[1] as NamedNode;
+          const subject = target[0][0] as NamedNode;
+          const predicate = target[0][1] as NamedNode;
           if (subject && predicate) {
             dataset.delete(quad(subject, predicate, term));
           }

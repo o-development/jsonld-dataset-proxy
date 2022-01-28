@@ -1,6 +1,10 @@
 import { Dataset } from "@rdfjs/types";
 import { ContextUtil } from "./ContextUtil";
-import { createArrayHandler, QuadMatch } from "./createArrayHandler";
+import {
+  ArrayProxyTarget,
+  createArrayHandler,
+  QuadMatch,
+} from "./createArrayHandler";
 import { createSubjectHander, ObjectWithId } from "./createSubjectHandler";
 
 /**
@@ -10,13 +14,13 @@ import { createSubjectHander, ObjectWithId } from "./createSubjectHandler";
  */
 export class ProxyCreator {
   private subjectMap: Map<string, ObjectWithId> = new Map();
-  private arrayMap: Map<string, QuadMatch> = new Map();
+  private arrayMap: Map<string, ArrayProxyTarget> = new Map();
 
   public createSubjectProxy(
     id: string,
     dataset: Dataset,
     contextUtil: ContextUtil
-  ) {
+  ): ObjectWithId {
     if (!this.subjectMap.has(id)) {
       const proxy = new Proxy(
         { "@id": id },
@@ -24,7 +28,7 @@ export class ProxyCreator {
       );
       this.subjectMap.set(id, proxy);
     }
-    return this.subjectMap.get(id);
+    return this.subjectMap.get(id) as ObjectWithId;
   }
 
   private getArrayKey(...quadMatch: QuadMatch) {
@@ -35,15 +39,15 @@ export class ProxyCreator {
     quadMatch: QuadMatch,
     dataset: Dataset,
     contextUtil: ContextUtil
-  ) {
+  ): ArrayProxyTarget {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
-        quadMatch,
+        [quadMatch, []],
         createArrayHandler(dataset, contextUtil, this)
       );
       this.arrayMap.set(key, proxy);
     }
-    return this.arrayMap.get(key);
+    return this.arrayMap.get(key) as ArrayProxyTarget;
   }
 }

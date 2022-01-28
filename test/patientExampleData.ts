@@ -199,3 +199,12 @@ example:Patient2
   fhir:name "Rob"^^xsd:string ;
   fhir:roommate example:Patient1 .
 `;
+
+export const tinyArrayPatientData = `
+@prefix example: <http://example.com/> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+example:Patient1
+  fhir:name "Garrett"^^xsd:string,  "Bobby"^^xsd:string, "Ferguson"^^xsd:string .
+`;
