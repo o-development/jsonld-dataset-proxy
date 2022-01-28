@@ -1,7 +1,7 @@
 import { Dataset, Literal, NamedNode, Quad } from "@rdfjs/types";
 import { namedNode, literal, quad } from "@rdfjs/dataset";
-import { ContextUtil } from "./ContextUtil";
-import { ObjectWithId } from "./createSubjectHandler";
+import { ContextUtil } from "../ContextUtil";
+import { ObjectWithId } from "../createSubjectHandler";
 import { deleteValueFromDataset } from "./deleteFromDataset";
 
 export function addObjectValueToDataset(

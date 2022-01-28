@@ -1,6 +1,6 @@
 import { Dataset, Term } from "@rdfjs/types";
-import { ContextUtil } from "./ContextUtil";
-import { ObjectWithId } from "./createSubjectHandler";
+import { ContextUtil } from "../ContextUtil";
+import { ObjectWithId } from "../createSubjectHandler";
 import { namedNode, quad } from "@rdfjs/dataset";
 
 export function deleteValueFromDataset(

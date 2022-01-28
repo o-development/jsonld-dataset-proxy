@@ -1,7 +1,7 @@
 import { Dataset, Quad } from "@rdfjs/types";
-import { ContextUtil } from "./ContextUtil";
-import { ObjectWithId } from "./createSubjectHandler";
-import { ProxyCreator } from "./ProxyCreator";
+import { ContextUtil } from "../ContextUtil";
+import { ObjectWithId } from "../createSubjectHandler";
+import { ProxyCreator } from "../ProxyCreator";
 
 export type ObjectJsonRepresentation = string | number | boolean | ObjectWithId;
 

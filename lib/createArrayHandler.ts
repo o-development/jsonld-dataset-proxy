@@ -1,10 +1,10 @@
 import { Dataset, NamedNode } from "@rdfjs/types";
-import { addObjectToDataset } from "./addObjectToDataset";
+import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
 import { ContextUtil } from "./ContextUtil";
 import {
   ObjectJsonRepresentation,
   objectToJsonldRepresentation,
-} from "./objectToJsonRepresentation";
+} from "./helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "./ProxyCreator";
 import { quad } from "@rdfjs/dataset";
 

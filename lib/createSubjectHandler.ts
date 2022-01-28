@@ -2,9 +2,9 @@ import { Dataset } from "@rdfjs/types";
 import { namedNode } from "@rdfjs/dataset";
 import { ContextUtil } from "./ContextUtil";
 import { ProxyCreator } from "./ProxyCreator";
-import { addObjectToDataset } from "./addObjectToDataset";
-import { getProxyFromDataset } from "./getProxyFromDataset";
-import { deleteValueFromDataset } from "./deleteFromDataset";
+import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
+import { getProxyFromDataset } from "./helperFunctions/getProxyFromDataset";
+import { deleteValueFromDataset } from "./helperFunctions/deleteFromDataset";
 
 export interface ObjectWithId {
   "@id": string;
