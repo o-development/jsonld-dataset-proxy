@@ -5,6 +5,9 @@ import {
   ObservationShapeDefinition,
   patientData,
   PatientShape,
+  PatientShapeDefinition,
+  patientContext,
+  tinyPatientData,
 } from "./patientExampleData";
 import { namedNode, quad, literal } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
@@ -21,12 +24,34 @@ describe("jsonldDatasetProxy", () => {
     return [dataset, observation];
   }
 
-  async function getEmptyDataset(): Promise<[Dataset, ObservationShape]> {
+  async function getTinyLoadedDataset(): Promise<[Dataset, ObservationShape]> {
+    const dataset = await serializedToDataset(tinyPatientData);
+    const observation = await jsonldDatasetProxy(
+      dataset,
+      ObservationShapeDefinition,
+      namedNode("http://example.com/Observation1")
+    );
+    return [dataset, observation];
+  }
+
+  async function getEmptyObservationDataset(): Promise<
+    [Dataset, ObservationShape]
+  > {
     const dataset = await createDataset();
     const observation = await jsonldDatasetProxy(
       dataset,
       ObservationShapeDefinition,
       namedNode("http://example.com/Observation1")
+    );
+    return [dataset, observation];
+  }
+
+  async function getEmptyPatientDataset(): Promise<[Dataset, PatientShape]> {
+    const dataset = await createDataset();
+    const observation = await jsonldDatasetProxy(
+      dataset,
+      PatientShapeDefinition,
+      namedNode("http://example.com/Patient1")
     );
     return [dataset, observation];
   }
@@ -256,138 +281,236 @@ describe("jsonldDatasetProxy", () => {
       );
       expect(patient.name).toEqual(["Garrett", "Bobby", "Ferguson"]);
     });
+
+    it("returns context when the @context key is called", async () => {
+      const [, observation] = await getLoadedDataset();
+      expect(observation["@context"]).toEqual(patientContext);
+    });
   });
 
   describe("write", () => {
-    // it("simulates setter object properties", async () => {
-    //   const [, observation] = await getLoadedDataset();
-    //   const obj = observation.subject as PatientShape;
-    //   // obj.assign
-    // });
-    // it("updates a primitive when the dataset is updated", async () => {});
-    // it("updates an array when the dataset is updated", async () => {});
-    // it("sets a primitive value that doesn't exist yet", async () => {
-    //   const dataset = createDataset();
-    //   const observation = await jsonldDatasetProxy<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    //   observation.notes = "Cool Notes";
-    //   expect(dataset.toString()).toBe(
-    //     '<https://example.com/observation1> <http://hl7.org/fhir/notes> "Cool Notes" .\n'
-    //   );
-    // });
-    // it("replaces a primitive value that currently exists", async () => {
-    //   const dataset = createDataset();
-    //   dataset.add(
-    //     quad(
-    //       namedNode("https://example.com/observation1"),
-    //       namedNode("http://hl7.org/fhir/notes"),
-    //       literal("Cool Notes")
-    //     )
-    //   );
-    //   const observation = await jsonldDatasetProxy<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    //   observation.notes = "Lame Notes";
-    //   expect(dataset.toString()).toBe(
-    //     '<https://example.com/observation1> <http://hl7.org/fhir/notes> "Lame Notes" .\n'
-    //   );
-    // });
-    // it("adds all quads from a set object", async () => {
-    //   const dataset = createDataset();
-    //   const observation = await jsonldDatasetProxy<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    //   const patient: PatientShape = {
-    //     "@id": "https://example.com/patient1",
-    //     birthdate: "2001-01-01",
-    //   };
-    //   observation.subject = patient;
-    //   expect(dataset.toString()).toBe(
-    //     '<https://example.com/observation1> <http://hl7.org/fhir/subject> <https://example.com/patient1> .\n<https://example.com/patient1> <http://hl7.org/fhir/birthdate> "2001-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .\n'
-    //   );
-    // });
-    // it("adds all quads from a set object that includes an array", async () => {
-    //   const dataset = createDataset();
-    //   const observation = await jsonldDatasetProxy<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    //   const patient: PatientShape = {
-    //     "@id": "https://example.com/patient1",
-    //     birthdate: "2001-01-01",
-    //     name: ["Jon", "Bon", "Jovi"],
-    //   };
-    //   observation.subject = patient;
-    //   expect(dataset.toString()).toBe(
-    //     '<https://example.com/observation1> <http://hl7.org/fhir/subject> <https://example.com/patient1> .\n<https://example.com/patient1> <http://hl7.org/fhir/birthdate> "2001-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .\n<https://example.com/patient1> <http://hl7.org/fhir/name> "Jon" .\n<https://example.com/patient1> <http://hl7.org/fhir/name> "Bon" .\n<https://example.com/patient1> <http://hl7.org/fhir/name> "Jovi" .\n'
-    //   );
-    // });
-    // it("does not infinitely recurse if there is a loop when setting an object", async () => {
-    //   const dataset = createDataset();
-    //   const observation = await jsonldDatasetProxy<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    //   const patient1: PatientShape = {
-    //     "@id": "https://example.com/patient1",
-    //     name: ["jon"],
-    //   };
-    //   const patient2: PatientShape = {
-    //     "@id": "https://example.com/patient2",
-    //     name: ["jane"],
-    //     roommate: [patient1],
-    //   };
-    //   patient1.roommate = [patient2];
-    //   observation.subject = patient1;
-    //   expect(dataset.toString()).toBe(
-    //     '<https://example.com/observation1> <http://hl7.org/fhir/subject> <https://example.com/patient1> .\n<https://example.com/patient1> <http://hl7.org/fhir/name> "jon" .\n<https://example.com/patient1> <http://hl7.org/fhir/roommate> <https://example.com/patient2> .\n<https://example.com/patient2> <http://hl7.org/fhir/name> "jane" .\n<https://example.com/patient2> <http://hl7.org/fhir/roommate> <https://example.com/patient1> .\n'
-    //   );
-    // });
-    // it("Removes triples from an overwritten object", () => {
-    // })
-    // it("sets a specific array value", () => {
-    //   const dataset = createDataset();
-    //   dataset.addAll([
-    //     quad(
-    //       namedNode("https://example.com/patient1"),
-    //       namedNode("http://hl7.org/fhir/roommate"),
-    //       namedNode("https://example.com/patient2")
-    //     ),
-    //     quad(
-    //       namedNode("https://example.com/patient1"),
-    //       namedNode("http://hl7.org/fhir/roommate"),
-    //       namedNode("https://example.com/patient3")
-    //     ),
-    //   ]);
-    //   const observation = await jsonldDatasetManipulator<ObservationShape>(
-    //     dataset,
-    //     patientContext,
-    //     namedNode("https://example.com/observation1")
-    //   );
-    // });
-    // it("pushes to the end of an array", () => {});
-    // it("pushes multiple items to the end of the array", () => {});
-    // it("removes an item from an array", () => {});
-    // it("simulates setter behaviour of an array of primitives", async () => {
-    //   const [, observation] = await getLoadedDataset();
-    //   const arr = observation?.subject?.name as string[];
-    //   // arr.copyWithin
-    //   // arr.fill
-    //   // arr.pop
-    //   // arr.push
-    //   // arr.shift
-    //   // arr.sort
-    //   // arr.splice
-    //   // arr.unshift
+    it("sets a primitive value that doesn't exist yet", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      observation.notes = "Cool Notes";
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/notes> "Cool Notes" .\n'
+      );
+    });
+
+    it("sets primitive number and boolean values", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.age = 35;
+      patient.isHappy = true;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/age> "35"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<http://example.com/Patient1> <http://hl7.org/fhir/isHappy> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .\n'
+      );
+    });
+
+    it("replaces a primitive value that currently exists", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      dataset.add(
+        quad(
+          namedNode("http://example.com/Observation1"),
+          namedNode("http://hl7.org/fhir/notes"),
+          literal("Cool Notes")
+        )
+      );
+      observation.notes = "Lame Notes";
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/notes> "Lame Notes" .\n'
+      );
+    });
+
+    it("adds all quads from a set object", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      const patient: PatientShape = {
+        "@id": "http://example.com/Patient1",
+        birthdate: "2001-01-01",
+      };
+      observation.subject = patient;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/birthdate> "2001-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .\n'
+      );
+    });
+
+    it("adds all quads from a set object that includes an array", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      const patient: PatientShape = {
+        "@id": "http://example.com/Patient1",
+        birthdate: "2001-01-01",
+        name: ["Jon", "Bon", "Jovi"],
+      };
+      observation.subject = patient;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/birthdate> "2001-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Jon" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bon" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Jovi" .\n'
+      );
+    });
+
+    it("does not infinitely recurse if there is a loop when setting an object", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      const patient1: PatientShape = {
+        "@id": "http://example.com/Patient1",
+        name: ["jon"],
+      };
+      const patient2: PatientShape = {
+        "@id": "https://example.com/patient2",
+        name: ["jane"],
+        roommate: [patient1],
+      };
+      patient1.roommate = [patient2];
+      observation.subject = patient1;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "jon" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <https://example.com/patient2> .\n<https://example.com/patient2> <http://hl7.org/fhir/name> "jane" .\n<https://example.com/patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    it("sets a primitive on an array", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      (patient.name as string[])[0] = "jon";
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "jon" .\n'
+      );
+    });
+
+    it("sets a primitive on an array and overwrites one that already is there", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      dataset.add(
+        quad(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("jon", "http://www.w3.org/2001/XMLSchema#string")
+        )
+      );
+      (patient.name as string[])[0] = "not jon";
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "not jon" .\n'
+      );
+    });
+
+    it("sets an array", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.name = ["Joe", "Mama"];
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Joe" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Mama" .\n'
+      );
+    });
+
+    it("Does not remove the full object when it is replaced on an object", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      const replacementPatient: PatientShape = {
+        "@id": "http://example.com/ReplacementPatient",
+        name: ["Jackson"],
+      };
+      observation.subject = replacementPatient;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/ReplacementPatient> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n<http://example.com/ReplacementPatient> <http://hl7.org/fhir/name> "Jackson" .\n'
+      );
+    });
+
+    it("Does not remove the full object when it is replaced on an array", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      const replacementPatient: PatientShape = {
+        "@id": "http://example.com/ReplacementPatient",
+        name: ["Jackson"],
+      };
+      const roommateArr = observation?.subject?.roommate as PatientShape[];
+      roommateArr[0] = replacementPatient;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/ReplacementPatient> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n<http://example.com/ReplacementPatient> <http://hl7.org/fhir/name> "Jackson" .\n'
+      );
+    });
+
+    it("Removes all adjoining triples when garbage collection is indicated via the delete operator on an object", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      delete observation.subject;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n'
+      );
+    });
+
+    it("Removes all adjoining triples in an array when garbage collection is indicated via the delete operator on an object", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      delete observation.subject?.name;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    it("Removes all adjoining triples when garbage collection is indicated via the delete operator on an array", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      delete observation.subject?.roommate?.[0];
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n'
+      );
+    });
+
+    it("Removes a literal in an array when using the delete operator", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      delete observation.subject?.name?.[0];
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    it("Removes old triples from a node that has the same id as the one it replaced", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      const replacementPatient: PatientShape = {
+        "@id": "http://example.com/Patient1",
+        name: ["Mister Sneaky"],
+      };
+      observation.subject = replacementPatient;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Mister Sneaky" .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n'
+      );
+    });
+
+    it("handles Object.assign", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      Object.assign(observation, {
+        age: 35,
+        isHappy: true,
+      });
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Observation1> <http://hl7.org/fhir/age> "35"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<http://example.com/Observation1> <http://hl7.org/fhir/isHappy> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    // describe("Array Methods", () => {
+    //   it("handles copyWithin", () => {
+
+    //   });
+
+    //   it("handles fill", () => {
+
+    //   });
+
+    //   it("handles pop", () => {
+
+    //   });
+
+    //   it("handles push", () => {
+
+    //   });
+
+    //   it("handles reverse", () => {
+
+    //   })
+
+    //   it("handles shift", () => {
+
+    //   });
+
+    //   it("handles sort", () => {
+
+    //   });
+
+    //   it("handles splice", () => {
+
+    //   });
+
+    //   it("handles unshift", () => {
+
+    //   });
     // });
   });
 });

@@ -4,12 +4,16 @@ import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
 
 export interface ObservationShape {
   "@id": string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  "@context"?: any;
   subject?: PatientShape;
   notes?: string;
 }
 
 export interface PatientShape {
   "@id": string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  "@context"?: any;
   name?: string[];
   birthdate?: string;
   age?: number;
@@ -107,7 +111,7 @@ const patientSchema: Schema = {
   "@context": "http://www.w3.org/ns/shex.jsonld",
 };
 
-const patientContext: ContextDefinition = {
+export const patientContext: ContextDefinition = {
   subject: { "@id": "http://hl7.org/fhir/subject", "@type": "@id" },
   name: {
     "@id": "http://hl7.org/fhir/name",
@@ -177,4 +181,21 @@ example:Patient3
   fhir:birthdate "1988-01-01"^^xsd:date ;
   fhir:age "33"^^xsd:integer ;
   fhir:isHappy "true"^^xsd:boolean .
+`;
+
+export const tinyPatientData = `
+@prefix example: <http://example.com/> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+example:Observation1
+  fhir:subject example:Patient1 .
+
+example:Patient1
+  fhir:name "Garrett"^^xsd:string ;
+  fhir:roommate example:Patient2 .
+
+example:Patient2
+  fhir:name "Rob"^^xsd:string ;
+  fhir:roommate example:Patient1 .
 `;

@@ -26,14 +26,14 @@ describe("ContextUtil", () => {
     });
   });
 
-  // describe("getType", () => {
-  //   it("returns xsd:string if no type is provided", () => {
-  //     const contextUtil = new ContextUtil({
-  //       name: { "@id": "http://hl7.org/fhir/name" },
-  //     });
-  //     expect(contextUtil.getType("name")).toBe(
-  //       "http://www.w3.org/2001/XMLSchema#string"
-  //     );
-  //   });
-  // });
+  describe("getType", () => {
+    it("returns xsd:string if no type is provided", () => {
+      const contextUtil = new ContextUtil({
+        name: { "@id": "http://hl7.org/fhir/name" },
+      });
+      expect(contextUtil.getType("name")).toBe(
+        "http://www.w3.org/2001/XMLSchema#string"
+      );
+    });
+  });
 });

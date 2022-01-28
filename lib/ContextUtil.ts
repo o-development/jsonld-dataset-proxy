@@ -41,15 +41,15 @@ export class ContextUtil {
     return iri;
   }
 
-  // public getType(key: string): string {
-  //   if (
-  //     typeof this.context[key] === "object" &&
-  //     (this.context[key] as ExpandedTermDefinition)["@type"]
-  //   ) {
-  //     return (this.context[key] as ExpandedTermDefinition)["@type"] as string;
-  //   }
-  //   return "http://www.w3.org/2001/XMLSchema#string";
-  // }
+  public getType(key: string): string {
+    if (
+      typeof this.context[key] === "object" &&
+      (this.context[key] as ExpandedTermDefinition)["@type"]
+    ) {
+      return (this.context[key] as ExpandedTermDefinition)["@type"] as string;
+    }
+    return "http://www.w3.org/2001/XMLSchema#string";
+  }
 
   public isArray(key: string): boolean {
     return !!(
