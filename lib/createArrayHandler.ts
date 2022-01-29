@@ -7,6 +7,11 @@ import {
 } from "./helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "./ProxyCreator";
 import { quad } from "@rdfjs/dataset";
+import {
+  ArrayMethodBuildersType,
+  arrayMethodsBuilders,
+  methodNames,
+} from "./helperFunctions/arrayMethods";
 
 export type QuadMatch = Parameters<Dataset["match"]>;
 
@@ -60,6 +65,13 @@ export function createArrayHandler(
         proxyCreator,
         target
       );
+      if (methodNames.has(key as keyof ArrayMethodBuildersType)) {
+        return arrayMethodsBuilders[key as keyof ArrayMethodBuildersType](
+          target,
+          dataset,
+          contextUtil
+        );
+      }
       return Reflect.get(processedObjects, key, ...rest);
     },
     getOwnPropertyDescriptor(target, key, ...rest) {
@@ -115,7 +127,8 @@ export function createArrayHandler(
             },
             dataset,
             contextUtil,
-            new Set()
+            new Set(),
+            false
           );
           return true;
         }

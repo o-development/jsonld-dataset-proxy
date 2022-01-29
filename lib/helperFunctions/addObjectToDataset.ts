@@ -11,7 +11,8 @@ export function addObjectValueToDataset(
   visitedObjects: Set<object>,
   subject: NamedNode,
   predicate: NamedNode,
-  value: unknown
+  value: unknown,
+  shouldDeleteOldTriples: boolean
 ): void {
   let object: NamedNode | Literal;
   if (
@@ -37,7 +38,8 @@ export function addObjectValueToDataset(
       value as ObjectWithId,
       dataset,
       contextUtil,
-      visitedObjects
+      visitedObjects,
+      shouldDeleteOldTriples
     );
   } else {
     throw Error("Set object does not have an @id");
@@ -48,7 +50,8 @@ export function addObjectToDataset(
   item: ObjectWithId,
   dataset: Dataset,
   contextUtil: ContextUtil,
-  visitedObjects: Set<object>
+  visitedObjects: Set<object>,
+  shouldDeleteOldTriples: boolean
 ): void {
   if (visitedObjects.has(item)) {
     return;
@@ -73,7 +76,9 @@ export function addObjectToDataset(
     ) {
       deleteValueFromDataset(item, key, dataset, contextUtil);
     }
-    dataset.deleteMatches(subject, predicate);
+    if (shouldDeleteOldTriples) {
+      dataset.deleteMatches(subject, predicate);
+    }
     if (Array.isArray(value)) {
       value.forEach((valueItem) => {
         addObjectValueToDataset(
@@ -83,7 +88,8 @@ export function addObjectToDataset(
           visitedObjects,
           subject,
           predicate,
-          valueItem
+          valueItem,
+          true
         );
       });
     } else {
@@ -94,7 +100,8 @@ export function addObjectToDataset(
         visitedObjects,
         subject,
         predicate,
-        value
+        value,
+        true
       );
     }
   });

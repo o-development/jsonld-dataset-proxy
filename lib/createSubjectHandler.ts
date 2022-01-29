@@ -54,7 +54,8 @@ export function createSubjectHander(
         { "@id": target["@id"], [key]: value },
         dataset,
         contextUtil,
-        new Set()
+        new Set(),
+        true
       );
       return true;
     },

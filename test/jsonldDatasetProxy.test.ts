@@ -532,29 +532,103 @@ describe("jsonldDatasetProxy", () => {
       expect(patient.name).toEqual(["Joe", "Tow"]);
     });
 
+    it("Prevents duplicates from being added to the array", async () => {
+      const [, patient] = await getArrayLoadedDataset();
+      const arr = patient.name as string[];
+      arr[3] = "Garrett";
+      expect(arr).toEqual(["Garrett", "Bobby", "Ferguson"]);
+    });
+
     describe("Array Methods", () => {
-      //   it("handles copyWithin", () => {
-      //   });
-      //   it("handles fill", () => {
-      //   });
-      //   it("handles pop", () => {
-      //   });
-      //   it("handles push", () => {
-      //   });
-      // it("handles reverse", async () => {
-      //   const [dataset, patient] = await getArrayLoadedDataset();
-      //   patient.name?.reverse();
-      //   expect(patient.name).toEqual(["Ferguson", "Bobby", "Garrett"]);
-      //   console.log(JSON.stringify(dataset.toString()));
-      // });
-      //   it("handles shift", () => {
-      //   });
-      //   it("handles sort", () => {
-      //   });
-      //   it("handles splice", () => {
-      //   });
-      //   it("handles unshift", () => {
-      //   });
+      it("handles copyWithin", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.copyWithin(0, 2, 3);
+        expect(arr).toEqual(["Ferguson", "Bobby"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+        );
+      });
+
+      it("handles fill", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.fill("Beepy", 2, 5);
+        expect(arr).toEqual(["Garrett", "Bobby", "Beepy"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
+        );
+      });
+
+      it("handles pop", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        expect(arr.pop()).toBe("Ferguson");
+        expect(arr).toEqual(["Garrett", "Bobby"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n'
+        );
+      });
+
+      it("handles push", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.push("Beepy");
+        expect(arr).toEqual(["Garrett", "Bobby", "Ferguson", "Beepy"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
+        );
+      });
+
+      it("handles reverse", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        patient.name?.reverse();
+        expect(patient.name).toEqual(["Ferguson", "Bobby", "Garrett"]);
+        expect(dataset.toString()).toBe(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+        );
+      });
+
+      it("handles shift", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        expect(arr.shift()).toEqual("Garrett");
+        expect(arr).toEqual(["Bobby", "Ferguson"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+        );
+      });
+
+      it("handles sort", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        patient.name?.sort((a, b) => {
+          return a.length - b.length;
+        });
+        expect(patient.name).toEqual(["Bobby", "Garrett", "Ferguson"]);
+        expect(dataset.toString()).toBe(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+        );
+      });
+
+      it("handles splice", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.splice(1, 0, "Beepy");
+        expect(arr).toEqual(["Garrett", "Beepy", "Bobby", "Ferguson"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
+        );
+      });
+
+      it("handles unshift", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.unshift("Beepy");
+        expect(arr).toEqual(["Beepy", "Garrett", "Bobby", "Ferguson"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
+        );
+      });
     });
   });
 });
