@@ -1,4 +1,4 @@
-import { Dataset } from "@rdfjs/types";
+import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { namedNode, quad } from "@rdfjs/dataset";
 import { ContextUtil } from "./ContextUtil";
 import { ProxyCreator } from "./ProxyCreator";
@@ -7,7 +7,7 @@ import { getProxyFromDataset } from "./helperFunctions/getProxyFromDataset";
 import { deleteValueFromDataset } from "./helperFunctions/deleteFromDataset";
 
 export interface ObjectWithId {
-  "@id": string;
+  "@id": NamedNode | BlankNode;
 }
 
 export function createSubjectHander(
@@ -26,7 +26,7 @@ export function createSubjectHander(
       );
     },
     getOwnPropertyDescriptor(target: ObjectWithId, key: string) {
-      const thing = {
+      return {
         value: getProxyFromDataset(
           target,
           key,
@@ -38,10 +38,9 @@ export function createSubjectHander(
         enumerable: true,
         configurable: true,
       };
-      return thing;
     },
     ownKeys(target) {
-      const subject = namedNode(target["@id"]);
+      const subject = target["@id"];
       const tripleDataset = dataset.match(subject);
       const keys: Set<string> = new Set(["@id"]);
       tripleDataset.toArray().forEach((quad) => {
@@ -51,9 +50,7 @@ export function createSubjectHander(
     },
     set: (target: ObjectWithId, key: string, value) => {
       if (key === "@id" && typeof value === "string") {
-        const currentSubjectQuads = dataset
-          .match(namedNode(target["@id"]))
-          .toArray();
+        const currentSubjectQuads = dataset.match(target["@id"]).toArray();
         const newSubjectQuads = currentSubjectQuads.map((curQuad) =>
           quad(
             namedNode(value),
@@ -65,7 +62,7 @@ export function createSubjectHander(
         currentSubjectQuads.forEach((curQuad) => dataset.delete(curQuad));
         dataset.addAll(newSubjectQuads);
         const currentObjectQuads = dataset
-          .match(undefined, undefined, namedNode(target["@id"]))
+          .match(undefined, undefined, target["@id"])
           .toArray();
         const newObjectQuads = currentObjectQuads.map((curQuad) =>
           quad(

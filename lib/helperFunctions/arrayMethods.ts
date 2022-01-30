@@ -43,7 +43,7 @@ export function replaceArray(
   if (target[0][0] && target[0][1]) {
     addObjectToDataset(
       {
-        "@id": target[0][0].value,
+        "@id": target[0][0],
         [contextUtil.iriToKey(target[0][1].value)]: replacement,
       },
       dataset,

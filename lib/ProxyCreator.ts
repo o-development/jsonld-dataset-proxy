@@ -1,4 +1,4 @@
-import { Dataset } from "@rdfjs/types";
+import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { ContextUtil } from "./ContextUtil";
 import {
   ArrayProxyTarget,
@@ -17,22 +17,22 @@ export class ProxyCreator {
   private arrayMap: Map<string, ArrayProxyTarget> = new Map();
 
   public createSubjectProxy(
-    id: string,
+    node: NamedNode | BlankNode,
     dataset: Dataset,
     contextUtil: ContextUtil
   ): ObjectWithId {
-    if (!this.subjectMap.has(id)) {
+    if (!this.subjectMap.has(node.value)) {
       const proxy = new Proxy(
-        { "@id": id },
+        { "@id": node },
         createSubjectHander(dataset, contextUtil, this)
       );
-      this.subjectMap.set(id, proxy);
+      this.subjectMap.set(node.value, proxy);
     }
-    return this.subjectMap.get(id) as ObjectWithId;
+    return this.subjectMap.get(node.value) as ObjectWithId;
   }
 
   private getArrayKey(...quadMatch: QuadMatch) {
-    return `${quadMatch[0]?.value}|${quadMatch[1]?.value}|${quadMatch[2]?.value}|${quadMatch[3]?.value}`;
+    return `${quadMatch[0].value}|${quadMatch[1].value}`;
   }
 
   public createArrayProxy(

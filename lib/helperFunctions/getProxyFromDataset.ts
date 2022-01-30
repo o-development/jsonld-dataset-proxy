@@ -13,7 +13,10 @@ export function getProxyFromDataset(
   proxyCreator: ProxyCreator
 ) {
   if (key === "@id") {
-    return target["@id"];
+    if (target["@id"].termType === "BlankNode") {
+      return undefined;
+    }
+    return target["@id"].value;
   }
   if (key === "@context") {
     return contextUtil.context;
@@ -27,7 +30,7 @@ export function getProxyFromDataset(
   if (typeof key === "symbol") {
     return;
   }
-  const subject = namedNode(target["@id"]);
+  const subject = target["@id"];
   const predicate = namedNode(contextUtil.keyToIri(key));
   if (contextUtil.isArray(key)) {
     const arrayProxy = proxyCreator.createArrayProxy(

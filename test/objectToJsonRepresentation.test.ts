@@ -2,7 +2,7 @@ import { createDataset } from "o-dataset-pack";
 import { ContextUtil } from "../lib/ContextUtil";
 import { objectToJsonldRepresentation } from "../lib/helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "../lib/ProxyCreator";
-import { quad, namedNode, literal, blankNode } from "@rdfjs/dataset";
+import { quad, namedNode, literal } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
 
 describe("objectToJsonRepresentation", () => {
@@ -52,18 +52,5 @@ describe("objectToJsonRepresentation", () => {
         ...extraParams
       )
     ).toBe("meh");
-  });
-
-  it("throws an error if the object is not a namedNode or a Literal", () => {
-    expect(() => {
-      objectToJsonldRepresentation(
-        quad(
-          namedNode("http://example.com/patient1"),
-          namedNode("http://example.com/someHex"),
-          blankNode()
-        ),
-        ...extraParams
-      );
-    }).toThrow("Cannot handle things that are not NamedNodes or literals");
   });
 });

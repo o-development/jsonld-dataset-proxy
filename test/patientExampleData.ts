@@ -3,7 +3,7 @@ import { Schema } from "shexj";
 import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
 
 export interface ObservationShape {
-  "@id": string;
+  "@id"?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   "@context"?: any;
   subject?: PatientShape;
@@ -11,7 +11,7 @@ export interface ObservationShape {
 }
 
 export interface PatientShape {
-  "@id": string;
+  "@id"?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   "@context"?: any;
   name?: string[];
@@ -177,6 +177,36 @@ example:Patient2
   fhir:roommate example:Patient1, example:Patient3 .
 
 example:Patient3
+  fhir:name "Amy"^^xsd:string ;
+  fhir:birthdate "1988-01-01"^^xsd:date ;
+  fhir:age "33"^^xsd:integer ;
+  fhir:isHappy "true"^^xsd:boolean .
+`;
+
+export const patientDataWithBlankNodes = `
+@prefix example: <http://example.com/> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+example:Observation1
+  fhir:notes "Cool Notes"^^xsd:string ;
+  fhir:subject _:Patient1 .
+
+_:Patient1
+  fhir:name "Garrett"^^xsd:string,  "Bobby"^^xsd:string, "Ferguson"^^xsd:string ;
+  fhir:birthdate "1986-01-01"^^xsd:date ;
+  fhir:age "35"^^xsd:integer ;
+  fhir:isHappy "true"^^xsd:boolean ;
+  fhir:roommate _:Patient2, _:Patient3 .
+
+_:Patient2
+  fhir:name "Rob"^^xsd:string ;
+  fhir:birthdate "1987-01-01"^^xsd:date ;
+  fhir:age "34"^^xsd:integer ;
+  fhir:isHappy "false"^^xsd:boolean ;
+  fhir:roommate _:Patient1, _:Patient3 .
+
+_:Patient3
   fhir:name "Amy"^^xsd:string ;
   fhir:birthdate "1988-01-01"^^xsd:date ;
   fhir:age "33"^^xsd:integer ;

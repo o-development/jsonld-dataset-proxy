@@ -11,4 +11,3 @@
    - "@type",
    - "@container": "@set"
  - Blank nodes are not supported
- - Array ordering is inconsistent

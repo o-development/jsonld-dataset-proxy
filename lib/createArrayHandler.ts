@@ -1,4 +1,4 @@
-import { Dataset, NamedNode } from "@rdfjs/types";
+import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
 import { ContextUtil } from "./ContextUtil";
 import {
@@ -13,7 +13,7 @@ import {
   methodNames,
 } from "./helperFunctions/arrayMethods";
 
-export type QuadMatch = Parameters<Dataset["match"]>;
+export type QuadMatch = [subject: NamedNode | BlankNode, predicate: NamedNode];
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
@@ -119,7 +119,7 @@ export function createArrayHandler(
         if (target[0][0] && target[0][1]) {
           addObjectToDataset(
             {
-              "@id": target[0][0].value,
+              "@id": target[0][0],
               [contextUtil.iriToKey(target[0][1].value)]: value,
             },
             dataset,

@@ -9,14 +9,27 @@ import {
   patientContext,
   tinyPatientData,
   tinyArrayPatientData,
+  patientDataWithBlankNodes,
 } from "./patientExampleData";
-import { namedNode, quad, literal } from "@rdfjs/dataset";
+import { namedNode, quad, literal, blankNode } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
 import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
 
 describe("jsonldDatasetProxy", () => {
   async function getLoadedDataset(): Promise<[Dataset, ObservationShape]> {
     const dataset = await serializedToDataset(patientData);
+    const observation = await jsonldDatasetProxy(
+      dataset,
+      ObservationShapeDefinition,
+      namedNode("http://example.com/Observation1")
+    );
+    return [dataset, observation];
+  }
+
+  async function getLoadedDatasetWithBlankNodes(): Promise<
+    [Dataset, ObservationShape]
+  > {
+    const dataset = await serializedToDataset(patientDataWithBlankNodes);
     const observation = await jsonldDatasetProxy(
       dataset,
       ObservationShapeDefinition,
@@ -74,6 +87,11 @@ describe("jsonldDatasetProxy", () => {
       expect(observation.notes).toBe("Cool Notes");
     });
 
+    it("retreives a primitive with blank nodes", async () => {
+      const [, observation] = await getLoadedDatasetWithBlankNodes();
+      expect(observation.subject?.age).toBe(35);
+    });
+
     it("retrieves a nested primitive", async () => {
       const [, observation] = await getLoadedDataset();
       expect(observation?.subject && observation.subject["@id"]).toBe(
@@ -82,6 +100,11 @@ describe("jsonldDatasetProxy", () => {
       expect(observation?.subject?.age).toBe(35);
       expect(observation?.subject?.birthdate).toBe("1986-01-01");
       expect(observation?.subject?.isHappy).toBe(true);
+    });
+
+    it("retrieves a nested primitive with a blank node", async () => {
+      const [, observation] = await getLoadedDatasetWithBlankNodes();
+      expect(observation?.subject?.roommate?.[0].age).toBe(34);
     });
 
     it("simulates the getter behavior of an array of primitives", async () => {
@@ -343,6 +366,8 @@ describe("jsonldDatasetProxy", () => {
         '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/birthdate> "2001-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .\n'
       );
     });
+
+    it("saves a blank node to ");
 
     it("adds all quads from a set object that includes an array", async () => {
       const [dataset, observation] = await getEmptyObservationDataset();

@@ -19,10 +19,10 @@ export function deleteValueFromDataset(
   if (typeof key === "symbol") {
     return true;
   }
-  const subject = namedNode(target["@id"]);
+  const subject = target["@id"];
   const predicate = namedNode(contextUtil.keyToIri(key));
   if (key === "@id") {
-    nodesToRemove.push(namedNode(target["@id"]));
+    nodesToRemove.push(target["@id"]);
   } else {
     const objectDataset = dataset.match(subject, predicate);
     if (objectDataset.size === 0) {

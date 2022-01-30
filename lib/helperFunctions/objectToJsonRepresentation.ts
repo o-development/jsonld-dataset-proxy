@@ -62,12 +62,11 @@ export function objectToJsonldRepresentation(
       default:
         return quad.object.value;
     }
-  } else if (quad.object.termType === "NamedNode") {
-    return proxyCreator.createSubjectProxy(
-      quad.object.value,
-      dataset,
-      contextUtil
-    );
+  } else if (
+    quad.object.termType === "NamedNode" ||
+    quad.object.termType === "BlankNode"
+  ) {
+    return proxyCreator.createSubjectProxy(quad.object, dataset, contextUtil);
   } else {
     throw new Error("Cannot handle things that are not NamedNodes or literals");
   }
