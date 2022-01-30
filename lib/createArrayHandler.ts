@@ -111,10 +111,7 @@ export function createArrayHandler(
       return Reflect.has(processedObjects, ...rest);
     },
     set(target, key, value, ...rest) {
-      if (typeof key === "symbol") {
-        return false;
-      }
-      if (!isNaN(parseInt(key as string))) {
+      if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (objectQuad) {
           dataset.delete(objectQuad);
@@ -132,15 +129,11 @@ export function createArrayHandler(
           );
           return true;
         }
-        return false;
       }
       return Reflect.set(target, key, ...rest);
     },
     deleteProperty(target, key) {
-      if (typeof key === "symbol") {
-        return true;
-      }
-      if (!isNaN(parseInt(key as string))) {
+      if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (!objectQuad) {
           return true;
@@ -153,10 +146,7 @@ export function createArrayHandler(
             dataset.delete(quad(subject, predicate, term));
           }
           return true;
-        } else if (
-          term.termType === "NamedNode" ||
-          term.termType === "BlankNode"
-        ) {
+        } else if (term.termType === "NamedNode") {
           dataset.deleteMatches(term, undefined, undefined);
           dataset.deleteMatches(undefined, undefined, term);
           return true;

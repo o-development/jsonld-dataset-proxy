@@ -76,6 +76,8 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
       return toReturn;
     };
   },
+  // TODO: Push is an O(n) operation. It could be made O(1), but I
+  // was lazy. I'll come back to fix this.
   push: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].push(...args);

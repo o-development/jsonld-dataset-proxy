@@ -431,6 +431,15 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
+    it("Changes the subject name if the @id is changed", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      const patient = observation?.subject as PatientShape;
+      patient["@id"] = "http://example.com/RenamedPatient";
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/RenamedPatient> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/RenamedPatient> .\n<http://example.com/RenamedPatient> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/RenamedPatient> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n'
+      );
+    });
+
     it("Removes all adjoining triples when garbage collection is indicated via the delete operator on an object", async () => {
       const [dataset, observation] = await getTinyLoadedDataset();
       delete observation.subject;
@@ -461,6 +470,50 @@ describe("jsonldDatasetProxy", () => {
       expect(dataset.toString()).toBe(
         '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
       );
+    });
+
+    it("Deletes itself if @id is deleted", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete observation["@id"];
+      expect(observation).toEqual({ "@id": "http://example.com/Observation1" });
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    it("Does nothing when deleting triples that don't exist", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      delete observation.subject;
+      expect(dataset.toString()).toBe("");
+    });
+
+    it("Does nothing when deleting context", async () => {
+      const [, observation] = await getTinyLoadedDataset();
+      delete observation["@context"];
+      expect(observation["@context"]).toEqual(patientContext);
+    });
+
+    it("Does nothing when deleting toString", async () => {
+      const [, observation] = await getTinyLoadedDataset();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete observation.toString;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete observation[Symbol.toStringTag];
+      expect(typeof observation.toString).toBe("function");
+    });
+
+    it("Does nothing when deleting any symbol", async () => {
+      const [, observation] = await getTinyLoadedDataset();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete observation[Symbol.search];
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      expect(observation[Symbol.search]).toBe(undefined);
     });
 
     it("Removes old triples from a node that has the same id as the one it replaced", async () => {
@@ -537,6 +590,58 @@ describe("jsonldDatasetProxy", () => {
       const arr = patient.name as string[];
       arr[3] = "Garrett";
       expect(arr).toEqual(["Garrett", "Bobby", "Ferguson"]);
+    });
+
+    it("Does nothing when you try to set a symbol on an array", async () => {
+      const [, patient] = await getArrayLoadedDataset();
+      const arr = patient.name as string[];
+      expect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        arr[Symbol.search] = "Cool";
+      }).not.toThrowError();
+    });
+
+    it("Does nothing when you try to delete a symbol on an array", async () => {
+      const [, patient] = await getArrayLoadedDataset();
+      const arr = patient.name as string[];
+      expect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        delete arr[Symbol.search];
+      }).not.toThrowError();
+    });
+
+    it("Does nothing when you try to delete an index of the array that doesn't exist", async () => {
+      const [dataset, patient] = await getArrayLoadedDataset();
+      const arr = patient.name as string[];
+      delete arr[5];
+      expect(arr).toEqual(["Garrett", "Bobby", "Ferguson"]);
+      expect(dataset.toString()).toEqual(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+      );
+    });
+
+    it("Can set a triple object named node with just a string", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      observation.subject = "http://example.com/Patient1";
+      expect(observation.subject).toEqual({
+        "@id": "http://example.com/Patient1",
+      });
+      expect(dataset.toString()).toBe(
+        "<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n"
+      );
+    });
+
+    it("Throws an error if an item is set without an Id", async () => {
+      const [, observation] = await getEmptyObservationDataset();
+      expect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        observation.subject = { name: ["Wrong", "Person"] };
+      }).toThrow("Set object does not have an @id");
     });
 
     describe("Array Methods", () => {
@@ -617,6 +722,16 @@ describe("jsonldDatasetProxy", () => {
         expect(arr).toEqual(["Garrett", "Beepy", "Bobby", "Ferguson"]);
         expect(dataset.toString()).toEqual(
           '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
+        );
+      });
+
+      it("handles splice with only two params", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.splice(1, 1);
+        expect(arr).toEqual(["Garrett", "Ferguson"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
         );
       });
 

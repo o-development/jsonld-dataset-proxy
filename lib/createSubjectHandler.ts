@@ -1,5 +1,5 @@
 import { Dataset } from "@rdfjs/types";
-import { namedNode } from "@rdfjs/dataset";
+import { namedNode, quad } from "@rdfjs/dataset";
 import { ContextUtil } from "./ContextUtil";
 import { ProxyCreator } from "./ProxyCreator";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
@@ -50,6 +50,34 @@ export function createSubjectHander(
       return Array.from(keys);
     },
     set: (target: ObjectWithId, key: string, value) => {
+      if (key === "@id" && typeof value === "string") {
+        const currentSubjectQuads = dataset
+          .match(namedNode(target["@id"]))
+          .toArray();
+        const newSubjectQuads = currentSubjectQuads.map((curQuad) =>
+          quad(
+            namedNode(value),
+            curQuad.predicate,
+            curQuad.object,
+            curQuad.graph
+          )
+        );
+        currentSubjectQuads.forEach((curQuad) => dataset.delete(curQuad));
+        dataset.addAll(newSubjectQuads);
+        const currentObjectQuads = dataset
+          .match(undefined, undefined, namedNode(target["@id"]))
+          .toArray();
+        const newObjectQuads = currentObjectQuads.map((curQuad) =>
+          quad(
+            curQuad.subject,
+            curQuad.predicate,
+            namedNode(value),
+            curQuad.graph
+          )
+        );
+        currentObjectQuads.forEach((curQuad) => dataset.delete(curQuad));
+        dataset.addAll(newObjectQuads);
+      }
       addObjectToDataset(
         { "@id": target["@id"], [key]: value },
         dataset,

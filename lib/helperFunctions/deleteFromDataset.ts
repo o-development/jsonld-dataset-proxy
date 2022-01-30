@@ -35,7 +35,7 @@ export function deleteValueFromDataset(
     if (term.termType === "Literal") {
       dataset.delete(quad(subject, predicate, term));
       return true;
-    } else if (term.termType === "NamedNode" || term.termType === "BlankNode") {
+    } else if (term.termType === "NamedNode") {
       dataset.deleteMatches(term, undefined, undefined);
       dataset.deleteMatches(undefined, undefined, term);
       return true;
