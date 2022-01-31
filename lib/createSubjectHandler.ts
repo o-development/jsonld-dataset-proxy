@@ -10,13 +10,18 @@ export interface ObjectWithId {
   "@id": NamedNode | BlankNode;
 }
 
+export const getUnderlyingNode = Symbol("getUnderlyingNode");
+
 export function createSubjectHander(
   dataset: Dataset,
   contextUtil: ContextUtil,
   proxyCreator: ProxyCreator
 ): ProxyHandler<ObjectWithId> {
   return {
-    get(target: ObjectWithId, key: string) {
+    get(target: ObjectWithId, key: string | symbol) {
+      if (key === getUnderlyingNode) {
+        return target["@id"];
+      }
       return getProxyFromDataset(
         target,
         key,

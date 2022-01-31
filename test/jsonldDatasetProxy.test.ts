@@ -10,8 +10,9 @@ import {
   tinyPatientData,
   tinyArrayPatientData,
   patientDataWithBlankNodes,
+  tinyPatientDataWithBlankNodes,
 } from "./patientExampleData";
-import { namedNode, quad, literal, blankNode } from "@rdfjs/dataset";
+import { namedNode, quad, literal } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
 import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
 
@@ -40,6 +41,18 @@ describe("jsonldDatasetProxy", () => {
 
   async function getTinyLoadedDataset(): Promise<[Dataset, ObservationShape]> {
     const dataset = await serializedToDataset(tinyPatientData);
+    const observation = await jsonldDatasetProxy(
+      dataset,
+      ObservationShapeDefinition,
+      namedNode("http://example.com/Observation1")
+    );
+    return [dataset, observation];
+  }
+
+  async function getTinyLoadedDatasetWithBlankNodes(): Promise<
+    [Dataset, ObservationShape]
+  > {
+    const dataset = await serializedToDataset(tinyPatientDataWithBlankNodes);
     const observation = await jsonldDatasetProxy(
       dataset,
       ObservationShapeDefinition,
@@ -367,7 +380,39 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
-    it("saves a blank node to ");
+    it("sets a retrieved blank node object", async () => {
+      const [, observation] = await getTinyLoadedDatasetWithBlankNodes();
+      const patient2 = observation.subject?.roommate?.[0] as PatientShape;
+      observation.subject = patient2;
+      expect(observation.subject.name).toEqual(["Rob"]);
+      expect(observation.subject.roommate?.[0]?.name).toEqual(["Garrett"]);
+      expect(observation.subject.roommate?.[0]?.roommate?.[0].name).toEqual([
+        "Rob",
+      ]);
+    });
+
+    it("only removes the connection when a value is set to undefined", async () => {
+      const [dataset, observation] = await getTinyLoadedDataset();
+      observation.subject = undefined;
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+      );
+    });
+
+    it("Creates a blank node if the id is blank during set", async () => {
+      const [dataset, observation] = await getEmptyObservationDataset();
+      observation.subject = { name: ["Joe"] };
+      expect(observation.subject?.["@id"]).toBeUndefined();
+      expect(observation.subject.name).toEqual(["Joe"]);
+      expect(
+        dataset
+          .match(
+            namedNode("http://example.com/Observation1"),
+            namedNode("http://hl7.org/fhir/subject")
+          )
+          .toArray()[0].object.termType
+      ).toBe("BlankNode");
+    });
 
     it("adds all quads from a set object that includes an array", async () => {
       const [dataset, observation] = await getEmptyObservationDataset();
@@ -549,7 +594,7 @@ describe("jsonldDatasetProxy", () => {
       };
       observation.subject = replacementPatient;
       expect(dataset.toString()).toBe(
-        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Mister Sneaky" .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n'
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Mister Sneaky" .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
       );
     });
 
@@ -658,15 +703,6 @@ describe("jsonldDatasetProxy", () => {
       expect(dataset.toString()).toBe(
         "<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n"
       );
-    });
-
-    it("Throws an error if an item is set without an Id", async () => {
-      const [, observation] = await getEmptyObservationDataset();
-      expect(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        observation.subject = { name: ["Wrong", "Person"] };
-      }).toThrow("Set object does not have an @id");
     });
 
     describe("Array Methods", () => {

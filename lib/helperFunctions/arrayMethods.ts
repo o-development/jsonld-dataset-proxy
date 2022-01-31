@@ -1,7 +1,11 @@
 import { Dataset } from "@rdfjs/types";
 import { ContextUtil } from "../ContextUtil";
 import { ArrayProxyTarget } from "../createArrayHandler";
-import { addObjectToDataset } from "./addObjectToDataset";
+import {
+  AddObjectItem,
+  addObjectToDataset,
+  AddObjectValue,
+} from "./addObjectToDataset";
 import { ObjectJsonRepresentation } from "./objectToJsonRepresentation";
 
 export type methodBuilder<Return> = (
@@ -36,21 +40,16 @@ export const methodNames: Set<keyof ArrayMethodBuildersType> = new Set([
 
 export function replaceArray(
   target: ArrayProxyTarget,
-  replacement: unknown[],
+  replacement: AddObjectValue[],
   dataset: Dataset,
   contextUtil: ContextUtil
 ) {
   if (target[0][0] && target[0][1]) {
-    addObjectToDataset(
-      {
-        "@id": target[0][0],
-        [contextUtil.iriToKey(target[0][1].value)]: replacement,
-      },
-      dataset,
-      contextUtil,
-      new Set(),
-      true
-    );
+    const itemToAdd = {
+      "@id": target[0][0],
+      [contextUtil.iriToKey(target[0][1].value)]: replacement,
+    } as AddObjectItem;
+    addObjectToDataset(itemToAdd, dataset, contextUtil, new Set(), true);
   }
 }
 
@@ -58,21 +57,21 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   copyWithin: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].copyWithin(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
   fill: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].fill(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
   pop: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].pop(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
@@ -81,7 +80,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   push: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].push(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
@@ -93,7 +92,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   shift: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].shift(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
@@ -108,14 +107,14 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
         items.length > 0
           ? target[1].splice(start, deleteCount as number, ...items)
           : target[1].splice(start, deleteCount);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },
   unshift: (target, dataset, contextUtil) => {
     return (...args) => {
       const toReturn = target[1].unshift(...args);
-      replaceArray(target, target[1], dataset, contextUtil);
+      replaceArray(target, target[1] as AddObjectValue[], dataset, contextUtil);
       return toReturn;
     };
   },

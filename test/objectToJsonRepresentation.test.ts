@@ -2,7 +2,7 @@ import { createDataset } from "o-dataset-pack";
 import { ContextUtil } from "../lib/ContextUtil";
 import { objectToJsonldRepresentation } from "../lib/helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "../lib/ProxyCreator";
-import { quad, namedNode, literal } from "@rdfjs/dataset";
+import { quad, namedNode, literal, defaultGraph } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
 
 describe("objectToJsonRepresentation", () => {
@@ -52,5 +52,20 @@ describe("objectToJsonRepresentation", () => {
         ...extraParams
       )
     ).toBe("meh");
+  });
+
+  it("throws an error when it encoutners a quad that is not a Liter, NamedNode, or BlankNode", () => {
+    expect(() =>
+      objectToJsonldRepresentation(
+        quad(
+          namedNode("http://example.com/patient1"),
+          namedNode("http://example.com/someHex"),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          defaultGraph()
+        ),
+        ...extraParams
+      )
+    ).toThrow("Can only convert NamedNodes or Literals or BlankNodes");
   });
 });

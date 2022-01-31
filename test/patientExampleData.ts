@@ -238,3 +238,20 @@ export const tinyArrayPatientData = `
 example:Patient1
   fhir:name "Garrett"^^xsd:string,  "Bobby"^^xsd:string, "Ferguson"^^xsd:string .
 `;
+
+export const tinyPatientDataWithBlankNodes = `
+@prefix example: <http://example.com/> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+example:Observation1
+  fhir:subject _:Patient1 .
+
+_:Patient1
+  fhir:name "Garrett"^^xsd:string ;
+  fhir:roommate _:Patient2 .
+
+_:Patient2
+  fhir:name "Rob"^^xsd:string ;
+  fhir:roommate _:Patient1 .
+`;

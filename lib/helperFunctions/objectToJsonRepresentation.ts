@@ -68,6 +68,6 @@ export function objectToJsonldRepresentation(
   ) {
     return proxyCreator.createSubjectProxy(quad.object, dataset, contextUtil);
   } else {
-    throw new Error("Cannot handle things that are not NamedNodes or literals");
+    throw new Error("Can only convert NamedNodes or Literals or BlankNodes");
   }
 }
