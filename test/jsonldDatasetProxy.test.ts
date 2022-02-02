@@ -1,11 +1,9 @@
 import { createDataset, serializedToDataset } from "o-dataset-pack";
-import { jsonldDatasetProxy } from "../lib/jsonldDatasetProxy";
+import { jsonldDatasetProxy, JsonldDatasetProxy } from "../lib";
 import {
   ObservationShape,
-  ObservationShapeDefinition,
   patientData,
   PatientShape,
-  PatientShapeDefinition,
   patientContext,
   tinyPatientData,
   tinyArrayPatientData,
@@ -14,14 +12,14 @@ import {
 } from "./patientExampleData";
 import { namedNode, quad, literal } from "@rdfjs/dataset";
 import { Dataset } from "@rdfjs/types";
-import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
+import { ContextDefinition } from "jsonld";
 
 describe("jsonldDatasetProxy", () => {
   async function getLoadedDataset(): Promise<[Dataset, ObservationShape]> {
     const dataset = await serializedToDataset(patientData);
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
-      ObservationShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
@@ -31,9 +29,9 @@ describe("jsonldDatasetProxy", () => {
     [Dataset, ObservationShape]
   > {
     const dataset = await serializedToDataset(patientDataWithBlankNodes);
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
-      ObservationShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
@@ -41,9 +39,9 @@ describe("jsonldDatasetProxy", () => {
 
   async function getTinyLoadedDataset(): Promise<[Dataset, ObservationShape]> {
     const dataset = await serializedToDataset(tinyPatientData);
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
-      ObservationShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
@@ -53,9 +51,9 @@ describe("jsonldDatasetProxy", () => {
     [Dataset, ObservationShape]
   > {
     const dataset = await serializedToDataset(tinyPatientDataWithBlankNodes);
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
-      ObservationShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
@@ -63,9 +61,9 @@ describe("jsonldDatasetProxy", () => {
 
   async function getArrayLoadedDataset(): Promise<[Dataset, PatientShape]> {
     const dataset = await serializedToDataset(tinyArrayPatientData);
-    const patient = await jsonldDatasetProxy(
+    const patient = await jsonldDatasetProxy<PatientShape>(
       dataset,
-      PatientShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Patient1")
     );
     return [dataset, patient];
@@ -75,9 +73,9 @@ describe("jsonldDatasetProxy", () => {
     [Dataset, ObservationShape]
   > {
     const dataset = await createDataset();
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
-      ObservationShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Observation1")
     );
     return [dataset, observation];
@@ -85,9 +83,9 @@ describe("jsonldDatasetProxy", () => {
 
   async function getEmptyPatientDataset(): Promise<[Dataset, PatientShape]> {
     const dataset = await createDataset();
-    const observation = await jsonldDatasetProxy(
+    const observation = await jsonldDatasetProxy<PatientShape>(
       dataset,
-      PatientShapeDefinition,
+      patientContext,
       namedNode("http://example.com/Patient1")
     );
     return [dataset, observation];
@@ -227,7 +225,7 @@ describe("jsonldDatasetProxy", () => {
 
     it("simulates getter object properties", async () => {
       const [, observation] = await getLoadedDataset();
-      const obj = observation.subject as PatientShape;
+      const obj = observation.subject as JsonldDatasetProxy<PatientShape>;
 
       expect(obj["@id"]).toEqual("http://example.com/Patient1");
       expect(obj.name).toEqual(["Garrett", "Bobby", "Ferguson"]);
@@ -311,19 +309,15 @@ describe("jsonldDatasetProxy", () => {
 
     it("returns an array object if multiple triples exist, even if @container is not @set", async () => {
       const dataset = await serializedToDataset(patientData);
-      const fakePatientShapeDefinition: ShapeDefinition<PatientShape> = {
-        schema: { type: "Schema" },
-        context: {
-          name: {
-            "@id": "http://hl7.org/fhir/name",
-            "@type": "http://www.w3.org/2001/XMLSchema#string",
-          },
+      const fakePatientSContext: ContextDefinition = {
+        name: {
+          "@id": "http://hl7.org/fhir/name",
+          "@type": "http://www.w3.org/2001/XMLSchema#string",
         },
-        shapeIri: "http://shex.io/webapps/shex.js/doc/PatientShape",
       };
-      const patient = await jsonldDatasetProxy(
+      const patient = await jsonldDatasetProxy<PatientShape>(
         dataset,
-        fakePatientShapeDefinition,
+        fakePatientSContext,
         namedNode("http://example.com/Patient1")
       );
       expect(patient.name).toEqual(["Garrett", "Bobby", "Ferguson"]);
@@ -505,6 +499,7 @@ describe("jsonldDatasetProxy", () => {
       const [dataset, observation] = await getTinyLoadedDataset();
       const patient = observation?.subject as PatientShape;
       patient["@id"] = "http://example.com/RenamedPatient";
+      expect(patient["@id"]).toBe("http://example.com/RenamedPatient");
       expect(dataset.toString()).toBe(
         '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/RenamedPatient> .\n<http://example.com/Patient2> <http://hl7.org/fhir/name> "Rob" .\n<http://example.com/Patient2> <http://hl7.org/fhir/roommate> <http://example.com/RenamedPatient> .\n<http://example.com/RenamedPatient> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/RenamedPatient> <http://hl7.org/fhir/roommate> <http://example.com/Patient2> .\n'
       );

@@ -1,3 +1,5 @@
+jsonld-dataset-proxy / [Exports](modules.md)
+
 # JSONLD Dataset Proxy
 
 Edit RDFJS Dataset just like regular JavaScript Object Literals.
@@ -35,7 +37,6 @@ dataset.add(
 Plus, you get IntelliSense typescript suggestions to help you write your code!
 
 ![Intellisense Example](./readme-images/Intellisense.png)
-
 
 ## Installation
 ```bash
@@ -226,8 +227,6 @@ console.log(person.bestFriend?.["@id"]); // "http://example.com/Person2"
 // Finally, you can retrieve the context
 console.log(person["@context"]); // { "name": { "@id": ... }}
 ```
-
-
 
 ### Setting a Primitive
 Setting a non-array primitive will remove the existing triple from the dataset and add a new triple.

@@ -1,27 +1,24 @@
 import { ContextDefinition } from "jsonld";
 import { Schema } from "shexj";
-import { ShapeDefinition } from "../lib/typeDescription/shapeDefinition";
 
-export interface ObservationShape {
+export type ObservationShape = {
   "@id"?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  "@context"?: any;
+  "@context"?: ContextDefinition;
   subject?: PatientShape;
   notes?: string;
-}
+};
 
-export interface PatientShape {
+export type PatientShape = {
   "@id"?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  "@context"?: any;
+  "@context"?: ContextDefinition;
   name?: string[];
   birthdate?: string;
   age?: number;
   isHappy?: boolean;
   roommate?: PatientShape[];
-}
+};
 
-const patientSchema: Schema = {
+export const patientSchema: Schema = {
   type: "Schema",
   start: "http://shex.io/webapps/shex.js/doc/ObservationShape",
   shapes: [
@@ -139,18 +136,6 @@ export const patientContext: ContextDefinition = {
     "@id": "http://hl7.org/fhir/notes",
     "@type": "http://www.w3.org/2001/XMLSchema#string",
   },
-};
-
-export const ObservationShapeDefinition: ShapeDefinition<ObservationShape> = {
-  schema: patientSchema,
-  shapeIri: "http://shex.io/webapps/shex.js/doc/ObservationShape",
-  context: patientContext,
-};
-
-export const PatientShapeDefinition: ShapeDefinition<PatientShape> = {
-  schema: patientSchema,
-  shapeIri: "http://shex.io/webapps/shex.js/doc/PatientShape",
-  context: patientContext,
 };
 
 export const patientData = `

@@ -79,6 +79,7 @@ export function createSubjectHander(
         );
         currentObjectQuads.forEach((curQuad) => dataset.delete(curQuad));
         dataset.addAll(newObjectQuads);
+        target["@id"] = namedNode(value);
       }
       addObjectToDataset(
         { "@id": target["@id"], [key]: value },
