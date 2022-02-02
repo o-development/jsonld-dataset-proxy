@@ -34,7 +34,7 @@
 
 #### Defined in
 
-[lib/ContextUtil.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L7)
+[lib/ContextUtil.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L7)
 
 ## Properties
 
@@ -44,7 +44,7 @@
 
 #### Defined in
 
-[lib/ContextUtil.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L4)
+[lib/ContextUtil.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L4)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L5)
+[lib/ContextUtil.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L5)
 
 ## Methods
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:44](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L44)
+[lib/ContextUtil.ts:44](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L44)
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:37](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L37)
+[lib/ContextUtil.ts:37](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L37)
 
 ___
 
@@ -114,7 +114,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:54](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L54)
+[lib/ContextUtil.ts:54](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L54)
 
 ___
 
@@ -134,4 +134,4 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ContextUtil.ts#L24)
+[lib/ContextUtil.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ContextUtil.ts#L24)

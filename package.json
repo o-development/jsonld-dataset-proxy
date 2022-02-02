@@ -1,6 +1,6 @@
 {
   "name": "jsonld-dataset-proxy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/o-development/solidshape.git"
+    "url": "git+https://github.com/o-development/jsonld-dataset-proxy.git"
   },
   "author": "Jackson Morgan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/o-development/solidshape/issues"
+    "url": "https://github.com/o-development/jsonld-dataset-proxy/issues"
   },
-  "homepage": "https://github.com/o-development/solidshape#readme",
+  "homepage": "https://github.com/o-development/jsonld-dataset-proxy#readme",
   "devDependencies": {
     "@rdfjs/types": "^1.0.1",
     "@types/jest": "^27.0.3",

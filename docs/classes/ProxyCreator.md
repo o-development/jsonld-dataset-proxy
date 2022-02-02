@@ -37,7 +37,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ProxyCreator.ts#L17)
+[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L17)
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ProxyCreator.ts#L16)
+[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L16)
 
 ## Methods
 
@@ -69,7 +69,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:38](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ProxyCreator.ts#L38)
+[lib/ProxyCreator.ts:38](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L38)
 
 ___
 
@@ -91,7 +91,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:19](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ProxyCreator.ts#L19)
+[lib/ProxyCreator.ts:19](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L19)
 
 ___
 
@@ -111,4 +111,4 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/9ae36cd/lib/ProxyCreator.ts#L34)
+[lib/ProxyCreator.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L34)
