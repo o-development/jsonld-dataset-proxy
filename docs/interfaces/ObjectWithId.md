@@ -12,8 +12,8 @@
 
 ### @id
 
-• **@id**: `NamedNode`<`string`\> \| `BlankNode`
+• **@id**: `BlankNode` \| `NamedNode`<`string`\>
 
 #### Defined in
 
-[lib/createSubjectHandler.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createSubjectHandler.ts#L10)
+[lib/createSubjectHandler.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/createSubjectHandler.ts#L10)

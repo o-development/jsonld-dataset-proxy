@@ -37,7 +37,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L17)
+[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/ProxyCreator.ts#L17)
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L16)
+[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/ProxyCreator.ts#L16)
 
 ## Methods
 
@@ -67,10 +67,6 @@ ___
 
 [`ArrayProxyTarget`](../modules.md#arrayproxytarget)
 
-#### Defined in
-
-[lib/ProxyCreator.ts:38](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L38)
-
 ___
 
 ### createSubjectProxy
@@ -81,17 +77,13 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `node` | `NamedNode`<`string`\> \| `BlankNode` |
+| `node` | `BlankNode` \| `NamedNode`<`string`\> |
 | `dataset` | `Dataset`<`Quad`, `Quad`\> |
 | `contextUtil` | [`ContextUtil`](ContextUtil.md) |
 
 #### Returns
 
 [`ObjectWithId`](../interfaces/ObjectWithId.md)
-
-#### Defined in
-
-[lib/ProxyCreator.ts:19](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L19)
 
 ___
 
@@ -108,7 +100,3 @@ ___
 #### Returns
 
 `string`
-
-#### Defined in
-
-[lib/ProxyCreator.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/ProxyCreator.ts#L34)

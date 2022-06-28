@@ -18,7 +18,7 @@
 - [ArrayMethodBuildersType](interfaces/ArrayMethodBuildersType.md)
 - [ObjectWithId](interfaces/ObjectWithId.md)
 
-### Type aliases
+### Type Aliases
 
 - [AddObjectItem](modules.md#addobjectitem)
 - [AddObjectValue](modules.md#addobjectvalue)
@@ -42,7 +42,7 @@
 - [createSubjectHander](modules.md#createsubjecthander)
 - [deleteValueFromDataset](modules.md#deletevaluefromdataset)
 - [getProxyFromDataset](modules.md#getproxyfromdataset)
-- [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
+- [jsonldDatasetProxy](modules.md#jsonlddatasetproxy-1)
 - [objectToJsonldRepresentation](modules.md#objecttojsonldrepresentation)
 - [replaceArray](modules.md#replacearray)
 
@@ -50,17 +50,17 @@
 
 ### default
 
-Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
+Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy-1)
 
-## Type aliases
+## Type Aliases
 
 ### AddObjectItem
 
-Ƭ **AddObjectItem**: { `@id?`: `string` \| `NamedNode` \| `BlankNode` ; `[getUnderlyingNode]?`: `NamedNode` \| `BlankNode`  } & { [key: string]: [`AddObjectValue`](modules.md#addobjectvalue) \| [`AddObjectValue`](modules.md#addobjectvalue)[];  }
+Ƭ **AddObjectItem**: { `@id?`: `string` \| `NamedNode` \| `BlankNode` ; `[getUnderlyingNode]?`: `NamedNode` \| `BlankNode`  } & { `[key: string]`: [`AddObjectValue`](modules.md#addobjectvalue) \| [`AddObjectValue`](modules.md#addobjectvalue)[];  }
 
 #### Defined in
 
-[lib/helperFunctions/addObjectToDataset.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/addObjectToDataset.ts#L6)
+[lib/helperFunctions/addObjectToDataset.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/addObjectToDataset.ts#L6)
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/addObjectToDataset.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/addObjectToDataset.ts#L13)
+[lib/helperFunctions/addObjectToDataset.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/addObjectToDataset.ts#L13)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[lib/createArrayHandler.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createArrayHandler.ts#L18)
+[lib/createArrayHandler.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/createArrayHandler.ts#L18)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[lib/jsonldDatasetProxy.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/jsonldDatasetProxy.ts#L20)
+[lib/jsonldDatasetProxy.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/jsonldDatasetProxy.ts#L20)
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/objectToJsonRepresentation.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/objectToJsonRepresentation.ts#L6)
+[lib/helperFunctions/objectToJsonRepresentation.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/objectToJsonRepresentation.ts#L6)
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 #### Defined in
 
-[lib/createArrayHandler.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createArrayHandler.ts#L16)
+[lib/createArrayHandler.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/createArrayHandler.ts#L16)
 
 ___
 
@@ -148,37 +148,37 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/arrayMethods.ts#L11)
+[lib/helperFunctions/arrayMethods.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/arrayMethods.ts#L11)
 
 ## Variables
 
 ### arrayMethodsBuilders
 
-• **arrayMethodsBuilders**: [`ArrayMethodBuildersType`](interfaces/ArrayMethodBuildersType.md)
+• `Const` **arrayMethodsBuilders**: [`ArrayMethodBuildersType`](interfaces/ArrayMethodBuildersType.md)
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:56](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/arrayMethods.ts#L56)
+[lib/helperFunctions/arrayMethods.ts:56](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/arrayMethods.ts#L56)
 
 ___
 
 ### getUnderlyingNode
 
-• **getUnderlyingNode**: typeof [`getUnderlyingNode`](modules.md#getunderlyingnode)
+• `Const` **getUnderlyingNode**: typeof [`getUnderlyingNode`](modules.md#getunderlyingnode)
 
 #### Defined in
 
-[lib/createSubjectHandler.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createSubjectHandler.ts#L13)
+[lib/createSubjectHandler.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/createSubjectHandler.ts#L13)
 
 ___
 
 ### methodNames
 
-• **methodNames**: `Set`<keyof [`ArrayMethodBuildersType`](interfaces/ArrayMethodBuildersType.md)\>
+• `Const` **methodNames**: `Set`<keyof [`ArrayMethodBuildersType`](interfaces/ArrayMethodBuildersType.md)\>
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/arrayMethods.ts#L29)
+[lib/helperFunctions/arrayMethods.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/0984c06/lib/helperFunctions/arrayMethods.ts#L29)
 
 ## Functions
 
@@ -200,10 +200,6 @@ ___
 
 `void`
 
-#### Defined in
-
-[lib/helperFunctions/addObjectToDataset.ts:84](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/addObjectToDataset.ts#L84)
-
 ___
 
 ### addObjectValueToDataset
@@ -218,7 +214,7 @@ ___
 | `contextUtil` | [`ContextUtil`](classes/ContextUtil.md) |
 | `key` | `string` |
 | `visitedObjects` | `Set`<`string`\> |
-| `subject` | `NamedNode`<`string`\> \| `BlankNode` |
+| `subject` | `BlankNode` \| `NamedNode`<`string`\> |
 | `predicate` | `NamedNode`<`string`\> |
 | `value` | [`AddObjectValue`](modules.md#addobjectvalue) |
 | `shouldDeleteOldTriples` | `boolean` |
@@ -226,10 +222,6 @@ ___
 #### Returns
 
 `void`
-
-#### Defined in
-
-[lib/helperFunctions/addObjectToDataset.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/addObjectToDataset.ts#L35)
 
 ___
 
@@ -249,10 +241,6 @@ ___
 
 `ProxyHandler`<[`ArrayProxyTarget`](modules.md#arrayproxytarget)\>
 
-#### Defined in
-
-[lib/createArrayHandler.ts:55](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createArrayHandler.ts#L55)
-
 ___
 
 ### createSubjectHander
@@ -270,10 +258,6 @@ ___
 #### Returns
 
 `ProxyHandler`<[`ObjectWithId`](interfaces/ObjectWithId.md)\>
-
-#### Defined in
-
-[lib/createSubjectHandler.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/createSubjectHandler.ts#L15)
 
 ___
 
@@ -293,10 +277,6 @@ ___
 #### Returns
 
 `boolean`
-
-#### Defined in
-
-[lib/helperFunctions/deleteFromDataset.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/deleteFromDataset.ts#L6)
 
 ___
 
@@ -318,10 +298,6 @@ ___
 
 `any`
 
-#### Defined in
-
-[lib/helperFunctions/getProxyFromDataset.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/getProxyFromDataset.ts#L8)
-
 ___
 
 ### jsonldDatasetProxy
@@ -340,15 +316,11 @@ ___
 | :------ | :------ |
 | `inputDataset` | `Dataset`<`Quad`, `Quad`\> |
 | `context` | `ContextDefinition` |
-| `entryNode` | `NamedNode`<`string`\> \| `BlankNode` |
+| `entryNode` | `BlankNode` \| `NamedNode`<`string`\> |
 
 #### Returns
 
 `Type`
-
-#### Defined in
-
-[lib/jsonldDatasetProxy.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/jsonldDatasetProxy.ts#L26)
 
 ___
 
@@ -369,10 +341,6 @@ ___
 
 [`ObjectJsonRepresentation`](modules.md#objectjsonrepresentation)
 
-#### Defined in
-
-[lib/helperFunctions/objectToJsonRepresentation.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/objectToJsonRepresentation.ts#L8)
-
 ___
 
 ### replaceArray
@@ -391,7 +359,3 @@ ___
 #### Returns
 
 `void`
-
-#### Defined in
-
-[lib/helperFunctions/arrayMethods.ts:41](https://github.com/o-development/jsonld-dataset-proxy/blob/2d127f7/lib/helperFunctions/arrayMethods.ts#L41)
