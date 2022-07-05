@@ -48,7 +48,7 @@ npm install jsonld-dataset-proxy
 import jsonldDatasetProxy from "jsonld-dataset-proxy";
 import { ContextDefinition } from "jsonld";
 import { serializedToDataset } from "o-dataset-pack";
-import { namedNode } from "@rdfjs/dataset";
+import { namedNode } from "@rdfjs/data-model";
 
 async function start() {
   // Define initial data

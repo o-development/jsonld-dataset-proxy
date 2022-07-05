@@ -1,5 +1,5 @@
 import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
-import { namedNode, quad } from "@rdfjs/dataset";
+import { namedNode, quad } from "@rdfjs/data-model";
 import { ContextUtil } from "./ContextUtil";
 import { ProxyCreator } from "./ProxyCreator";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";

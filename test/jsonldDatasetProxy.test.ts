@@ -10,7 +10,7 @@ import {
   patientDataWithBlankNodes,
   tinyPatientDataWithBlankNodes,
 } from "./patientExampleData";
-import { namedNode, quad, literal } from "@rdfjs/dataset";
+import { namedNode, quad, literal } from "@rdfjs/data-model";
 import { Dataset } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 

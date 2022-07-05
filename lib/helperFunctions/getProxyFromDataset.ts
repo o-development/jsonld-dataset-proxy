@@ -2,7 +2,7 @@ import { Dataset } from "@rdfjs/types";
 import { ContextUtil } from "../ContextUtil";
 import { ObjectWithId } from "../createSubjectHandler";
 import { ProxyCreator } from "../ProxyCreator";
-import { namedNode } from "@rdfjs/dataset";
+import { namedNode } from "@rdfjs/data-model";
 import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
 
 export function getProxyFromDataset(

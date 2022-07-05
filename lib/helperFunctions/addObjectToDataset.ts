@@ -1,5 +1,5 @@
 import { BlankNode, Dataset, Literal, NamedNode } from "@rdfjs/types";
-import { namedNode, literal, quad, blankNode } from "@rdfjs/dataset";
+import { namedNode, literal, quad, blankNode } from "@rdfjs/data-model";
 import { ContextUtil } from "../ContextUtil";
 import { getUnderlyingNode } from "../createSubjectHandler";
 

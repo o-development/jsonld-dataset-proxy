@@ -2,7 +2,7 @@ import { createDataset } from "o-dataset-pack";
 import { ContextUtil } from "../lib/ContextUtil";
 import { objectToJsonldRepresentation } from "../lib/helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "../lib/ProxyCreator";
-import { quad, namedNode, literal, defaultGraph } from "@rdfjs/dataset";
+import { quad, namedNode, literal, defaultGraph } from "@rdfjs/data-model";
 import { Dataset } from "@rdfjs/types";
 
 describe("objectToJsonRepresentation", () => {

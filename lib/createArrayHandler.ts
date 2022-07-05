@@ -6,7 +6,7 @@ import {
   objectToJsonldRepresentation,
 } from "./helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "./ProxyCreator";
-import { quad } from "@rdfjs/dataset";
+import { quad } from "@rdfjs/data-model";
 import {
   ArrayMethodBuildersType,
   arrayMethodsBuilders,
