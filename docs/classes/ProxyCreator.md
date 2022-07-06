@@ -37,7 +37,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/4f248b4/lib/ProxyCreator.ts#L17)
+[lib/ProxyCreator.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/ProxyCreator.ts#L17)
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/4f248b4/lib/ProxyCreator.ts#L16)
+[lib/ProxyCreator.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/ProxyCreator.ts#L16)
 
 ## Methods
 
