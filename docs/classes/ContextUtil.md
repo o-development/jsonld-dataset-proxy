@@ -40,7 +40,7 @@
 
 #### Defined in
 
-[lib/ContextUtil.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/ContextUtil.ts#L4)
+[lib/ContextUtil.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/ContextUtil.ts#L4)
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/ContextUtil.ts#L5)
+[lib/ContextUtil.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/ContextUtil.ts#L5)
 
 ## Methods
 

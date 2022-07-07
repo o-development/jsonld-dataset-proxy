@@ -60,7 +60,7 @@ Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy-1)
 
 #### Defined in
 
-[lib/helperFunctions/addObjectToDataset.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/addObjectToDataset.ts#L6)
+[lib/helperFunctions/addObjectToDataset.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/addObjectToDataset.ts#L6)
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/addObjectToDataset.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/addObjectToDataset.ts#L13)
+[lib/helperFunctions/addObjectToDataset.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/addObjectToDataset.ts#L13)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[lib/createArrayHandler.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/createArrayHandler.ts#L18)
+[lib/createArrayHandler.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/createArrayHandler.ts#L18)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[lib/jsonldDatasetProxy.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/jsonldDatasetProxy.ts#L20)
+[lib/jsonldDatasetProxy.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/jsonldDatasetProxy.ts#L20)
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/objectToJsonRepresentation.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/objectToJsonRepresentation.ts#L6)
+[lib/helperFunctions/objectToJsonRepresentation.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/objectToJsonRepresentation.ts#L6)
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 #### Defined in
 
-[lib/createArrayHandler.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/createArrayHandler.ts#L16)
+[lib/createArrayHandler.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/createArrayHandler.ts#L16)
 
 ___
 
@@ -148,7 +148,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L11)
+[lib/helperFunctions/arrayMethods.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L11)
 
 ## Variables
 
@@ -158,7 +158,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:56](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L56)
+[lib/helperFunctions/arrayMethods.ts:56](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L56)
 
 ___
 
@@ -168,7 +168,7 @@ ___
 
 #### Defined in
 
-[lib/createSubjectHandler.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/createSubjectHandler.ts#L13)
+[lib/createSubjectHandler.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/createSubjectHandler.ts#L13)
 
 ___
 
@@ -178,7 +178,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L29)
+[lib/helperFunctions/arrayMethods.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L29)
 
 ## Functions
 

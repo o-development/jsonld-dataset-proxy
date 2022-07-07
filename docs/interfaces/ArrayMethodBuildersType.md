@@ -24,7 +24,7 @@
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L18)
+[lib/helperFunctions/arrayMethods.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L18)
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:19](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L19)
+[lib/helperFunctions/arrayMethods.ts:19](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L19)
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L20)
+[lib/helperFunctions/arrayMethods.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L20)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:21](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L21)
+[lib/helperFunctions/arrayMethods.ts:21](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L21)
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:22](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L22)
+[lib/helperFunctions/arrayMethods.ts:22](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L22)
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:23](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L23)
+[lib/helperFunctions/arrayMethods.ts:23](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L23)
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L24)
+[lib/helperFunctions/arrayMethods.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L24)
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:25](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L25)
+[lib/helperFunctions/arrayMethods.ts:25](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L25)
 
 ___
 
@@ -104,4 +104,4 @@ ___
 
 #### Defined in
 
-[lib/helperFunctions/arrayMethods.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/e267685/lib/helperFunctions/arrayMethods.ts#L26)
+[lib/helperFunctions/arrayMethods.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/helperFunctions/arrayMethods.ts#L26)
