@@ -16,7 +16,7 @@ export function getProxyFromDataset(
     if (target["@id"].termType === "BlankNode") {
       return undefined;
     }
-    return target["@id"].value;
+    return contextUtil.iriToKey(target["@id"].value);
   }
   if (key === "@context") {
     return contextUtil.context;

@@ -2,6 +2,9 @@
 
 # Class: ContextUtil
 
+Context Util
+Handles the JSON-LD context and allows conversion between IRIs and terms
+
 ## Table of contents
 
 ### Constructors
@@ -18,6 +21,7 @@
 - [getType](ContextUtil.md#gettype)
 - [iriToKey](ContextUtil.md#iritokey)
 - [isArray](ContextUtil.md#isarray)
+- [keyIdToIri](ContextUtil.md#keyidtoiri)
 - [keyToIri](ContextUtil.md#keytoiri)
 
 ## Constructors
@@ -40,7 +44,7 @@
 
 #### Defined in
 
-[lib/ContextUtil.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/ContextUtil.ts#L4)
+[lib/ContextUtil.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/8b95e1c/lib/ContextUtil.ts#L13)
 
 ___
 
@@ -50,7 +54,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/dd0ebdb/lib/ContextUtil.ts#L5)
+[lib/ContextUtil.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/8b95e1c/lib/ContextUtil.ts#L14)
 
 ## Methods
 
@@ -99,6 +103,22 @@ ___
 #### Returns
 
 `boolean`
+
+___
+
+### keyIdToIri
+
+▸ `Private` **keyIdToIri**(`keyId`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `keyId` | `string` |
+
+#### Returns
+
+`string`
 
 ___
 

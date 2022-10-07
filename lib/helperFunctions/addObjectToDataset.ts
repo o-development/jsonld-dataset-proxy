@@ -12,13 +12,16 @@ export type AddObjectItem = {
 
 export type AddObjectValue = string | boolean | number | AddObjectItem;
 
-function getIdNode(item: AddObjectItem): NamedNode | BlankNode {
+function getIdNode(
+  item: AddObjectItem,
+  contextUtil: ContextUtil
+): NamedNode | BlankNode {
   if (item[getUnderlyingNode]) {
     return item[getUnderlyingNode] as NamedNode | BlankNode;
   } else if (!item["@id"]) {
     return blankNode();
   } else if (typeof item["@id"] === "string") {
-    return namedNode(item["@id"]);
+    return namedNode(contextUtil.keyToIri(item["@id"]));
   } else {
     return item["@id"];
   }
@@ -59,7 +62,7 @@ export function addObjectValueToDataset(
     }
     dataset.add(quad(subject, predicate, object));
   } else {
-    object = getIdNode(value);
+    object = getIdNode(value, contextUtil);
 
     // Delete any triples if the id is the same
     if (
@@ -88,7 +91,7 @@ export function addObjectToDataset(
   visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean
 ): void {
-  const subject = getIdNode(item);
+  const subject = getIdNode(item, contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
     return;
   }

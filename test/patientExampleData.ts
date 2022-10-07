@@ -11,6 +11,7 @@ export type ObservationShape = {
 export type PatientShape = {
   "@id"?: string;
   "@context"?: ContextDefinition;
+  type?: { "@id": "Patient" };
   name?: string[];
   birthdate?: string;
   age?: number;
@@ -109,6 +110,10 @@ export const patientSchema: Schema = {
 };
 
 export const patientContext: ContextDefinition = {
+  type: {
+    "@id": "@type",
+  },
+  Patient: "http://hl7.org/fhir/Patient",
   subject: { "@id": "http://hl7.org/fhir/subject", "@type": "@id" },
   name: {
     "@id": "http://hl7.org/fhir/name",
@@ -142,12 +147,14 @@ export const patientData = `
 @prefix example: <http://example.com/> .
 @prefix fhir: <http://hl7.org/fhir/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 example:Observation1
   fhir:notes "Cool Notes"^^xsd:string ;
   fhir:subject example:Patient1 .
 
 example:Patient1
+  rdf:type fhir:Patient ; 
   fhir:name "Garrett"^^xsd:string,  "Bobby"^^xsd:string, "Ferguson"^^xsd:string ;
   fhir:birthdate "1986-01-01"^^xsd:date ;
   fhir:age "35"^^xsd:integer ;
@@ -155,6 +162,7 @@ example:Patient1
   fhir:roommate example:Patient2, example:Patient3 .
 
 example:Patient2
+  rdf:type fhir:Patient ; 
   fhir:name "Rob"^^xsd:string ;
   fhir:birthdate "1987-01-01"^^xsd:date ;
   fhir:age "34"^^xsd:integer ;
@@ -162,6 +170,7 @@ example:Patient2
   fhir:roommate example:Patient1, example:Patient3 .
 
 example:Patient3
+  rdf:type fhir:Patient ; 
   fhir:name "Amy"^^xsd:string ;
   fhir:birthdate "1988-01-01"^^xsd:date ;
   fhir:age "33"^^xsd:integer ;

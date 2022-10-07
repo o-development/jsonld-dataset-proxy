@@ -118,6 +118,11 @@ describe("jsonldDatasetProxy", () => {
       expect(observation?.subject?.roommate?.[0].age).toBe(34);
     });
 
+    it("retreives a @type value as rdf:type", async () => {
+      const [, observation] = await getLoadedDataset();
+      expect(observation.subject?.type?.["@id"]).toBe("Patient");
+    });
+
     it("simulates the getter behavior of an array of primitives", async () => {
       const [, observation] = await getLoadedDataset();
       const arr = observation?.subject?.name as string[];
@@ -228,19 +233,22 @@ describe("jsonldDatasetProxy", () => {
       const obj = observation.subject as JsonldDatasetProxy<PatientShape>;
 
       expect(obj["@id"]).toEqual("http://example.com/Patient1");
+      expect(obj.type).toEqual({ "@id": "Patient" });
       expect(obj.name).toEqual(["Garrett", "Bobby", "Ferguson"]);
       expect(obj.birthdate).toEqual("1986-01-01");
       expect(obj.age).toEqual(35);
       expect(obj.isHappy).toEqual(true);
       const entries = Object.entries(obj);
       expect(entries[0]).toEqual(["@id", "http://example.com/Patient1"]);
-      expect(entries[1]).toEqual(["name", ["Garrett", "Bobby", "Ferguson"]]);
-      expect(entries[2]).toEqual(["birthdate", "1986-01-01"]);
-      expect(entries[3]).toEqual(["age", 35]);
-      expect(entries[4]).toEqual(["isHappy", true]);
-      expect(entries[5][0]).toEqual("roommate");
+      expect(entries[1]).toEqual(["type", { "@id": "Patient" }]);
+      expect(entries[2]).toEqual(["name", ["Garrett", "Bobby", "Ferguson"]]);
+      expect(entries[3]).toEqual(["birthdate", "1986-01-01"]);
+      expect(entries[4]).toEqual(["age", 35]);
+      expect(entries[5]).toEqual(["isHappy", true]);
+      expect(entries[6][0]).toEqual("roommate");
       expect(Object.keys(obj)).toEqual([
         "@id",
+        "type",
         "name",
         "birthdate",
         "age",
@@ -249,10 +257,11 @@ describe("jsonldDatasetProxy", () => {
       ]);
       const values = Object.values(obj);
       expect(values[0]).toEqual("http://example.com/Patient1");
-      expect(values[1]).toEqual(["Garrett", "Bobby", "Ferguson"]);
-      expect(values[2]).toEqual("1986-01-01");
-      expect(values[3]).toEqual(35);
-      expect(values[4]).toEqual(true);
+      expect(values[1]).toEqual({ "@id": "Patient" });
+      expect(values[2]).toEqual(["Garrett", "Bobby", "Ferguson"]);
+      expect(values[3]).toEqual("1986-01-01");
+      expect(values[4]).toEqual(35);
+      expect(values[5]).toEqual(true);
     });
 
     it("handles stringification of a non circular object", async () => {
@@ -260,7 +269,7 @@ describe("jsonldDatasetProxy", () => {
       const obj = observation.subject?.roommate?.[1] as PatientShape;
       expect(obj.toString()).toBe("[object Object]");
       expect(JSON.stringify(obj)).toBe(
-        `{"@id":"http://example.com/Patient3","name":["Amy"],"birthdate":"1988-01-01","age":33,"isHappy":true}`
+        `{"@id":"http://example.com/Patient3","type":{"@id":"Patient"},"name":["Amy"],"birthdate":"1988-01-01","age":33,"isHappy":true}`
       );
     });
 
@@ -344,6 +353,14 @@ describe("jsonldDatasetProxy", () => {
       patient.isHappy = true;
       expect(dataset.toString()).toBe(
         '<http://example.com/Patient1> <http://hl7.org/fhir/age> "35"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<http://example.com/Patient1> <http://hl7.org/fhir/isHappy> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .\n'
+      );
+    });
+
+    it("sets a @type value as rdf:type", async () => {
+      const [dataset, patient] = await getEmptyPatientDataset();
+      patient.type = { "@id": "Patient" };
+      expect(dataset.toString()).toBe(
+        "<http://example.com/Patient1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://hl7.org/fhir/Patient> .\n"
       );
     });
 

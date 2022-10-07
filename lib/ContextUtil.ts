@@ -1,5 +1,14 @@
 import { ContextDefinition, ExpandedTermDefinition } from "jsonld";
 
+// Create JSONLD Shorthands
+const shorthandToIriMap: Record<string, string> = {
+  "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+};
+
+/**
+ * Context Util
+ * Handles the JSON-LD context and allows conversion between IRIs and terms
+ */
 export class ContextUtil {
   public readonly context: ContextDefinition;
   private iriToKeyMap: Record<string, string>;
@@ -9,14 +18,15 @@ export class ContextUtil {
     this.iriToKeyMap = {};
     Object.entries(context).forEach(([contextKey, contextValue]) => {
       if (typeof contextValue === "string") {
-        this.iriToKeyMap[contextValue] = contextKey;
+        this.iriToKeyMap[this.keyIdToIri(contextValue)] = contextKey;
       } else if (
         typeof contextValue === "object" &&
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (contextValue as any)["@id"]
       ) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.iriToKeyMap[(contextValue as any)["@id"]] = contextKey;
+        this.iriToKeyMap[this.keyIdToIri((contextValue as any)["@id"])] =
+          contextKey;
       }
     });
   }
@@ -25,13 +35,21 @@ export class ContextUtil {
     if (!this.context[key]) {
       return key;
     } else if (typeof this.context[key] === "string") {
-      return this.context[key] as string;
+      return this.keyIdToIri(this.context[key] as string);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } else if (this.context[key] && (this.context[key] as any)["@id"]) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (this.context[key] as any)["@id"];
+      return this.keyIdToIri((this.context[key] as any)["@id"]);
     }
     return key;
+  }
+
+  private keyIdToIri(keyId: string) {
+    if (shorthandToIriMap[keyId]) {
+      return shorthandToIriMap[keyId];
+    } else {
+      return keyId;
+    }
   }
 
   public iriToKey(iri: string): string {
