@@ -11,3 +11,5 @@ export * from "./helperFunctions/arrayMethods";
 export * from "./helperFunctions/deleteFromDataset";
 export * from "./helperFunctions/getProxyFromDataset";
 export * from "./helperFunctions/objectToJsonRepresentation";
+export * from "./readFromGraphs";
+export * from "./writeToGraph";

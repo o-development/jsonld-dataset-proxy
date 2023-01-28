@@ -1,5 +1,11 @@
 import { createDataset, serializedToDataset } from "o-dataset-pack";
-import { jsonldDatasetProxy, JsonldDatasetProxy } from "../lib";
+import {
+  getUnderlyingNode,
+  jsonldDatasetProxy,
+  JsonldDatasetProxy,
+  readFromGraphs,
+  writeToGraph,
+} from "../lib";
 import {
   ObservationShape,
   patientData,
@@ -11,7 +17,7 @@ import {
   tinyPatientDataWithBlankNodes,
 } from "./patientExampleData";
 import { namedNode, quad, literal } from "@rdfjs/data-model";
-import { Dataset } from "@rdfjs/types";
+import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 
 describe("jsonldDatasetProxy", () => {
@@ -39,6 +45,40 @@ describe("jsonldDatasetProxy", () => {
 
   async function getTinyLoadedDataset(): Promise<[Dataset, ObservationShape]> {
     const dataset = await serializedToDataset(tinyPatientData);
+    const observation = await jsonldDatasetProxy<ObservationShape>(
+      dataset,
+      patientContext,
+      namedNode("http://example.com/Observation1")
+    );
+    return [dataset, observation];
+  }
+
+  async function getTinyGraphLoadedDataset(): Promise<
+    [Dataset, ObservationShape]
+  > {
+    const tempDataset = await serializedToDataset(tinyPatientData);
+    const dataset = createDataset();
+    const subjectGraphMap: Record<string, NamedNode> = {
+      "http://example.com/Observation1": namedNode(
+        "http://example.com/Observation1Doc"
+      ),
+      "http://example.com/Patient1": namedNode(
+        "http://example.com/Patient1Doc"
+      ),
+      "http://example.com/Patient2": namedNode(
+        "http://example.com/Patient2Doc"
+      ),
+    };
+    tempDataset.forEach((tempQuad) => {
+      dataset.add(
+        quad(
+          tempQuad.subject,
+          tempQuad.predicate,
+          tempQuad.object,
+          subjectGraphMap[tempQuad.subject.value]
+        )
+      );
+    });
     const observation = await jsonldDatasetProxy<ObservationShape>(
       dataset,
       patientContext,
@@ -817,6 +857,39 @@ describe("jsonldDatasetProxy", () => {
           '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Beepy" .\n'
         );
       });
+    });
+  });
+
+  describe("Graph Methods", () => {
+    it("reads only data from specified graphs", async () => {
+      const [, defaultObservation] = await getTinyGraphLoadedDataset();
+
+      const observation = readFromGraphs(defaultObservation, [
+        namedNode("http://example.com/Observation1Doc"),
+        namedNode("http://example.com/Patient1Doc"),
+      ]);
+
+      expect(observation.subject?.["@id"]).toBe("http://example.com/Patient1");
+      expect(observation.subject?.name?.[0]).toBe("Garrett");
+      expect(observation.subject?.roommate?.[0]).toBeUndefined();
+    });
+
+    it("writes new data to a specified graph", async () => {
+      const [dataset, defaultObservation] = await getTinyGraphLoadedDataset();
+      const observation = writeToGraph(
+        defaultObservation,
+        namedNode("https://something.com/exampleGraph")
+      );
+      observation.notes = "hello world!";
+      expect(
+        dataset
+          .match(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (observation as any)[getUnderlyingNode],
+            namedNode("http://hl7.org/fhir/notes")
+          )
+          .toArray()[0].graph.value
+      ).toBe("https://something.com/exampleGraph");
     });
   });
 });
