@@ -1,17 +1,23 @@
-import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
+import { BlankNode, NamedNode } from "@rdfjs/types";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
-import { ContextUtil } from "./ContextUtil";
 import {
   ObjectJsonRepresentation,
   objectToJsonldRepresentation,
 } from "./helperFunctions/objectToJsonRepresentation";
-import { ProxyCreator } from "./ProxyCreator";
 import { quad } from "@rdfjs/data-model";
 import {
   ArrayMethodBuildersType,
   arrayMethodsBuilders,
   methodNames,
 } from "./helperFunctions/arrayMethods";
+import { ProxyContext } from "./ProxyContext";
+import {
+  getReadsFromGraphs,
+  getUnderlyingContext,
+  getUnderlyingDataset,
+  getUnderlyingMatch,
+  getWritesToGraph,
+} from "./JsonldDatasetProxyType";
 
 export type QuadMatch = [subject: NamedNode | BlankNode, predicate: NamedNode];
 
@@ -21,20 +27,13 @@ export type ArrayProxyTarget = [
 ];
 
 function getProcessedObjects(
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator,
-  target: ArrayProxyTarget
+  target: ArrayProxyTarget,
+  proxyContext: ProxyContext
 ): ObjectJsonRepresentation[] {
-  const objects = dataset.match(...target[0]);
+  const objects = proxyContext.dataset.match(...target[0]);
   const datasetObjects = new Set(
     objects.toArray().map((quad) => {
-      return objectToJsonldRepresentation(
-        quad,
-        dataset,
-        contextUtil,
-        proxyCreator
-      );
+      return objectToJsonldRepresentation(quad, proxyContext);
     })
   );
   const processedObjects: ObjectJsonRepresentation[] = [];
@@ -53,64 +52,50 @@ function getProcessedObjects(
 }
 
 export function createArrayHandler(
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator
+  proxyContext: ProxyContext
 ): ProxyHandler<ArrayProxyTarget> {
   return {
     get(target, key, ...rest) {
-      const processedObjects = getProcessedObjects(
-        dataset,
-        contextUtil,
-        proxyCreator,
-        target
-      );
+      // switch (key) {
+      //   case getUnderlyingDataset:
+      //     return proxyContext.dataset;
+      //   case getUnderlyingMatch:
+      //     return target[0];
+      //   case getUnderlyingContext:
+      //     return proxyContext.contextUtil.context;
+      //   case getReadsFromGraphs:
+      //     return proxyContext.readsFromGraphs;
+      //   case getWritesToGraph:
+      //     return proxyContext.writesToGraph;
+      // }
+
+      const processedObjects = getProcessedObjects(target, proxyContext);
       if (methodNames.has(key as keyof ArrayMethodBuildersType)) {
         return arrayMethodsBuilders[key as keyof ArrayMethodBuildersType](
           target,
-          dataset,
-          contextUtil
+          proxyContext
         );
       }
       return Reflect.get(processedObjects, key, ...rest);
     },
     getOwnPropertyDescriptor(target, key, ...rest) {
-      const processedObjects = getProcessedObjects(
-        dataset,
-        contextUtil,
-        proxyCreator,
-        target
-      );
+      const processedObjects = getProcessedObjects(target, proxyContext);
       return Reflect.getOwnPropertyDescriptor(processedObjects, key, ...rest);
     },
     ownKeys(target, ...rest) {
-      const processedObjects = getProcessedObjects(
-        dataset,
-        contextUtil,
-        proxyCreator,
-        target
-      );
+      const processedObjects = getProcessedObjects(target, proxyContext);
       return Reflect.ownKeys(processedObjects, ...rest);
     },
     getPrototypeOf(target, ...rest) {
-      const processedObjects = getProcessedObjects(
-        dataset,
-        contextUtil,
-        proxyCreator,
-        target
-      );
+      const processedObjects = getProcessedObjects(target, proxyContext);
       return Reflect.getPrototypeOf(processedObjects, ...rest);
     },
     has(target, ...rest) {
-      const processedObjects = getProcessedObjects(
-        dataset,
-        contextUtil,
-        proxyCreator,
-        target
-      );
+      const processedObjects = getProcessedObjects(target, proxyContext);
       return Reflect.has(processedObjects, ...rest);
     },
     set(target, key, value, ...rest) {
+      const { dataset, contextUtil } = proxyContext;
       if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (objectQuad) {
@@ -122,10 +107,9 @@ export function createArrayHandler(
               "@id": target[0][0],
               [contextUtil.iriToKey(target[0][1].value)]: value,
             },
-            dataset,
-            contextUtil,
             new Set(),
-            false
+            false,
+            proxyContext
           );
           return true;
         }
@@ -133,6 +117,7 @@ export function createArrayHandler(
       return Reflect.set(target, key, ...rest);
     },
     deleteProperty(target, key) {
+      const { dataset } = proxyContext;
       if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
         if (!objectQuad) {

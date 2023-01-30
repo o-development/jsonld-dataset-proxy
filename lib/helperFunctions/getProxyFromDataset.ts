@@ -1,17 +1,14 @@
-import { Dataset } from "@rdfjs/types";
-import { ContextUtil } from "../ContextUtil";
 import { ObjectWithId } from "../createSubjectHandler";
-import { ProxyCreator } from "../ProxyCreator";
 import { namedNode } from "@rdfjs/data-model";
 import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
+import { ProxyContext } from "../ProxyContext";
 
 export function getProxyFromDataset(
   target: ObjectWithId,
   key: string | symbol,
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator
+  proxyContext: ProxyContext
 ) {
+  const { contextUtil, dataset, proxyCreator } = proxyContext;
   if (key === "@id") {
     if (target["@id"].termType === "BlankNode") {
       return undefined;
@@ -35,8 +32,7 @@ export function getProxyFromDataset(
   if (contextUtil.isArray(key)) {
     const arrayProxy = proxyCreator.createArrayProxy(
       [subject, predicate],
-      dataset,
-      contextUtil
+      proxyContext
     );
     return arrayProxy;
   }
@@ -46,15 +42,9 @@ export function getProxyFromDataset(
   } else if (objectDataset.size === 1) {
     return objectToJsonldRepresentation(
       objectDataset.toArray()[0],
-      dataset,
-      contextUtil,
-      proxyCreator
+      proxyContext
     );
   } else {
-    return proxyCreator.createArrayProxy(
-      [subject, predicate],
-      dataset,
-      contextUtil
-    );
+    return proxyCreator.createArrayProxy([subject, predicate], proxyContext);
   }
 }

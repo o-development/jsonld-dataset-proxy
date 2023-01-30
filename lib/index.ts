@@ -1,6 +1,7 @@
 import { jsonldDatasetProxy } from "./jsonldDatasetProxy";
 
 export default jsonldDatasetProxy;
+export * from "./JsonldDatasetProxyType";
 export * from "./ContextUtil";
 export * from "./ProxyCreator";
 export * from "./createArrayHandler";
@@ -13,3 +14,4 @@ export * from "./helperFunctions/getProxyFromDataset";
 export * from "./helperFunctions/objectToJsonRepresentation";
 export * from "./readFromGraphs";
 export * from "./writeToGraph";
+export * from "./ProxyContext";

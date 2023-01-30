@@ -1,7 +1,8 @@
-import { BlankNode, Dataset, Literal, NamedNode } from "@rdfjs/types";
+import { BlankNode, Literal, NamedNode } from "@rdfjs/types";
 import { namedNode, literal, quad, blankNode } from "@rdfjs/data-model";
 import { ContextUtil } from "../ContextUtil";
-import { getUnderlyingNode } from "../createSubjectHandler";
+import { getUnderlyingNode } from "../JsonldDatasetProxyType";
+import { ProxyContext } from "../ProxyContext";
 
 export type AddObjectItem = {
   "@id"?: string | NamedNode | BlankNode;
@@ -36,15 +37,15 @@ function nodeToSetKey(node: NamedNode | BlankNode): string {
 }
 
 export function addObjectValueToDataset(
-  dataset: Dataset,
-  contextUtil: ContextUtil,
   key: string,
   visitedObjects: Set<string>,
   subject: NamedNode | BlankNode,
   predicate: NamedNode,
   value: AddObjectValue,
-  shouldDeleteOldTriples: boolean
+  shouldDeleteOldTriples: boolean,
+  proxyContext: ProxyContext
 ): void {
+  const { dataset } = proxyContext;
   // Get the Object Node
   let object: NamedNode | Literal | BlankNode;
   if (value == undefined) {
@@ -54,31 +55,30 @@ export function addObjectValueToDataset(
     typeof value === "boolean" ||
     typeof value === "number"
   ) {
-    const datatype = contextUtil.getType(key);
+    const datatype = proxyContext.contextUtil.getType(key);
     if (datatype === "@id") {
       object = namedNode(value.toString());
     } else {
       object = literal(value.toString(), datatype);
     }
-    dataset.add(quad(subject, predicate, object));
+    proxyContext.dataset.add(quad(subject, predicate, object));
   } else {
-    object = getIdNode(value, contextUtil);
+    object = getIdNode(value, proxyContext.contextUtil);
 
     // Delete any triples if the id is the same
     if (
       !visitedObjects.has(nodeToSetKey(object)) &&
       !value[getUnderlyingNode]
     ) {
-      dataset.deleteMatches(object, undefined, undefined);
+      proxyContext.dataset.deleteMatches(object, undefined, undefined);
     }
-    dataset.add(quad(subject, predicate, object));
+    proxyContext.dataset.add(quad(subject, predicate, object));
     if (!value[getUnderlyingNode]) {
       addObjectToDataset(
         { ...value, "@id": object } as AddObjectItem,
-        dataset,
-        contextUtil,
         visitedObjects,
-        shouldDeleteOldTriples
+        shouldDeleteOldTriples,
+        proxyContext
       );
     }
   }
@@ -86,12 +86,12 @@ export function addObjectValueToDataset(
 
 export function addObjectToDataset(
   item: AddObjectItem,
-  dataset: Dataset,
-  contextUtil: ContextUtil,
   visitedObjects: Set<string>,
-  shouldDeleteOldTriples: boolean
+  shouldDeleteOldTriples: boolean,
+  proxyContext: ProxyContext
 ): void {
-  const subject = getIdNode(item, contextUtil);
+  const { dataset } = proxyContext;
+  const subject = getIdNode(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
     return;
   }
@@ -100,33 +100,31 @@ export function addObjectToDataset(
     if (key === "@id") {
       return;
     }
-    const predicate = namedNode(contextUtil.keyToIri(key));
+    const predicate = namedNode(proxyContext.contextUtil.keyToIri(key));
     if (shouldDeleteOldTriples && !item[getUnderlyingNode]) {
       dataset.deleteMatches(subject, predicate);
     }
     if (Array.isArray(value)) {
       value.forEach((valueItem) => {
         addObjectValueToDataset(
-          dataset,
-          contextUtil,
           key,
           visitedObjects,
           subject,
           predicate,
           valueItem,
-          true
+          true,
+          proxyContext
         );
       });
     } else {
       addObjectValueToDataset(
-        dataset,
-        contextUtil,
         key,
         visitedObjects,
         subject,
         predicate,
         value as AddObjectValue,
-        true
+        true,
+        proxyContext
       );
     }
   });

@@ -54,7 +54,7 @@ describe("jsonldDatasetProxy", () => {
   }
 
   async function getTinyGraphLoadedDataset(): Promise<
-    [Dataset, ObservationShape]
+    [Dataset, JsonldDatasetProxy<ObservationShape>]
   > {
     const tempDataset = await serializedToDataset(tinyPatientData);
     const dataset = createDataset();
@@ -876,8 +876,10 @@ describe("jsonldDatasetProxy", () => {
 
     it("writes new data to a specified graph", async () => {
       const [dataset, defaultObservation] = await getTinyGraphLoadedDataset();
+      const thing: JsonldDatasetProxy<ObservationShape> = defaultObservation;
+
       const observation = writeToGraph(
-        defaultObservation,
+        thing,
         namedNode("https://something.com/exampleGraph")
       );
       observation.notes = "hello world!";

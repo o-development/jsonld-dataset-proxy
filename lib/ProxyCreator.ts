@@ -1,11 +1,11 @@
-import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
-import { ContextUtil } from "./ContextUtil";
+import { BlankNode, NamedNode } from "@rdfjs/types";
 import {
   ArrayProxyTarget,
   createArrayHandler,
   QuadMatch,
 } from "./createArrayHandler";
 import { createSubjectHander, ObjectWithId } from "./createSubjectHandler";
+import { ProxyContext } from "./ProxyContext";
 
 /**
  * This file keeps track of the target objects used in the proxies.
@@ -18,13 +18,12 @@ export class ProxyCreator {
 
   public createSubjectProxy(
     node: NamedNode | BlankNode,
-    dataset: Dataset,
-    contextUtil: ContextUtil
+    proxyContext: ProxyContext
   ): ObjectWithId {
     if (!this.subjectMap.has(node.value)) {
       const proxy = new Proxy(
         { "@id": node },
-        createSubjectHander(dataset, contextUtil, this)
+        createSubjectHander(proxyContext)
       );
       this.subjectMap.set(node.value, proxy);
     }
@@ -37,14 +36,13 @@ export class ProxyCreator {
 
   public createArrayProxy(
     quadMatch: QuadMatch,
-    dataset: Dataset,
-    contextUtil: ContextUtil
+    proxyContext: ProxyContext
   ): ArrayProxyTarget {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
         [quadMatch, []],
-        createArrayHandler(dataset, contextUtil, this)
+        createArrayHandler(proxyContext)
       );
       this.arrayMap.set(key, proxy);
     }

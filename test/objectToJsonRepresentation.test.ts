@@ -3,14 +3,16 @@ import { ContextUtil } from "../lib/ContextUtil";
 import { objectToJsonldRepresentation } from "../lib/helperFunctions/objectToJsonRepresentation";
 import { ProxyCreator } from "../lib/ProxyCreator";
 import { quad, namedNode, literal, defaultGraph } from "@rdfjs/data-model";
-import { Dataset } from "@rdfjs/types";
+import { ProxyContext } from "../lib";
 
 describe("objectToJsonRepresentation", () => {
-  const extraParams: [
-    dataset: Dataset,
-    contextUtil: ContextUtil,
-    proxyCreator: ProxyCreator
-  ] = [createDataset(), new ContextUtil({}), new ProxyCreator()];
+  const extraParams: ProxyContext = {
+    dataset: createDataset(),
+    contextUtil: new ContextUtil({}),
+    proxyCreator: new ProxyCreator(),
+    readsFromGraphs: [],
+    writesToGraph: defaultGraph(),
+  };
 
   it("returns a string for hexBinary", () => {
     expect(
@@ -20,7 +22,7 @@ describe("objectToJsonRepresentation", () => {
           namedNode("http://example.com/someHex"),
           literal("F03493", "http://www.w3.org/2001/XMLSchema#hexBinary")
         ),
-        ...extraParams
+        extraParams
       )
     ).toBe("F03493");
   });
@@ -36,7 +38,7 @@ describe("objectToJsonRepresentation", () => {
             "http://www.w3.org/2001/XMLSchema#anyURI"
           )
         ),
-        ...extraParams
+        extraParams
       )
     ).toBe("http://example.com");
   });
@@ -49,7 +51,7 @@ describe("objectToJsonRepresentation", () => {
           namedNode("http://example.com/someHex"),
           literal("meh", "http://weirddatatype.com")
         ),
-        ...extraParams
+        extraParams
       )
     ).toBe("meh");
   });
@@ -64,7 +66,7 @@ describe("objectToJsonRepresentation", () => {
           // @ts-ignore
           defaultGraph()
         ),
-        ...extraParams
+        extraParams
       )
     ).toThrow("Can only convert NamedNodes or Literals or BlankNodes");
   });

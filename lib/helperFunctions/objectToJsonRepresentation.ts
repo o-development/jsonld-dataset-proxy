@@ -1,15 +1,12 @@
-import { Dataset, Quad } from "@rdfjs/types";
-import { ContextUtil } from "../ContextUtil";
+import { Quad } from "@rdfjs/types";
 import { ObjectWithId } from "../createSubjectHandler";
-import { ProxyCreator } from "../ProxyCreator";
+import { ProxyContext } from "../ProxyContext";
 
 export type ObjectJsonRepresentation = string | number | boolean | ObjectWithId;
 
 export function objectToJsonldRepresentation(
   quad: Quad,
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator
+  proxyContext: ProxyContext
 ): ObjectJsonRepresentation {
   if (quad.object.termType === "Literal") {
     switch (quad.object.datatype.value) {
@@ -66,7 +63,10 @@ export function objectToJsonldRepresentation(
     quad.object.termType === "NamedNode" ||
     quad.object.termType === "BlankNode"
   ) {
-    return proxyCreator.createSubjectProxy(quad.object, dataset, contextUtil);
+    return proxyContext.proxyCreator.createSubjectProxy(
+      quad.object,
+      proxyContext
+    );
   } else {
     throw new Error("Can only convert NamedNodes or Literals or BlankNodes");
   }

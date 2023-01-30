@@ -1,44 +1,43 @@
-import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
+import { BlankNode, NamedNode } from "@rdfjs/types";
 import { namedNode, quad } from "@rdfjs/data-model";
-import { ContextUtil } from "./ContextUtil";
-import { ProxyCreator } from "./ProxyCreator";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
 import { getProxyFromDataset } from "./helperFunctions/getProxyFromDataset";
 import { deleteValueFromDataset } from "./helperFunctions/deleteFromDataset";
+import { ProxyContext } from "./ProxyContext";
+import {
+  getReadsFromGraphs,
+  getUnderlyingContext,
+  getUnderlyingDataset,
+  getUnderlyingNode,
+  getWritesToGraph,
+} from "./JsonldDatasetProxyType";
 
 export interface ObjectWithId {
   "@id": NamedNode | BlankNode;
 }
 
-export const getUnderlyingNode = Symbol("getUnderlyingNode");
-
 export function createSubjectHander(
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator
+  proxyContext: ProxyContext
 ): ProxyHandler<ObjectWithId> {
   return {
     get(target: ObjectWithId, key: string | symbol) {
-      if (key === getUnderlyingNode) {
-        return target["@id"];
+      switch (key) {
+        case getUnderlyingDataset:
+          return proxyContext.dataset;
+        case getUnderlyingNode:
+          return target["@id"];
+        case getUnderlyingContext:
+          return proxyContext.contextUtil.context;
+        case getReadsFromGraphs:
+          return proxyContext.readsFromGraphs;
+        case getWritesToGraph:
+          return proxyContext.writesToGraph;
       }
-      return getProxyFromDataset(
-        target,
-        key,
-        dataset,
-        contextUtil,
-        proxyCreator
-      );
+      return getProxyFromDataset(target, key, proxyContext);
     },
     getOwnPropertyDescriptor(target: ObjectWithId, key: string) {
       return {
-        value: getProxyFromDataset(
-          target,
-          key,
-          dataset,
-          contextUtil,
-          proxyCreator
-        ),
+        value: getProxyFromDataset(target, key, proxyContext),
         writable: true,
         enumerable: true,
         configurable: true,
@@ -46,16 +45,18 @@ export function createSubjectHander(
     },
     ownKeys(target) {
       const subject = target["@id"];
-      const tripleDataset = dataset.match(subject);
+      const tripleDataset = proxyContext.dataset.match(subject);
       const keys: Set<string> = new Set(["@id"]);
       tripleDataset.toArray().forEach((quad) => {
-        keys.add(contextUtil.iriToKey(quad.predicate.value));
+        keys.add(proxyContext.contextUtil.iriToKey(quad.predicate.value));
       });
       return Array.from(keys);
     },
     set: (target: ObjectWithId, key: string, value) => {
       if (key === "@id" && typeof value === "string") {
-        const currentSubjectQuads = dataset.match(target["@id"]).toArray();
+        const currentSubjectQuads = proxyContext.dataset
+          .match(target["@id"])
+          .toArray();
         const newSubjectQuads = currentSubjectQuads.map((curQuad) =>
           quad(
             namedNode(value),
@@ -64,9 +65,11 @@ export function createSubjectHander(
             curQuad.graph
           )
         );
-        currentSubjectQuads.forEach((curQuad) => dataset.delete(curQuad));
-        dataset.addAll(newSubjectQuads);
-        const currentObjectQuads = dataset
+        currentSubjectQuads.forEach((curQuad) =>
+          proxyContext.dataset.delete(curQuad)
+        );
+        proxyContext.dataset.addAll(newSubjectQuads);
+        const currentObjectQuads = proxyContext.dataset
           .match(undefined, undefined, target["@id"])
           .toArray();
         const newObjectQuads = currentObjectQuads.map((curQuad) =>
@@ -77,21 +80,22 @@ export function createSubjectHander(
             curQuad.graph
           )
         );
-        currentObjectQuads.forEach((curQuad) => dataset.delete(curQuad));
-        dataset.addAll(newObjectQuads);
+        currentObjectQuads.forEach((curQuad) =>
+          proxyContext.dataset.delete(curQuad)
+        );
+        proxyContext.dataset.addAll(newObjectQuads);
         target["@id"] = namedNode(value);
       }
       addObjectToDataset(
         { "@id": target["@id"], [key]: value },
-        dataset,
-        contextUtil,
         new Set(),
-        true
+        true,
+        proxyContext
       );
       return true;
     },
     deleteProperty(target, key) {
-      return deleteValueFromDataset(target, key, dataset, contextUtil);
+      return deleteValueFromDataset(target, key, proxyContext);
     },
   };
 }
