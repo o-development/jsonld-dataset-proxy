@@ -1,9 +1,9 @@
 import { jsonldDatasetProxy } from "./jsonldDatasetProxy";
 import {
-  getReadsFromGraphs,
-  getUnderlyingContext,
-  getUnderlyingDataset,
-  getUnderlyingNode,
+  _getReadsFromGraphs,
+  _getUnderlyingContext,
+  _getUnderlyingDataset,
+  _getUnderlyingNode,
   JsonldDatasetProxy,
   ObjectLike,
 } from "./JsonldDatasetProxyType";
@@ -19,10 +19,10 @@ export function writeToGraph<T extends JsonldDatasetProxy<ObjectLike>>(
   input: T,
   graphs: ProxyContext["writesToGraph"]
 ): T {
-  const dataset = input[getUnderlyingDataset];
-  const context = input[getUnderlyingContext];
-  const entryNode = input[getUnderlyingNode];
-  const readsFromGraphs = input[getReadsFromGraphs];
+  const dataset = input[_getUnderlyingDataset];
+  const context = input[_getUnderlyingContext];
+  const entryNode = input[_getUnderlyingNode];
+  const readsFromGraphs = input[_getReadsFromGraphs];
   return jsonldDatasetProxy(
     dataset,
     context,

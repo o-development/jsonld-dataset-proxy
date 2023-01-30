@@ -1,10 +1,15 @@
 import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
-  getUnderlyingNode,
   jsonldDatasetProxy,
   JsonldDatasetProxy,
   readFromGraphs,
   writeToGraph,
+  _getReadsFromGraphs,
+  _getUnderlyingContext,
+  _getUnderlyingDataset,
+  _getUnderlyingMatch,
+  _getUnderlyingNode,
+  _getWritesToGraph,
 } from "../lib";
 import {
   ObservationShape,
@@ -16,7 +21,7 @@ import {
   patientDataWithBlankNodes,
   tinyPatientDataWithBlankNodes,
 } from "./patientExampleData";
-import { namedNode, quad, literal } from "@rdfjs/data-model";
+import { namedNode, quad, literal, defaultGraph } from "@rdfjs/data-model";
 import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 
@@ -860,6 +865,44 @@ describe("jsonldDatasetProxy", () => {
     });
   });
 
+  describe("underlying data", () => {
+    it("retrieves underlying data", async () => {
+      const dataset = await serializedToDataset(patientData);
+      const entryNode = namedNode("http://example.com/Observation1");
+      const context = patientContext;
+      const readsFromGraphs = [
+        namedNode("http://example.com/Observation1Doc"),
+        namedNode("http://example.com/Patient1Doc"),
+        namedNode("http://example.com/Patient2Doc"),
+        defaultGraph(),
+      ];
+      const writesToGraph = namedNode("http://example.com/Observation1Doc");
+      const observation = await jsonldDatasetProxy<ObservationShape>(
+        dataset,
+        context,
+        entryNode,
+        readsFromGraphs,
+        writesToGraph
+      );
+      expect(observation[_getUnderlyingDataset]).toBe(dataset);
+      expect(observation[_getUnderlyingNode].value).toBe(
+        "http://example.com/Observation1"
+      );
+      expect(observation[_getUnderlyingContext]).toBe(context);
+      expect(observation[_getReadsFromGraphs]).toBe(readsFromGraphs);
+      expect(observation[_getWritesToGraph]).toBe(writesToGraph);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const roommateArr = observation.subject!.roommate!;
+      expect(roommateArr[_getReadsFromGraphs]).toBe(readsFromGraphs);
+      expect(roommateArr[_getUnderlyingContext]).toBe(context);
+      expect(roommateArr[_getUnderlyingDataset]).toBe(dataset);
+      const match = roommateArr[_getUnderlyingMatch];
+      expect(match[0].value).toBe("http://example.com/Patient1");
+      expect(match[1].value).toBe("http://hl7.org/fhir/roommate");
+      expect(roommateArr[_getWritesToGraph]).toBe(writesToGraph);
+    });
+  });
+
   describe("Graph Methods", () => {
     it("reads only data from specified graphs", async () => {
       const [, defaultObservation] = await getTinyGraphLoadedDataset();
@@ -871,15 +914,13 @@ describe("jsonldDatasetProxy", () => {
 
       expect(observation.subject?.["@id"]).toBe("http://example.com/Patient1");
       expect(observation.subject?.name?.[0]).toBe("Garrett");
-      expect(observation.subject?.roommate?.[0]).toBeUndefined();
+      expect(observation.subject?.roommate?.[0].name?.[0]).toBeUndefined();
     });
 
     it("writes new data to a specified graph", async () => {
       const [dataset, defaultObservation] = await getTinyGraphLoadedDataset();
-      const thing: JsonldDatasetProxy<ObservationShape> = defaultObservation;
-
       const observation = writeToGraph(
-        thing,
+        defaultObservation,
         namedNode("https://something.com/exampleGraph")
       );
       observation.notes = "hello world!";
@@ -887,7 +928,7 @@ describe("jsonldDatasetProxy", () => {
         dataset
           .match(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (observation as any)[getUnderlyingNode],
+            (observation as any)[_getUnderlyingNode],
             namedNode("http://hl7.org/fhir/notes")
           )
           .toArray()[0].graph.value

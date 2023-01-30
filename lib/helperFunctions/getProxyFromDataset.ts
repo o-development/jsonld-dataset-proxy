@@ -2,13 +2,14 @@ import { ObjectWithId } from "../createSubjectHandler";
 import { namedNode } from "@rdfjs/data-model";
 import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
 import { ProxyContext } from "../ProxyContext";
+import { matchWithGraphArray } from "./matchWithGraphArray";
 
 export function getProxyFromDataset(
   target: ObjectWithId,
   key: string | symbol,
   proxyContext: ProxyContext
 ) {
-  const { contextUtil, dataset, proxyCreator } = proxyContext;
+  const { contextUtil, dataset, proxyCreator, readsFromGraphs } = proxyContext;
   if (key === "@id") {
     if (target["@id"].termType === "BlankNode") {
       return undefined;
@@ -36,7 +37,13 @@ export function getProxyFromDataset(
     );
     return arrayProxy;
   }
-  const objectDataset = dataset.match(subject, predicate);
+  const objectDataset = matchWithGraphArray(
+    dataset,
+    subject,
+    predicate,
+    null,
+    readsFromGraphs
+  );
   if (objectDataset.size === 0) {
     return undefined;
   } else if (objectDataset.size === 1) {

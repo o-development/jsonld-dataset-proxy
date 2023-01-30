@@ -3,29 +3,29 @@ import { ContextDefinition } from "jsonld";
 import { ArrayProxyTarget } from "./createArrayHandler";
 import { ProxyContext } from "./ProxyContext";
 
-export const getUnderlyingNode = Symbol("getUnderlyingNode");
-export const getUnderlyingMatch = Symbol("getUnderlyingMatch");
-export const getUnderlyingDataset = Symbol("getUnderlyingDataset");
-export const getUnderlyingContext = Symbol("getUnderlyingContext");
-export const getReadsFromGraphs = Symbol("getReadsFromGraphs");
-export const getWritesToGraph = Symbol("getWritesToGraph");
+export const _getUnderlyingNode = Symbol("_getUnderlyingNode");
+export const _getUnderlyingMatch = Symbol("_getUnderlyingMatch");
+export const _getUnderlyingDataset = Symbol("_getUnderlyingDataset");
+export const _getUnderlyingContext = Symbol("_getUnderlyingContext");
+export const _getReadsFromGraphs = Symbol("_getReadsFromGraphs");
+export const _getWritesToGraph = Symbol("_getWritesToGraph");
 
 type JsonldDatasetProxyObjectAdditionalFields = {
   "@id"?: string;
   "@context"?: ContextDefinition;
-  [getUnderlyingDataset]: Dataset;
-  [getUnderlyingNode]: NamedNode | BlankNode;
-  [getUnderlyingContext]: ContextDefinition;
-  [getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
-  [getWritesToGraph]: ProxyContext["writesToGraph"];
+  [_getUnderlyingDataset]: Dataset;
+  [_getUnderlyingNode]: NamedNode | BlankNode;
+  [_getUnderlyingContext]: ContextDefinition;
+  [_getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
+  [_getWritesToGraph]: ProxyContext["writesToGraph"];
 };
 
 type JsonldDatasetProxyArrayAdditionalFields = {
-  [getUnderlyingDataset]: Dataset;
-  [getUnderlyingMatch]: ArrayProxyTarget[0];
-  [getUnderlyingContext]: ContextDefinition;
-  [getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
-  [getWritesToGraph]: ProxyContext["writesToGraph"];
+  [_getUnderlyingDataset]: Dataset;
+  [_getUnderlyingMatch]: ArrayProxyTarget[0];
+  [_getUnderlyingContext]: ContextDefinition;
+  [_getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
+  [_getWritesToGraph]: ProxyContext["writesToGraph"];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
