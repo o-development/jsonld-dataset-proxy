@@ -12,13 +12,10 @@ import {
 } from "./helperFunctions/arrayMethods";
 import { ProxyContext } from "./ProxyContext";
 import {
-  _getReadsFromGraphs,
   _getUnderlyingContext,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
-  _getWritesToGraph,
 } from "./JsonldDatasetProxyType";
-import { matchWithGraphArray } from "./helperFunctions/matchWithGraphArray";
 
 export type QuadMatch = [subject: NamedNode | BlankNode, predicate: NamedNode];
 
@@ -31,13 +28,7 @@ function getProcessedObjects(
   target: ArrayProxyTarget,
   proxyContext: ProxyContext
 ): ObjectJsonRepresentation[] {
-  const objects = matchWithGraphArray(
-    proxyContext.dataset,
-    target[0][0],
-    target[0][1],
-    null,
-    proxyContext.readsFromGraphs
-  );
+  const objects = proxyContext.dataset.match(...target[0]);
   const datasetObjects = new Set(
     objects.toArray().map((quad) => {
       return objectToJsonldRepresentation(quad, proxyContext);
@@ -70,10 +61,6 @@ export function createArrayHandler(
           return target[0];
         case _getUnderlyingContext:
           return proxyContext.contextUtil.context;
-        case _getReadsFromGraphs:
-          return proxyContext.readsFromGraphs;
-        case _getWritesToGraph:
-          return proxyContext.writesToGraph;
       }
 
       const processedObjects = getProcessedObjects(target, proxyContext);

@@ -1,9 +1,7 @@
-import { defaultGraph } from "@rdfjs/data-model";
 import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 import { ContextUtil } from "./ContextUtil";
 import { JsonldDatasetProxy, ObjectLike } from "./JsonldDatasetProxyType";
-import { ProxyContext } from "./ProxyContext";
 import { ProxyCreator } from "./ProxyCreator";
 
 /**
@@ -19,9 +17,7 @@ import { ProxyCreator } from "./ProxyCreator";
 export function jsonldDatasetProxy<Type extends ObjectLike>(
   inputDataset: Dataset,
   context: ContextDefinition,
-  entryNode: NamedNode | BlankNode,
-  readsFromGraphs: ProxyContext["readsFromGraphs"] = [],
-  writesToGraph: ProxyContext["writesToGraph"] = defaultGraph()
+  entryNode: NamedNode | BlankNode
 ): JsonldDatasetProxy<Type> {
   const contextUtil = new ContextUtil(context);
   const proxyCreator = new ProxyCreator();
@@ -29,8 +25,6 @@ export function jsonldDatasetProxy<Type extends ObjectLike>(
   return proxyCreator.createSubjectProxy(entryNode, {
     dataset: inputDataset,
     contextUtil,
-    readsFromGraphs,
-    writesToGraph,
     proxyCreator,
   }) as unknown as JsonldDatasetProxy<Type>;
 }

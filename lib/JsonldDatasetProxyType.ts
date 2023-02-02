@@ -1,14 +1,11 @@
 import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 import { ArrayProxyTarget } from "./createArrayHandler";
-import { ProxyContext } from "./ProxyContext";
 
 export const _getUnderlyingNode = Symbol("_getUnderlyingNode");
 export const _getUnderlyingMatch = Symbol("_getUnderlyingMatch");
 export const _getUnderlyingDataset = Symbol("_getUnderlyingDataset");
 export const _getUnderlyingContext = Symbol("_getUnderlyingContext");
-export const _getReadsFromGraphs = Symbol("_getReadsFromGraphs");
-export const _getWritesToGraph = Symbol("_getWritesToGraph");
 
 type JsonldDatasetProxyObjectAdditionalFields = {
   "@id"?: string;
@@ -16,16 +13,12 @@ type JsonldDatasetProxyObjectAdditionalFields = {
   [_getUnderlyingDataset]: Dataset;
   [_getUnderlyingNode]: NamedNode | BlankNode;
   [_getUnderlyingContext]: ContextDefinition;
-  [_getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
-  [_getWritesToGraph]: ProxyContext["writesToGraph"];
 };
 
 type JsonldDatasetProxyArrayAdditionalFields = {
   [_getUnderlyingDataset]: Dataset;
   [_getUnderlyingMatch]: ArrayProxyTarget[0];
   [_getUnderlyingContext]: ContextDefinition;
-  [_getReadsFromGraphs]: ProxyContext["readsFromGraphs"];
-  [_getWritesToGraph]: ProxyContext["writesToGraph"];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

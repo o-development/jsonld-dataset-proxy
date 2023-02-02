@@ -5,13 +5,10 @@ import { getProxyFromDataset } from "./helperFunctions/getProxyFromDataset";
 import { deleteValueFromDataset } from "./helperFunctions/deleteFromDataset";
 import { ProxyContext } from "./ProxyContext";
 import {
-  _getReadsFromGraphs,
   _getUnderlyingContext,
   _getUnderlyingDataset,
   _getUnderlyingNode,
-  _getWritesToGraph,
 } from "./JsonldDatasetProxyType";
-import { matchWithGraphArray } from "./helperFunctions/matchWithGraphArray";
 
 export interface ObjectWithId {
   "@id": NamedNode | BlankNode;
@@ -29,10 +26,6 @@ export function createSubjectHander(
           return target["@id"];
         case _getUnderlyingContext:
           return proxyContext.contextUtil.context;
-        case _getReadsFromGraphs:
-          return proxyContext.readsFromGraphs;
-        case _getWritesToGraph:
-          return proxyContext.writesToGraph;
       }
       return getProxyFromDataset(target, key, proxyContext);
     },
@@ -46,13 +39,7 @@ export function createSubjectHander(
     },
     ownKeys(target) {
       const subject = target["@id"];
-      const tripleDataset = matchWithGraphArray(
-        proxyContext.dataset,
-        subject,
-        null,
-        null,
-        proxyContext.readsFromGraphs
-      );
+      const tripleDataset = proxyContext.dataset.match(subject);
       const keys: Set<string> = new Set(["@id"]);
       tripleDataset.toArray().forEach((quad) => {
         keys.add(proxyContext.contextUtil.iriToKey(quad.predicate.value));
