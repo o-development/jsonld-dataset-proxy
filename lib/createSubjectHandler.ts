@@ -61,6 +61,7 @@ export function createSubjectHander(
     },
     set: (target: ObjectWithId, key: string, value) => {
       if (key === "@id" && typeof value === "string") {
+        // Change the Id of a subject
         const currentSubjectQuads = proxyContext.dataset
           .match(target["@id"])
           .toArray();

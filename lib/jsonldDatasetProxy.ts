@@ -22,7 +22,7 @@ export function jsonldDatasetProxy<Type extends ObjectLike>(
   entryNode: NamedNode | BlankNode,
   readsFromGraphs: ProxyContext["readsFromGraphs"] = [],
   writesToGraph: ProxyContext["writesToGraph"] = defaultGraph()
-): JsonldDatasetProxy<Type> {
+): Type {
   const contextUtil = new ContextUtil(context);
   const proxyCreator = new ProxyCreator();
 

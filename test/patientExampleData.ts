@@ -12,11 +12,11 @@ export type PatientShape = {
   "@id"?: string;
   "@context"?: ContextDefinition;
   type?: { "@id": "Patient" };
-  name?: string[];
+  name: string[];
   birthdate?: string;
   age?: number;
   isHappy?: boolean;
-  roommate?: PatientShape[];
+  roommate: PatientShape[];
 };
 
 export const patientSchema: Schema = {

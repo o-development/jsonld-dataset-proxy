@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
   jsonldDatasetProxy,
@@ -10,6 +11,11 @@ import {
   _getUnderlyingMatch,
   _getUnderlyingNode,
   _getWritesToGraph,
+  _graph,
+  _object,
+  _predicate,
+  _quad,
+  _subject,
 } from "../lib";
 import {
   ObservationShape,
@@ -59,7 +65,7 @@ describe("jsonldDatasetProxy", () => {
   }
 
   async function getTinyGraphLoadedDataset(): Promise<
-    [Dataset, JsonldDatasetProxy<ObservationShape>]
+    [Dataset, ObservationShape]
   > {
     const tempDataset = await serializedToDataset(tinyPatientData);
     const dataset = createDataset();
@@ -891,7 +897,6 @@ describe("jsonldDatasetProxy", () => {
       expect(observation[_getUnderlyingContext]).toBe(context);
       expect(observation[_getReadsFromGraphs]).toBe(readsFromGraphs);
       expect(observation[_getWritesToGraph]).toBe(writesToGraph);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const roommateArr = observation.subject!.roommate!;
       expect(roommateArr[_getReadsFromGraphs]).toBe(readsFromGraphs);
       expect(roommateArr[_getUnderlyingContext]).toBe(context);
@@ -901,38 +906,160 @@ describe("jsonldDatasetProxy", () => {
       expect(match[1].value).toBe("http://hl7.org/fhir/roommate");
       expect(roommateArr[_getWritesToGraph]).toBe(writesToGraph);
     });
+
+    // it("retrieves underlying RDF terms", async () => {
+    //   const [, observation] = await getTinyGraphLoadedDataset();
+    //   // Empty Quad
+    //   expect(observation[_quad]("notes")).toBeUndefined();
+    //   expect(observation[_subject]("notes")).toBeUndefined();
+    //   expect(observation[_predicate]("notes")).toBeUndefined();
+    //   expect(observation[_object]("notes")).toBeUndefined();
+    //   expect(observation[_graph]("notes")).toBeUndefined();
+
+    //   // Single Quad
+    //   const obsSubjectQuad = observation[_quad]("subject")!;
+    //   expect(obsSubjectQuad.subject.value).toBe(
+    //     "http://example.com/Observation1"
+    //   );
+    //   expect(obsSubjectQuad.predicate.value).toBe(
+    //     "http://hl7.org/fhir/subject"
+    //   );
+    //   expect(obsSubjectQuad.predicate.value).toBe(
+    //     "http://example.com/Patient1"
+    //   );
+    //   expect(obsSubjectQuad.graph.value).toBe(
+    //     "http://example.com/Observation1Doc"
+    //   );
+    //   expect(observation[_subject]("subject")?.value).toBe(
+    //     "http://example.com/Observation1"
+    //   );
+    //   expect(observation[_predicate]("subject")?.value).toBe(
+    //     "http://hl7.org/fhir/subject"
+    //   );
+    //   expect(observation[_object]("subject")?.value).toBe(
+    //     "http://example.com/Patient1"
+    //   );
+    //   expect(observation[_graph]("subject")?.value).toBe(
+    //     "http://example.com/Observation1Doc"
+    //   );
+
+    //   // Array Quad
+    //   const patient1 = observation.subject!;
+    //   const patientRoomateQuads = patient1[_quad]("roommate")!;
+
+    //   const things = quadsOf(patient1, "roommate", 0).graphs;
+    //   const things = subjectOf()
+
+    //   // expect(obsSubjectQuad.subject.value).toBe(
+    //   //   "http://example.com/Observation1"
+    //   // );
+    //   // expect(obsSubjectQuad.predicate.value).toBe(
+    //   //   "http://hl7.org/fhir/subject"
+    //   // );
+    //   // expect(obsSubjectQuad.predicate.value).toBe(
+    //   //   "http://example.com/Patient1"
+    //   // );
+    //   // expect(obsSubjectQuad.graph.value).toBe(
+    //   //   "http://example.com/Observation1Doc"
+    //   // );
+    //   // expect(observation[_subject]("subject")?.value).toBe(
+    //   //   "http://example.com/Observation1"
+    //   // );
+    //   // expect(observation[_predicate]("subject")?.value).toBe(
+    //   //   "http://hl7.org/fhir/subject"
+    //   // );
+    //   // expect(observation[_object]("subject")?.value).toBe(
+    //   //   "http://example.com/Patient1"
+    //   // );
+    //   // expect(observation[_graph]("subject")?.value).toBe(
+    //   //   "http://example.com/Observation1Doc"
+    //   // );
+    // });
   });
 
   describe("Graph Methods", () => {
-    it("reads only data from specified graphs", async () => {
-      const [, defaultObservation] = await getTinyGraphLoadedDataset();
+  //   it("reads only data from specified graphs", async () => {
+  //     const [, defaultObservation] = await getTinyGraphLoadedDataset();
 
-      const observation = readFromGraphs(defaultObservation, [
-        namedNode("http://example.com/Observation1Doc"),
-        namedNode("http://example.com/Patient1Doc"),
-      ]);
+  //     const observation = readFromGraphs(defaultObservation, [
+  //       namedNode("http://example.com/Observation1Doc"),
+  //       namedNode("http://example.com/Patient1Doc"),
+  //     ]);
 
-      expect(observation.subject?.["@id"]).toBe("http://example.com/Patient1");
-      expect(observation.subject?.name?.[0]).toBe("Garrett");
-      expect(observation.subject?.roommate?.[0].name?.[0]).toBeUndefined();
-    });
+  //     expect(observation.subject?.["@id"]).toBe("http://example.com/Patient1");
+  //     expect(observation.subject?.name?.[0]).toBe("Garrett");
+  //     expect(observation.subject?.roommate?.[0].name?.[0]).toBeUndefined();
+  //   });
 
-    it("writes new data to a specified graph", async () => {
-      const [dataset, defaultObservation] = await getTinyGraphLoadedDataset();
-      const observation = writeToGraph(
-        defaultObservation,
-        namedNode("https://something.com/exampleGraph")
-      );
-      observation.notes = "hello world!";
-      expect(
-        dataset
-          .match(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (observation as any)[_getUnderlyingNode],
-            namedNode("http://hl7.org/fhir/notes")
-          )
-          .toArray()[0].graph.value
-      ).toBe("https://something.com/exampleGraph");
-    });
+  //   i;
+
+  //   it("sets data on the same graph", () => {
+  //     const [, defaultObservation] = await getTinyGraphLoadedDataset();
+  //   });
+
+  //   it("writes new data to a specified graph", async () => {
+  //     const [dataset, defaultObservation] = await getTinyGraphLoadedDataset();
+  //     const observation = writeToGraph(
+  //       defaultObservation,
+  //       namedNode("https://something.com/exampleGraph")
+  //     );
+  //     observation.notes = "hello world!";
+  //     expect(
+  //       dataset
+  //         .match(
+  //           observation[_getUnderlyingNode],
+  //           namedNode("http://hl7.org/fhir/notes")
+  //         )
+  //         .toArray()[0].graph.value
+  //     ).toBe("https://something.com/exampleGraph");
+  //   });
+  // });
+
+  it("gets the graphs statements belong to", () => {
+    // const [, observation] = await getTinyGraphLoadedDataset();
+    graphOf(observation, "subject")
+    graphOf(observation.subject, "roommate", observation.subject?.roommate[0])
+
+    quadOf()
+
+    graphOf subject.roommate[0]
+
+    obser
   });
+
+
+  it("automatically assumes the graph for new changes", () => {
+
+  });
+
+  it("lets a new patient get created in a new graph", () => {
+    const [dataset, observation] = await getTinyGraphLoadedDataset();
+
+    const patient1Doc = namedNode("https://example.com/patient1Doc");
+    const patient2Doc = namedNode("https://example.com/patient2Doc");
+    const patient3Doc = namedNode("https://example.com/patient3Doc");
+
+    const patient1 = observation.subject!;
+    const patient2 = patient1.roommate?.[0]!;
+
+    startGraph(patient3Doc);
+      const patient3 = jsonldDatasetProxy<PatientShape>(
+        dataset,
+        patientContext,
+        namedNode("https://example.com/patient3")
+      );
+      patient3.name?.push("Mr. Patient 3");
+      patient3.roommate = [ patient1, patient2 ];
+
+      // alternatively
+      patient3 = proxyObject<PatientShape>({
+        name: [""],
+        roommate: [patient1, patient2] 
+      })
+
+    endGraph();
+
+    patient1.roommate[patient1Doc].push(patient3);
+    patient3.roommate[patient2Doc].push(patient3);
+  })
 });
