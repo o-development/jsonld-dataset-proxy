@@ -919,6 +919,7 @@ describe("jsonldDatasetProxy", () => {
       expect(
         dataset
           .match(
+            null,
             namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
             namedNode("http://hl7.org/fhir/Patient")
           )
@@ -954,6 +955,7 @@ describe("jsonldDatasetProxy", () => {
       expect(
         dataset
           .match(
+            null,
             namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
             namedNode("http://hl7.org/fhir/Patient")
           )

@@ -108,7 +108,11 @@ export function replaceArray(
   replacement: AddObjectValue[],
   proxyContext: ProxyContext
 ) {
-  if (target[0][0] && target[0][1]) {
+  if (target[2]) {
+    replacement.forEach((item) => {
+      addObjectToDataset(item as AddObjectItem, new Set(), true, proxyContext);
+    });
+  } else if (target[0][0] && target[0][1]) {
     const itemToAdd = {
       "@id": target[0][0],
       [proxyContext.contextUtil.iriToKey(target[0][1].value)]: replacement,
