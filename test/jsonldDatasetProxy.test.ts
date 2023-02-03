@@ -891,6 +891,124 @@ describe("jsonldDatasetProxy", () => {
     });
   });
 
+  describe("matchSubject", () => {
+    it("creates a list of subjects that match a certain pattern", async () => {
+      const [, , builder] = await getLoadedDataset();
+      const patients = builder.matchSubject<PatientShape>(
+        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        namedNode("http://hl7.org/fhir/Patient")
+      );
+      expect(patients[0].name?.[0]).toBe("Garrett");
+      expect(patients[1].name?.[0]).toBe("Rob");
+      expect(patients[2].name?.[0]).toBe("Amy");
+    });
+
+    it("Successfully adds a node to the list", async () => {
+      const [dataset, , builder] = await getLoadedDataset();
+      const patients = builder.matchSubject<PatientShape>(
+        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        namedNode("http://hl7.org/fhir/Patient")
+      );
+
+      patients.push({
+        "@id": "https://example.com/Patient4",
+        type: { "@id": "Patient" },
+        name: ["Dippy"],
+        age: 2,
+      });
+      expect(
+        dataset
+          .match(
+            namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            namedNode("http://hl7.org/fhir/Patient")
+          )
+          .some((quad) => {
+            return quad.subject.value === "https://example.com/Patient4";
+          })
+      ).toBe(true);
+      expect(patients[3].name?.[0]).toBe("Dippy");
+    });
+
+    it("will read a new object if something has been added to the dataset after object creation", async () => {
+      const [dataset, , builder] = await getLoadedDataset();
+      const patients = builder.matchSubject<PatientShape>(
+        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        namedNode("http://hl7.org/fhir/Patient")
+      );
+
+      dataset.add(
+        quad(
+          namedNode("https://example.com/Patient4"),
+          namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+          namedNode("http://hl7.org/fhir/Patient")
+        )
+      );
+      dataset.add(
+        quad(
+          namedNode("https://example.com/Patient4"),
+          namedNode("http://hl7.org/fhir/name"),
+          literal("Dippy")
+        )
+      );
+
+      expect(
+        dataset
+          .match(
+            namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            namedNode("http://hl7.org/fhir/Patient")
+          )
+          .some((quad) => {
+            return quad.subject.value === "https://example.com/Patient4";
+          })
+      ).toBe(true);
+      expect(patients[3].name?.[0]).toBe("Dippy");
+    });
+
+    it("errors if an object is added without the correct parameters", async () => {
+      const [, , builder] = await getLoadedDataset();
+      const patients = builder.matchSubject<PatientShape>(
+        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        namedNode("http://hl7.org/fhir/Patient")
+      );
+
+      expect(() =>
+        patients.push({
+          "@id": "https://example.com/Patient4",
+          name: ["Dippy"],
+          age: 2,
+        })
+      ).toThrowError(
+        `Cannot add value to collection. This must contain a quad that matches (null, namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), namedNode("http://hl7.org/fhir/Patient"), null)`
+      );
+    });
+  });
+
+  describe("matchObject", () => {
+    // TODO
+  });
+
+  describe("fromJson", () => {
+    it("initializes a patient using the fromJSON method", async () => {
+      const [, , builder] = await getEmptyPatientDataset();
+      const patient = builder.fromJson<PatientShape>({
+        name: ["Jack", "Horner"],
+        birthdate: "1725/11/03",
+        age: 298,
+        roommate: [
+          {
+            name: ["Ethical", "Bug"],
+          },
+        ],
+      });
+      expect(patient.name?.[0]).toBe("Jack");
+      expect(patient.name?.[1]).toBe("Horner");
+      expect(patient.birthdate).toBe("1725/11/03");
+      expect(patient.age).toBe(298);
+      expect(patient.roommate?.[0].name?.[0]).toBe("Ethical");
+      expect(patient.roommate?.[0].name?.[1]).toBe("Bug");
+    });
+  });
+
   describe("Graph Methods", () => {
     it("lets a new patient get created in a new graph", async () => {
       // TODO

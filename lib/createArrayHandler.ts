@@ -1,4 +1,4 @@
-import { NamedNode } from "@rdfjs/types";
+import { BlankNode, NamedNode } from "@rdfjs/types";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
 import {
   ObjectJsonRepresentation,
@@ -20,16 +20,24 @@ import { QuadMatch } from "./QuadMatch";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
-  curArray: ObjectJsonRepresentation[]
+  curArray: ObjectJsonRepresentation[],
+  isSubjectOriented?: boolean
 ];
 
 function getProcessedObjects(
   target: ArrayProxyTarget,
   proxyContext: ProxyContext
 ): ObjectJsonRepresentation[] {
-  const objects = proxyContext.dataset.match(...target[0]);
+  const quads = proxyContext.dataset.match(...target[0]);
   const datasetObjects = new Set(
-    objects.toArray().map((quad) => {
+    quads.toArray().map((quad) => {
+      // If this this a subject-oriented document
+      if (target[2]) {
+        return proxyContext.proxyCreator.createSubjectProxy(
+          quad.subject as NamedNode | BlankNode,
+          proxyContext
+        );
+      }
       return objectToJsonldRepresentation(quad, proxyContext);
     })
   );

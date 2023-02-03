@@ -37,12 +37,13 @@ export class ProxyCreator {
 
   public createArrayProxy(
     quadMatch: QuadMatch,
-    proxyContext: ProxyContext
+    proxyContext: ProxyContext,
+    isSubjectOriented = false
   ): ArrayProxyTarget {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
-        [quadMatch, []],
+        [quadMatch, [], isSubjectOriented],
         createArrayHandler(proxyContext)
       );
       this.arrayMap.set(key, proxy);

@@ -41,10 +41,11 @@ export class JsonldDatasetProxyBuilder {
     predicate: QuadMatch[1],
     object?: QuadMatch[2],
     graph?: QuadMatch[3]
-  ): JsonldDatasetProxy<T[]> {
+  ): T[] {
     return this.proxyContext.proxyCreator.createArrayProxy(
       [null, predicate, object, graph],
-      this.proxyContext
+      this.proxyContext,
+      true
     ) as unknown as JsonldDatasetProxy<T[]>;
   }
 
@@ -59,7 +60,7 @@ export class JsonldDatasetProxyBuilder {
     subject: QuadMatch[0],
     predicate: QuadMatch[1],
     graph: QuadMatch[3]
-  ): JsonldDatasetProxy<T[]> {
+  ): T[] {
     return this.proxyContext.proxyCreator.createArrayProxy(
       [subject, predicate, null, graph],
       this.proxyContext
@@ -73,10 +74,7 @@ export class JsonldDatasetProxyBuilder {
    * @param inputData Initial Data
    * @param graph Optional graph to save this data to
    */
-  fromJson<T extends ObjectLike>(
-    inputData: T,
-    _graph: QuadMatch[3]
-  ): JsonldDatasetProxy<T> {
+  fromJson<T extends ObjectLike>(inputData: T, _graph?: QuadMatch[3]): T {
     const entryNode = inputData["@id"]
       ? namedNode(inputData["@id"])
       : blankNode();

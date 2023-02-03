@@ -13,7 +13,7 @@ export type AddObjectItem = {
 
 export type AddObjectValue = string | boolean | number | AddObjectItem;
 
-function getIdNode(
+export function getIdNode(
   item: AddObjectItem,
   contextUtil: ContextUtil
 ): NamedNode | BlankNode {
