@@ -2,6 +2,7 @@ import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
   jsonldDatasetProxy,
   JsonldDatasetProxy,
+  JsonldDatasetProxyBuilder,
   _getUnderlyingContext,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
@@ -22,40 +23,44 @@ import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 
 describe("jsonldDatasetProxy", () => {
-  async function getLoadedDataset(): Promise<[Dataset, ObservationShape]> {
+  async function getLoadedDataset(): Promise<
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
+  > {
     const dataset = await serializedToDataset(patientData);
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
   async function getLoadedDatasetWithBlankNodes(): Promise<
-    [Dataset, ObservationShape]
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
     const dataset = await serializedToDataset(patientDataWithBlankNodes);
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
-  async function getTinyLoadedDataset(): Promise<[Dataset, ObservationShape]> {
+  async function getTinyLoadedDataset(): Promise<
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
+  > {
     const dataset = await serializedToDataset(tinyPatientData);
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
   async function getTinyGraphLoadedDataset(): Promise<
-    [Dataset, JsonldDatasetProxy<ObservationShape>]
+    [Dataset, JsonldDatasetProxy<ObservationShape>, JsonldDatasetProxyBuilder]
   > {
     const tempDataset = await serializedToDataset(tinyPatientData);
     const dataset = createDataset();
@@ -80,56 +85,60 @@ describe("jsonldDatasetProxy", () => {
         )
       );
     });
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
   async function getTinyLoadedDatasetWithBlankNodes(): Promise<
-    [Dataset, ObservationShape]
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
     const dataset = await serializedToDataset(tinyPatientDataWithBlankNodes);
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
-  async function getArrayLoadedDataset(): Promise<[Dataset, PatientShape]> {
+  async function getArrayLoadedDataset(): Promise<
+    [Dataset, PatientShape, JsonldDatasetProxyBuilder]
+  > {
     const dataset = await serializedToDataset(tinyArrayPatientData);
-    const patient = await jsonldDatasetProxy<PatientShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Patient1")
-    );
-    return [dataset, patient];
+      builder.fromSubject(namedNode("http://example.com/Patient1")),
+      builder,
+    ];
   }
 
   async function getEmptyObservationDataset(): Promise<
-    [Dataset, ObservationShape]
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
     const dataset = await createDataset();
-    const observation = await jsonldDatasetProxy<ObservationShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Observation1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
   }
 
-  async function getEmptyPatientDataset(): Promise<[Dataset, PatientShape]> {
+  async function getEmptyPatientDataset(): Promise<
+    [Dataset, PatientShape, JsonldDatasetProxyBuilder]
+  > {
     const dataset = await createDataset();
-    const observation = await jsonldDatasetProxy<PatientShape>(
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
       dataset,
-      patientContext,
-      namedNode("http://example.com/Patient1")
-    );
-    return [dataset, observation];
+      builder.fromSubject(namedNode("http://example.com/Patient1")),
+      builder,
+    ];
   }
 
   describe("read", () => {
@@ -365,9 +374,8 @@ describe("jsonldDatasetProxy", () => {
           "@type": "http://www.w3.org/2001/XMLSchema#string",
         },
       };
-      const patient = await jsonldDatasetProxy<PatientShape>(
-        dataset,
-        fakePatientSContext,
+      const builder = jsonldDatasetProxy(dataset, fakePatientSContext);
+      const patient = builder.fromSubject(
         namedNode("http://example.com/Patient1")
       );
       expect(patient.name).toEqual(["Garrett", "Bobby", "Ferguson"]);
@@ -866,11 +874,8 @@ describe("jsonldDatasetProxy", () => {
       const dataset = await serializedToDataset(patientData);
       const entryNode = namedNode("http://example.com/Observation1");
       const context = patientContext;
-      const observation = await jsonldDatasetProxy<ObservationShape>(
-        dataset,
-        context,
-        entryNode
-      );
+      const builder = jsonldDatasetProxy(dataset, context);
+      const observation = builder.fromSubject(entryNode);
       expect(observation[_getUnderlyingDataset]).toBe(dataset);
       expect(observation[_getUnderlyingNode].value).toBe(
         "http://example.com/Observation1"
@@ -887,6 +892,30 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("Graph Methods", () => {
-    // TODO
+    it("lets a new patient get created in a new graph", async () => {
+      // TODO
+      // const [dataset, observation] = await getTinyGraphLoadedDataset();
+      // const patient1Doc = namedNode("https://example.com/patient1Doc");
+      // const patient2Doc = namedNode("https://example.com/patient2Doc");
+      // const patient3Doc = namedNode("https://example.com/patient3Doc");
+      // const patient1 = observation.subject!;
+      // const patient2 = patient1.roommate?.[0]!;
+      // startGraph(patient3Doc);
+      // const patient3 = jsonldDatasetProxy<PatientShape>(
+      //   dataset,
+      //   patientContext,
+      //   namedNode("https://example.com/patient3")
+      // );
+      // patient3.name?.push("Mr. Patient 3");
+      // patient3.roommate = [patient1, patient2];
+      // // alternatively
+      // patient3 = proxyObject<PatientShape>({
+      //   name: [""],
+      //   roommate: [patient1, patient2],
+      // });
+      // endGraph();
+      // patient1.roommate[patient1Doc].push(patient3);
+      // patient3.roommate[patient2Doc].push(patient3);
+    });
   });
 });

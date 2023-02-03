@@ -13,3 +13,4 @@ export * from "./helperFunctions/deleteFromDataset";
 export * from "./helperFunctions/getProxyFromDataset";
 export * from "./helperFunctions/objectToJsonRepresentation";
 export * from "./ProxyContext";
+export * from "./QuadMatch";

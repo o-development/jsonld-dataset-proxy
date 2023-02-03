@@ -1,4 +1,4 @@
-import { BlankNode, NamedNode } from "@rdfjs/types";
+import { NamedNode } from "@rdfjs/types";
 import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
 import {
   ObjectJsonRepresentation,
@@ -16,8 +16,7 @@ import {
   _getUnderlyingDataset,
   _getUnderlyingMatch,
 } from "./JsonldDatasetProxyType";
-
-export type QuadMatch = [subject: NamedNode | BlankNode, predicate: NamedNode];
+import { QuadMatch } from "./QuadMatch";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,

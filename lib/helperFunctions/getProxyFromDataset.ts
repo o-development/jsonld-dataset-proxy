@@ -31,7 +31,7 @@ export function getProxyFromDataset(
   const predicate = namedNode(contextUtil.keyToIri(key));
   if (contextUtil.isArray(key)) {
     const arrayProxy = proxyCreator.createArrayProxy(
-      [subject, predicate],
+      [subject, predicate, null, null],
       proxyContext
     );
     return arrayProxy;
@@ -45,6 +45,9 @@ export function getProxyFromDataset(
       proxyContext
     );
   } else {
-    return proxyCreator.createArrayProxy([subject, predicate], proxyContext);
+    return proxyCreator.createArrayProxy(
+      [subject, predicate, null, null],
+      proxyContext
+    );
   }
 }

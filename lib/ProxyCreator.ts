@@ -1,11 +1,8 @@
 import { BlankNode, NamedNode } from "@rdfjs/types";
-import {
-  ArrayProxyTarget,
-  createArrayHandler,
-  QuadMatch,
-} from "./createArrayHandler";
+import { ArrayProxyTarget, createArrayHandler } from "./createArrayHandler";
 import { createSubjectHander, ObjectWithId } from "./createSubjectHandler";
 import { ProxyContext } from "./ProxyContext";
+import { QuadMatch } from "./QuadMatch";
 
 /**
  * This file keeps track of the target objects used in the proxies.
@@ -31,7 +28,11 @@ export class ProxyCreator {
   }
 
   private getArrayKey(...quadMatch: QuadMatch) {
-    return `${quadMatch[0].value}|${quadMatch[1].value}`;
+    return `${quadMatch[0]?.value || "undefined"}|${
+      quadMatch[1]?.value || "undefined"
+    }|${quadMatch[2]?.value || "undefined"}|${
+      quadMatch[3]?.value || "undefined"
+    }`;
   }
 
   public createArrayProxy(
