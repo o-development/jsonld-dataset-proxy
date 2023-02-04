@@ -561,6 +561,17 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
+    it("Keeps the correct array index when setting an index", async () => {
+      const [, observation] = await getLoadedDataset();
+      const roommateArr = observation.subject?.roommate as PatientShape[];
+      roommateArr[0] = {
+        "@id": "http://example.com/ReplacementPatient",
+        name: ["Jackson"],
+      };
+      expect(roommateArr.length).toBe(2);
+      expect(roommateArr[0].name?.[0]).toBe("Jackson");
+    });
+
     it("Changes the subject name if the @id is changed", async () => {
       const [dataset, observation] = await getTinyLoadedDataset();
       const patient = observation?.subject as PatientShape;
@@ -847,6 +858,30 @@ describe("jsonldDatasetProxy", () => {
         );
       });
 
+      it("handles splice with objects", async () => {
+        const [dataset, observation] = await getLoadedDataset();
+        const roommates = observation.subject?.roommate as PatientShape[];
+        roommates.splice(
+          0,
+          1,
+          {
+            "@id": "https://example.com/Patient4",
+            type: { "@id": "Patient" },
+            name: ["Dippy"],
+            age: 2,
+          },
+          {
+            "@id": "https://example.com/Patient5",
+            type: { "@id": "Patient" },
+            name: ["Licky"],
+            age: 3,
+          }
+        );
+        expect(roommates[0].name?.[0]).toBe("Dippy");
+        expect(roommates[0].name?.[0]).toBe("Licky");
+        expect(roommates[0].name?.[0]).toBe("Amy");
+      });
+
       it("handles splice with only two params", async () => {
         const [dataset, patient] = await getArrayLoadedDataset();
         const arr = patient.name as string[];
@@ -892,24 +927,25 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("matchSubject", () => {
-    it("creates a list of subjects that match a certain pattern", async () => {
-      const [, , builder] = await getLoadedDataset();
-      const patients = builder.matchSubject<PatientShape>(
+    let patients: PatientShape[];
+    let dataset: Dataset;
+
+    beforeEach(async () => {
+      const [receivedDataset, , builder] = await getLoadedDataset();
+      dataset = receivedDataset;
+      patients = builder.matchSubject<PatientShape>(
         namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
         namedNode("http://hl7.org/fhir/Patient")
       );
+    });
+
+    it("creates a list of subjects that match a certain pattern", async () => {
       expect(patients[0].name?.[0]).toBe("Garrett");
       expect(patients[1].name?.[0]).toBe("Rob");
       expect(patients[2].name?.[0]).toBe("Amy");
     });
 
     it("Successfully adds a node to the list", async () => {
-      const [dataset, , builder] = await getLoadedDataset();
-      const patients = builder.matchSubject<PatientShape>(
-        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-        namedNode("http://hl7.org/fhir/Patient")
-      );
-
       patients.push({
         "@id": "https://example.com/Patient4",
         type: { "@id": "Patient" },
@@ -931,12 +967,6 @@ describe("jsonldDatasetProxy", () => {
     });
 
     it("will read a new object if something has been added to the dataset after object creation", async () => {
-      const [dataset, , builder] = await getLoadedDataset();
-      const patients = builder.matchSubject<PatientShape>(
-        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-        namedNode("http://hl7.org/fhir/Patient")
-      );
-
       dataset.add(
         quad(
           namedNode("https://example.com/Patient4"),
@@ -967,12 +997,6 @@ describe("jsonldDatasetProxy", () => {
     });
 
     it("errors if an object is added without the correct parameters", async () => {
-      const [, , builder] = await getLoadedDataset();
-      const patients = builder.matchSubject<PatientShape>(
-        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-        namedNode("http://hl7.org/fhir/Patient")
-      );
-
       expect(() =>
         patients.push({
           "@id": "https://example.com/Patient4",
@@ -982,6 +1006,64 @@ describe("jsonldDatasetProxy", () => {
       ).toThrowError(
         `Cannot add value to collection. This must contain a quad that matches (null, namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), namedNode("http://hl7.org/fhir/Patient"), null)`
       );
+    });
+
+    it("Removes all an object and replaces in upon set", async () => {
+      patients[0] = {
+        "@id": "https://example.com/Patient4",
+        type: { "@id": "Patient" },
+        name: ["Dippy"],
+        age: 2,
+      };
+
+      expect(
+        dataset.match(namedNode("https://example.com/Patient1")).size
+      ).toBe(0);
+      expect(patients[0].name?.[0]).toBe("Dippy");
+    });
+
+    it("Removes an object and replaces it upon splice", async () => {
+      patients.splice(
+        1,
+        1,
+        {
+          "@id": "https://example.com/Patient4",
+          type: { "@id": "Patient" },
+          name: ["Dippy"],
+          age: 2,
+        },
+        {
+          "@id": "https://example.com/Patient5",
+          type: { "@id": "Patient" },
+          name: ["Licky"],
+          age: 3,
+        }
+      );
+
+      expect(
+        dataset.match(namedNode("https://example.com/Patient2")).size
+      ).toBe(0);
+      expect(patients[1].name?.[0]).toBe("Dippy");
+      expect(patients[2].name?.[0]).toBe("Licky");
+    });
+
+    it("Removes an object completely when assigning it to undefined", async () => {
+      // @ts-expect-error This violates the typings
+      patients[0] = undefined;
+
+      expect(
+        dataset.match(namedNode("https://example.com/Patient1")).size
+      ).toBe(0);
+      expect(patients[0].name?.[0]).toBe("Rob");
+    });
+
+    it("Removes an object completely when using the delete parameter", async () => {
+      delete patients[0];
+
+      expect(
+        dataset.match(namedNode("https://example.com/Patient1")).size
+      ).toBe(0);
+      expect(patients[0].name?.[0]).toBe("Rob");
     });
   });
 

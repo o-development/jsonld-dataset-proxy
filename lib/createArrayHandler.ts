@@ -1,5 +1,9 @@
 import { BlankNode, NamedNode } from "@rdfjs/types";
-import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
+import {
+  AddObjectItem,
+  addObjectToDataset,
+  AddObjectValue,
+} from "./helperFunctions/addObjectToDataset";
 import {
   ObjectJsonRepresentation,
   objectToJsonldRepresentation,
@@ -8,7 +12,9 @@ import { quad } from "@rdfjs/data-model";
 import {
   ArrayMethodBuildersType,
   arrayMethodsBuilders,
+  checkArrayModification,
   methodNames,
+  replaceArray,
 } from "./helperFunctions/arrayMethods";
 import { ProxyContext } from "./ProxyContext";
 import {
@@ -97,25 +103,48 @@ export function createArrayHandler(
     },
     set(target, key, value, ...rest) {
       const { dataset, contextUtil } = proxyContext;
+      getProcessedObjects(target, proxyContext);
       if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
-        const objectQuad = dataset.match(...target[0]).toArray()[parseInt(key)];
-        if (objectQuad) {
-          dataset.delete(objectQuad);
-        }
-        if (target[0][0] && target[0][1]) {
+        const index = parseInt(key);
+        checkArrayModification(target, [value], proxyContext);
+        // If it is subject-oriented
+        if (target[2]) {
+          const curSubject = dataset.match(...target[0]).toArray()[
+            index
+          ].subject;
+          dataset.deleteMatches(curSubject, undefined, undefined);
+          const object = addObjectToDataset(
+            value,
+            new Set(),
+            false,
+            proxyContext
+          );
+          target[1][index] = object;
+          return true;
+        } else if (target[0][0] && target[0][1]) {
+          const curQuad = dataset.match(...target[0]).toArray()[index];
+          if (curQuad) {
+            dataset.delete(curQuad);
+          }
+          const addedObject =
+            typeof value === "object"
+              ? addObjectToDataset(value, new Set(), false, proxyContext)
+              : value;
           addObjectToDataset(
             {
               "@id": target[0][0],
-              [contextUtil.iriToKey(target[0][1].value)]: value,
+              [contextUtil.iriToKey(target[0][1].value)]: addedObject,
             },
             new Set(),
             false,
             proxyContext
           );
+          target[1][index] = addedObject;
           return true;
         }
+        return false;
       }
-      return Reflect.set(target, key, ...rest);
+      return Reflect.set(target[1], key, ...rest);
     },
     deleteProperty(target, key) {
       const { dataset } = proxyContext;
@@ -132,7 +161,10 @@ export function createArrayHandler(
             dataset.delete(quad(subject, predicate, term));
           }
           return true;
-        } else if (term.termType === "NamedNode") {
+        } else if (
+          term.termType === "NamedNode" ||
+          term.termType === "BlankNode"
+        ) {
           dataset.deleteMatches(term, undefined, undefined);
           dataset.deleteMatches(undefined, undefined, term);
           return true;

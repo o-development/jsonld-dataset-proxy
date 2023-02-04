@@ -3,6 +3,7 @@ import { namedNode, literal, quad, blankNode } from "@rdfjs/data-model";
 import { ContextUtil } from "../ContextUtil";
 import { _getUnderlyingNode } from "../JsonldDatasetProxyType";
 import { ProxyContext } from "../ProxyContext";
+import { ObjectWithId } from "../createSubjectHandler";
 
 export type AddObjectItem = {
   "@id"?: string | NamedNode | BlankNode;
@@ -89,11 +90,11 @@ export function addObjectToDataset(
   visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
-): void {
+): ObjectWithId {
   const { dataset } = proxyContext;
   const subject = getIdNode(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
-    return;
+    return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
   }
   visitedObjects.add(nodeToSetKey(subject));
   Object.entries(item).forEach(([key, value]) => {
@@ -128,4 +129,5 @@ export function addObjectToDataset(
       );
     }
   });
+  return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
 }
