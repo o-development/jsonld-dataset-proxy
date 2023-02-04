@@ -114,23 +114,48 @@ export function modifyArray<ReturnType>(
     target: ArrayProxyTarget;
     toAdd?: AddObjectValue[];
     quadsToDelete?: (quads: Quad[]) => Quad[];
-    modifyArray: (addedValues?: ObjectJsonRepresentation[]) => ReturnType;
+    modifyCoreArray: (
+      coreArray: ArrayProxyTarget[1],
+      addedValues?: ObjectJsonRepresentation[]
+    ) => ReturnType;
   },
   proxyContext: ProxyContext
 ): ReturnType {
-  const { target, toAdd, quadsToDelete, modifyArray } = config;
-  const { dataset } = proxyContext;
+  const { target, toAdd, quadsToDelete, modifyCoreArray } = config;
+  const { dataset, contextUtil } = proxyContext;
   checkArrayModification(target, toAdd || [], proxyContext);
+
+  // Find subjects already in the array
+  // const subjectsAlreadyInTheArray = new Set<NamedNode | BlankNode>();
+  // toAdd?.forEach((item) => {
+  //   if () {
+
+  //   }
+  //   const subject = getIdNode(item, proxyContext.contextUtil);
+
+  // });
+
   // Add new items to the dataset
   const added = toAdd?.map((item) => {
     return typeof item === "object"
       ? addObjectToDataset(item as AddObjectItem, false, proxyContext)
       : item;
-  });
+  }); // Filter items that were duplicates
+  if (!target[2] && target[0][0] && target[0][1] && added) {
+    addObjectToDataset(
+      {
+        "@id": target[0][0],
+        [contextUtil.iriToKey(target[0][1].value)]: added,
+      } as AddObjectItem,
+      false,
+      proxyContext
+    );
+  }
   // Remove appropriate Quads
   if (quadsToDelete) {
     const quadArr = dataset.match(...target[0]).toArray();
     const deleteQuadArr = quadsToDelete(quadArr);
+    // Filter out overlapping items
     deleteQuadArr.forEach((delQuad) => {
       if (target[2]) {
         dataset.deleteMatches(delQuad.subject, undefined, undefined);
@@ -140,7 +165,7 @@ export function modifyArray<ReturnType>(
     });
   }
   // Allow the base array to be modified
-  return modifyArray(added);
+  return modifyCoreArray(target[1], added);
 }
 
 export function replaceArray(

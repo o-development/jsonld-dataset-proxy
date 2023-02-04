@@ -859,7 +859,7 @@ describe("jsonldDatasetProxy", () => {
       });
 
       it("handles splice with objects", async () => {
-        const [dataset, observation] = await getLoadedDataset();
+        const [, observation] = await getLoadedDataset();
         const roommates = observation.subject?.roommate as PatientShape[];
         roommates.splice(
           0,

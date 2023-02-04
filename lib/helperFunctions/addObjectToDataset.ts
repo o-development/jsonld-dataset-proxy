@@ -37,6 +37,33 @@ function nodeToSetKey(node: NamedNode | BlankNode): string {
   }
 }
 
+export function getNodeFromAddObjectValue(
+  value: AddObjectValue,
+  proxyContext: ProxyContext,
+  key?: string
+): BlankNode | NamedNode | Literal | undefined {
+  // Get the Object Node
+  if (value == undefined) {
+    return undefined;
+  } else if (
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    typeof value === "number"
+  ) {
+    if (!key) {
+      return literal(value.toString());
+    }
+    const datatype = proxyContext.contextUtil.getType(key);
+    if (datatype === "@id") {
+      return namedNode(value.toString());
+    } else {
+      return literal(value.toString(), datatype);
+    }
+  } else {
+    return getIdNode(value, proxyContext.contextUtil);
+  }
+}
+
 export function addObjectValueToDatasetRecurse(
   key: string,
   visitedObjects: Set<string>,
@@ -48,35 +75,28 @@ export function addObjectValueToDatasetRecurse(
 ): void {
   const { dataset } = proxyContext;
   // Get the Object Node
-  let object: NamedNode | Literal | BlankNode;
-  if (value == undefined) {
+  const object = getNodeFromAddObjectValue(value, proxyContext, key);
+  if (object == undefined) {
     dataset.deleteMatches(subject, predicate);
-  } else if (
-    typeof value === "string" ||
-    typeof value === "boolean" ||
-    typeof value === "number"
-  ) {
-    const datatype = proxyContext.contextUtil.getType(key);
-    if (datatype === "@id") {
-      object = namedNode(value.toString());
-    } else {
-      object = literal(value.toString(), datatype);
-    }
+  } else if (object.termType === "Literal") {
     proxyContext.dataset.add(quad(subject, predicate, object));
   } else {
-    object = getIdNode(value, proxyContext.contextUtil);
-
     // Delete any triples if the id is the same
     if (
       !visitedObjects.has(nodeToSetKey(object)) &&
-      !value[_getUnderlyingNode]
+      !(value as AddObjectItem)[_getUnderlyingNode]
     ) {
       proxyContext.dataset.deleteMatches(object, undefined, undefined);
     }
     proxyContext.dataset.add(quad(subject, predicate, object));
-    if (!value[_getUnderlyingNode]) {
+    if (!(value as AddObjectItem)[_getUnderlyingNode]) {
+      const updateData: AddObjectItem = (
+        typeof value === "object"
+          ? { ...value, "@id": object }
+          : { "@id": object }
+      ) as AddObjectItem;
       addObjectToDatasetRecurse(
-        { ...value, "@id": object } as AddObjectItem,
+        updateData,
         visitedObjects,
         shouldDeleteOldTriples,
         proxyContext
