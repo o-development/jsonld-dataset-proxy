@@ -113,12 +113,7 @@ export function createArrayHandler(
             index
           ].subject;
           dataset.deleteMatches(curSubject, undefined, undefined);
-          const object = addObjectToDataset(
-            value,
-            new Set(),
-            false,
-            proxyContext
-          );
+          const object = addObjectToDataset(value, false, proxyContext);
           target[1][index] = object;
           return true;
         } else if (target[0][0] && target[0][1]) {
@@ -128,14 +123,13 @@ export function createArrayHandler(
           }
           const addedObject =
             typeof value === "object"
-              ? addObjectToDataset(value, new Set(), false, proxyContext)
+              ? addObjectToDataset(value, false, proxyContext)
               : value;
           addObjectToDataset(
             {
               "@id": target[0][0],
               [contextUtil.iriToKey(target[0][1].value)]: addedObject,
             },
-            new Set(),
             false,
             proxyContext
           );

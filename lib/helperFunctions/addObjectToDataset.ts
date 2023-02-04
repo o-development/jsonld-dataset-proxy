@@ -37,7 +37,7 @@ function nodeToSetKey(node: NamedNode | BlankNode): string {
   }
 }
 
-export function addObjectValueToDataset(
+export function addObjectValueToDatasetRecurse(
   key: string,
   visitedObjects: Set<string>,
   subject: NamedNode | BlankNode,
@@ -75,7 +75,7 @@ export function addObjectValueToDataset(
     }
     proxyContext.dataset.add(quad(subject, predicate, object));
     if (!value[_getUnderlyingNode]) {
-      addObjectToDataset(
+      addObjectToDatasetRecurse(
         { ...value, "@id": object } as AddObjectItem,
         visitedObjects,
         shouldDeleteOldTriples,
@@ -85,7 +85,7 @@ export function addObjectValueToDataset(
   }
 }
 
-export function addObjectToDataset(
+export function addObjectToDatasetRecurse(
   item: AddObjectItem,
   visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean,
@@ -107,7 +107,7 @@ export function addObjectToDataset(
     }
     if (Array.isArray(value)) {
       value.forEach((valueItem) => {
-        addObjectValueToDataset(
+        addObjectValueToDatasetRecurse(
           key,
           visitedObjects,
           subject,
@@ -118,7 +118,7 @@ export function addObjectToDataset(
         );
       });
     } else {
-      addObjectValueToDataset(
+      addObjectValueToDatasetRecurse(
         key,
         visitedObjects,
         subject,
@@ -130,4 +130,17 @@ export function addObjectToDataset(
     }
   });
   return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
+}
+
+export function addObjectToDataset(
+  item: AddObjectItem,
+  shouldDeleteOldTriples: boolean,
+  proxyContext: ProxyContext
+): ObjectWithId {
+  return addObjectToDatasetRecurse(
+    item,
+    new Set(),
+    shouldDeleteOldTriples,
+    proxyContext
+  );
 }

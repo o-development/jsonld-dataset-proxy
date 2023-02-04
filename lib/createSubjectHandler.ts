@@ -82,7 +82,6 @@ export function createSubjectHander(
       }
       addObjectToDataset(
         { "@id": target["@id"], [key]: value },
-        new Set(),
         true,
         proxyContext
       );

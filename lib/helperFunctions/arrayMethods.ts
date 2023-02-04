@@ -1,6 +1,12 @@
 import { ProxyTransactionalDataset } from "o-dataset-pack";
 import { createExtendedDatasetFactory } from "o-dataset-pack/dist/createExtendedDataset";
-import { BlankNode, DefaultGraph, Literal, NamedNode } from "@rdfjs/types";
+import {
+  BlankNode,
+  DefaultGraph,
+  Literal,
+  NamedNode,
+  Quad,
+} from "@rdfjs/types";
 import { ArrayProxyTarget } from "../createArrayHandler";
 import { ProxyContext } from "../ProxyContext";
 import {
@@ -60,7 +66,7 @@ export function nodeToString(
 
 export function checkArrayModification(
   target: ArrayProxyTarget,
-  objectsToAdd: ObjectJsonRepresentation[],
+  objectsToAdd: AddObjectValue[],
   proxyContext: ProxyContext
 ) {
   if (target[2]) {
@@ -75,7 +81,7 @@ export function checkArrayModification(
         proxyContext.dataset,
         createExtendedDatasetFactory()
       );
-      addObjectToDataset(objectToAdd as AddObjectItem, new Set(), false, {
+      addObjectToDataset(objectToAdd as AddObjectItem, false, {
         contextUtil: proxyContext.contextUtil,
         dataset: testDataset,
         proxyCreator: proxyContext.proxyCreator,
@@ -103,6 +109,40 @@ export function checkArrayModification(
   }
 }
 
+export function modifyArray<ReturnType>(
+  config: {
+    target: ArrayProxyTarget;
+    toAdd?: AddObjectValue[];
+    quadsToDelete?: (quads: Quad[]) => Quad[];
+    modifyArray: (addedValues?: ObjectJsonRepresentation[]) => ReturnType;
+  },
+  proxyContext: ProxyContext
+): ReturnType {
+  const { target, toAdd, quadsToDelete, modifyArray } = config;
+  const { dataset } = proxyContext;
+  checkArrayModification(target, toAdd || [], proxyContext);
+  // Add new items to the dataset
+  const added = toAdd?.map((item) => {
+    return typeof item === "object"
+      ? addObjectToDataset(item as AddObjectItem, false, proxyContext)
+      : item;
+  });
+  // Remove appropriate Quads
+  if (quadsToDelete) {
+    const quadArr = dataset.match(...target[0]).toArray();
+    const deleteQuadArr = quadsToDelete(quadArr);
+    deleteQuadArr.forEach((delQuad) => {
+      if (target[2]) {
+        dataset.deleteMatches(delQuad.subject, undefined, undefined);
+      } else {
+        dataset.delete(delQuad);
+      }
+    });
+  }
+  // Allow the base array to be modified
+  return modifyArray(added);
+}
+
 export function replaceArray(
   target: ArrayProxyTarget,
   replacement: AddObjectValue[],
@@ -110,14 +150,14 @@ export function replaceArray(
 ) {
   if (target[2]) {
     replacement.forEach((item) => {
-      addObjectToDataset(item as AddObjectItem, new Set(), true, proxyContext);
+      addObjectToDataset(item as AddObjectItem, true, proxyContext);
     });
   } else if (target[0][0] && target[0][1]) {
     const itemToAdd = {
       "@id": target[0][0],
       [proxyContext.contextUtil.iriToKey(target[0][1].value)]: replacement,
     } as AddObjectItem;
-    addObjectToDataset(itemToAdd, new Set(), true, proxyContext);
+    addObjectToDataset(itemToAdd, true, proxyContext);
   }
 }
 
@@ -131,7 +171,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   fill: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, [args[0]], proxyContext);
+      checkArrayModification(target, [args[0] as AddObjectValue], proxyContext);
       const toReturn = target[1].fill(...args);
       replaceArray(target, target[1] as AddObjectValue[], proxyContext);
       return toReturn;
@@ -148,7 +188,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   // was lazy. I'll come back to fix this.
   push: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args, proxyContext);
+      checkArrayModification(target, args as AddObjectValue[], proxyContext);
       const toReturn = target[1].push(...args);
       replaceArray(target, target[1] as AddObjectValue[], proxyContext);
       return toReturn;
@@ -173,7 +213,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   splice: (target, proxyContext) => {
     return (start, deleteCount, ...items: ObjectJsonRepresentation[]) => {
-      checkArrayModification(target, items, proxyContext);
+      checkArrayModification(target, items as AddObjectValue[], proxyContext);
       const toReturn =
         items.length > 0
           ? target[1].splice(start, deleteCount as number, ...items)
@@ -184,7 +224,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   unshift: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args, proxyContext);
+      checkArrayModification(target, args as AddObjectValue[], proxyContext);
       const toReturn = target[1].unshift(...args);
       replaceArray(target, target[1] as AddObjectValue[], proxyContext);
       return toReturn;
