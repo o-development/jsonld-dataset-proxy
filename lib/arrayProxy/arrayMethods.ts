@@ -39,7 +39,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
         {
           target,
           quadsToDelete: (quads) => {
-            const realEnd = end || quads.length - 1;
+            const realEnd = end || quads.length;
             return quads.slice(targetIndex, targetIndex + (realEnd - start));
           },
           modifyCoreArray: (coreArray) => {
@@ -64,7 +64,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           quadsToDelete: (quads) => {
             return quads.slice(start, end);
           },
-          modifyCoreArray: (coreArray, addedValues = []) => {
+          modifyCoreArray: (coreArray, addedValues) => {
             coreArray.fill(addedValues[0], start, end);
             return proxyContext.proxyCreator.createArrayProxy(
               target[0],
@@ -99,7 +99,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
         {
           target,
           toAdd: args,
-          modifyCoreArray: (coreArray, addedValues = []) => {
+          modifyCoreArray: (coreArray, addedValues) => {
             coreArray.push(...addedValues);
             return proxyContext.proxyCreator.createArrayProxy(
               target[0],
@@ -147,7 +147,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           quadsToDelete: (quads) => {
             return quads.splice(start, deleteCount);
           },
-          modifyCoreArray: (coreArray, addedValues = []) => {
+          modifyCoreArray: (coreArray, addedValues) => {
             return coreArray.splice(start, deleteCount || 0, ...addedValues);
           },
         },
@@ -161,7 +161,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
         {
           target,
           toAdd: args,
-          modifyCoreArray: (coreArray, addedValues = []) => {
+          modifyCoreArray: (coreArray, addedValues) => {
             coreArray.unshift(...addedValues);
             return proxyContext.proxyCreator.createArrayProxy(
               target[0],

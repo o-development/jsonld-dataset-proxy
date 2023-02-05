@@ -5,6 +5,7 @@ import {
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _getUnderlyingNode,
+  _isSubjectOriented,
 } from "../lib";
 import {
   ObservationShape,
@@ -607,6 +608,14 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
+    it("Removes all adjoining triples when garbage collection is indicated via the delete operator on an array with blank nodes", async () => {
+      const [dataset, observation] = await getTinyLoadedDatasetWithBlankNodes();
+      delete observation.subject?.roommate?.[0];
+      expect(dataset.toString()).toBe(
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> _:b24_Patient1 .\n_:b24_Patient1 <http://hl7.org/fhir/name> "Garrett" .\n'
+      );
+    });
+
     it("Removes a literal in an array when using the delete operator", async () => {
       const [dataset, observation] = await getTinyLoadedDataset();
       delete observation.subject?.name?.[0];
@@ -804,6 +813,16 @@ describe("jsonldDatasetProxy", () => {
         );
       });
 
+      it("handles copyWithin with the optional end variable missing", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        const arr = patient.name as string[];
+        arr.copyWithin(0, 2);
+        expect(arr).toEqual(["Ferguson", "Bobby"]);
+        expect(dataset.toString()).toEqual(
+          '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
+        );
+      });
+
       it("handles fill", async () => {
         const [dataset, patient] = await getArrayLoadedDataset();
         const arr = patient.name as string[];
@@ -822,6 +841,12 @@ describe("jsonldDatasetProxy", () => {
         expect(dataset.toString()).toEqual(
           '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n'
         );
+      });
+
+      it("returns undefined for pop on an empty collection", async () => {
+        const [, patient] = await getArrayLoadedDataset();
+        patient.name = [];
+        expect(patient.name.pop()).toBe(undefined);
       });
 
       it("handles push", async () => {
@@ -851,6 +876,12 @@ describe("jsonldDatasetProxy", () => {
         expect(dataset.toString()).toEqual(
           '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
         );
+      });
+
+      it("returns undefined for shift on an empty collection", async () => {
+        const [, patient] = await getArrayLoadedDataset();
+        patient.name = [];
+        expect(patient.name.shift()).toBe(undefined);
       });
 
       it("handles sort", async () => {
@@ -934,6 +965,7 @@ describe("jsonldDatasetProxy", () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const roommateArr = observation.subject!.roommate!;
       expect(roommateArr[_getUnderlyingDataset]).toBe(dataset);
+      expect(roommateArr[_isSubjectOriented]).toBe(false);
       const match = roommateArr[_getUnderlyingMatch];
       expect(match[0].value).toBe("http://example.com/Patient1");
       expect(match[1].value).toBe("http://hl7.org/fhir/roommate");
@@ -1019,6 +1051,13 @@ describe("jsonldDatasetProxy", () => {
         })
       ).toThrowError(
         `Cannot add value to collection. This must contain a quad that matches (null, namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), namedNode("http://hl7.org/fhir/Patient"), null)`
+      );
+    });
+
+    it("errors if a literal is added to the collection", async () => {
+      // @ts-expect-error Purposely pushing an incorrect value to trigger an error
+      expect(() => patients.push("some string")).toThrowError(
+        `Cannot add a literal "some string"(string) to a subject-oriented collection.`
       );
     });
 

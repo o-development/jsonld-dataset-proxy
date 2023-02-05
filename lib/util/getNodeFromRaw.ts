@@ -32,9 +32,6 @@ export function getNodeFromRawValue(
     typeof value === "boolean" ||
     typeof value === "number"
   ) {
-    if (!key) {
-      return literal(value.toString());
-    }
     const datatype = proxyContext.contextUtil.getType(key);
     if (datatype === "@id") {
       return namedNode(value.toString());

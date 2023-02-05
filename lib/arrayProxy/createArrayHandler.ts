@@ -109,7 +109,7 @@ export function createArrayHandler(
               return allQuads[index] ? [allQuads[index]] : [];
             },
             modifyCoreArray(coreArray, addedValues) {
-              coreArray[index] = addedValues?.[0] as ObjectJsonRepresentation;
+              coreArray[index] = addedValues[0];
               return true;
             },
           },

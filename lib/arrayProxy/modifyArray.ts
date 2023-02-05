@@ -26,7 +26,7 @@ export function nodeToString(
     case "BlankNode":
       return `blankNode("${node.value}")`;
     case "Literal":
-      return `literal(${JSON.stringify(node.value)})`;
+      return `literal(${node.value}, ${node.datatype.value})`;
     case "DefaultGraph":
       return "defaultGraph()";
   }
@@ -88,7 +88,7 @@ export function modifyArray<ReturnType>(
     quadsToDelete?: (quads: Quad[]) => Quad[];
     modifyCoreArray: (
       coreArray: ArrayProxyTarget[1],
-      addedValues?: ObjectJsonRepresentation[]
+      addedValues: ObjectJsonRepresentation[]
     ) => ReturnType;
   },
   proxyContext: ProxyContext
