@@ -9,10 +9,10 @@ import {
 } from "@rdfjs/types";
 import { ArrayProxyTarget } from "./createArrayHandler";
 import {
-  AddObjectItem,
+  RawObject,
+  RawValue,
   addObjectToDataset,
-  AddObjectValue,
-  getIdNode,
+  getNodeFromRawObject,
 } from "../util/addObjectToDataset";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
 import { ProxyContext } from "../types";
@@ -66,7 +66,7 @@ export function nodeToString(
 
 export function checkArrayModification(
   target: ArrayProxyTarget,
-  objectsToAdd: AddObjectValue[],
+  objectsToAdd: RawValue[],
   proxyContext: ProxyContext
 ) {
   if (target[2]) {
@@ -81,14 +81,14 @@ export function checkArrayModification(
         proxyContext.dataset,
         createExtendedDatasetFactory()
       );
-      addObjectToDataset(objectToAdd as AddObjectItem, false, {
+      addObjectToDataset(objectToAdd as RawObject, false, {
         contextUtil: proxyContext.contextUtil,
         dataset: testDataset,
         proxyCreator: proxyContext.proxyCreator,
       });
       const isValidAddition =
         testDataset.match(
-          getIdNode(objectToAdd as AddObjectItem, proxyContext.contextUtil),
+          getNodeFromRawObject(objectToAdd, proxyContext.contextUtil),
           target[0][1],
           target[0][2]
         ).size !== 0;
@@ -112,7 +112,7 @@ export function checkArrayModification(
 export function modifyArray<ReturnType>(
   config: {
     target: ArrayProxyTarget;
-    toAdd?: AddObjectValue[];
+    toAdd?: RawValue[];
     quadsToDelete?: (quads: Quad[]) => Quad[];
     modifyCoreArray: (
       coreArray: ArrayProxyTarget[1],
@@ -138,7 +138,7 @@ export function modifyArray<ReturnType>(
   // Add new items to the dataset
   const added = toAdd?.map((item) => {
     return typeof item === "object"
-      ? addObjectToDataset(item as AddObjectItem, false, proxyContext)
+      ? addObjectToDataset(item, false, proxyContext)
       : item;
   }); // Filter items that were duplicates
   if (!target[2] && target[0][0] && target[0][1] && added) {
@@ -146,7 +146,7 @@ export function modifyArray<ReturnType>(
       {
         "@id": target[0][0],
         [contextUtil.iriToKey(target[0][1].value)]: added,
-      } as AddObjectItem,
+      } as RawObject,
       false,
       proxyContext
     );
@@ -170,19 +170,19 @@ export function modifyArray<ReturnType>(
 
 export function replaceArray(
   target: ArrayProxyTarget,
-  replacement: AddObjectValue[],
+  replacement: RawValue[],
   proxyContext: ProxyContext
 ) {
   if (target[2]) {
     replacement.forEach((item) => {
-      addObjectToDataset(item as AddObjectItem, true, proxyContext);
+      addObjectToDataset(item as RawObject, true, proxyContext);
     });
   } else if (target[0][0] && target[0][1]) {
     const itemToAdd = {
       "@id": target[0][0],
       [proxyContext.contextUtil.iriToKey(target[0][1].value)]: replacement,
-    } as AddObjectItem;
-    addObjectToDataset(itemToAdd, true, proxyContext);
+    };
+    addObjectToDataset(itemToAdd as RawObject, true, proxyContext);
   }
 }
 
@@ -190,22 +190,22 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   copyWithin: (target, proxyContext) => {
     return (...args) => {
       const toReturn = target[1].copyWithin(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
   fill: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, [args[0] as AddObjectValue], proxyContext);
+      checkArrayModification(target, [args[0]], proxyContext);
       const toReturn = target[1].fill(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
   pop: (target, proxyContext) => {
     return (...args) => {
       const toReturn = target[1].pop(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
@@ -213,9 +213,9 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   // was lazy. I'll come back to fix this.
   push: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args as AddObjectValue[], proxyContext);
+      checkArrayModification(target, args, proxyContext);
       const toReturn = target[1].push(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
@@ -227,7 +227,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   shift: (target, proxyContext) => {
     return (...args) => {
       const toReturn = target[1].shift(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
@@ -238,20 +238,20 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   splice: (target, proxyContext) => {
     return (start, deleteCount, ...items: ObjectJsonRepresentation[]) => {
-      checkArrayModification(target, items as AddObjectValue[], proxyContext);
+      checkArrayModification(target, items, proxyContext);
       const toReturn =
         items.length > 0
           ? target[1].splice(start, deleteCount as number, ...items)
           : target[1].splice(start, deleteCount);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },
   unshift: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args as AddObjectValue[], proxyContext);
+      checkArrayModification(target, args, proxyContext);
       const toReturn = target[1].unshift(...args);
-      replaceArray(target, target[1] as AddObjectValue[], proxyContext);
+      replaceArray(target, target[1], proxyContext);
       return toReturn;
     };
   },

@@ -4,17 +4,26 @@ import { ContextUtil } from "../ContextUtil";
 import { ProxyContext, _getUnderlyingNode } from "../types";
 import { SubjectProxy } from "../subjectProxy/SubjectProxy";
 
-export type AddObjectItem = {
-  "@id"?: string | NamedNode | BlankNode;
-  [_getUnderlyingNode]?: NamedNode | BlankNode;
-} & {
-  [key: string]: AddObjectValue | AddObjectValue[];
-};
+export type RawObject =
+  | ({
+      "@id"?: string | NamedNode | BlankNode;
+    } & {
+      [key: string | symbol | number]: RawValue | RawValue[];
+    })
+  | SubjectProxy;
 
-export type AddObjectValue = string | boolean | number | AddObjectItem;
+export type RawValue = string | boolean | number | RawObject;
 
-export function getIdNode(
-  item: AddObjectItem,
+function nodeToSetKey(node: NamedNode | BlankNode): string {
+  if (node.termType === "NamedNode") {
+    return `NamedNode${node.value}`;
+  } else {
+    return `BlankNode${node.value}`;
+  }
+}
+
+export function getNodeFromRawObject(
+  item: RawObject,
   contextUtil: ContextUtil
 ): NamedNode | BlankNode {
   if (item[_getUnderlyingNode]) {
@@ -28,18 +37,10 @@ export function getIdNode(
   }
 }
 
-function nodeToSetKey(node: NamedNode | BlankNode): string {
-  if (node.termType === "NamedNode") {
-    return `NamedNode${node.value}`;
-  } else {
-    return `BlankNode${node.value}`;
-  }
-}
-
-export function getNodeFromAddObjectValue(
-  value: AddObjectValue,
-  proxyContext: ProxyContext,
-  key?: string
+export function getNodeFromRawValue(
+  key: string,
+  value: RawValue,
+  proxyContext: ProxyContext
 ): BlankNode | NamedNode | Literal | undefined {
   // Get the Object Node
   if (value == undefined) {
@@ -59,22 +60,22 @@ export function getNodeFromAddObjectValue(
       return literal(value.toString(), datatype);
     }
   } else {
-    return getIdNode(value, proxyContext.contextUtil);
+    return getNodeFromRawObject(value, proxyContext.contextUtil);
   }
 }
 
-export function addObjectValueToDatasetRecurse(
-  key: string,
-  visitedObjects: Set<string>,
+export function addRawValueToDatasetRecursive(
   subject: NamedNode | BlankNode,
-  predicate: NamedNode,
-  value: AddObjectValue,
+  key: string,
+  value: RawValue,
+  visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): void {
-  const { dataset } = proxyContext;
+  const { dataset, contextUtil } = proxyContext;
+  const predicate = namedNode(contextUtil.keyToIri(key));
   // Get the Object Node
-  const object = getNodeFromAddObjectValue(value, proxyContext, key);
+  const object = getNodeFromRawValue(key, value, proxyContext);
   if (object == undefined) {
     dataset.deleteMatches(subject, predicate);
   } else if (object.termType === "Literal") {
@@ -83,18 +84,18 @@ export function addObjectValueToDatasetRecurse(
     // Delete any triples if the id is the same
     if (
       !visitedObjects.has(nodeToSetKey(object)) &&
-      !(value as AddObjectItem)[_getUnderlyingNode]
+      !(value as RawObject)[_getUnderlyingNode]
     ) {
-      proxyContext.dataset.deleteMatches(object, undefined, undefined);
+      dataset.deleteMatches(object, undefined, undefined);
     }
-    proxyContext.dataset.add(quad(subject, predicate, object));
-    if (!(value as AddObjectItem)[_getUnderlyingNode]) {
-      const updateData: AddObjectItem = (
+    dataset.add(quad(subject, predicate, object));
+    if (!(value as RawObject)[_getUnderlyingNode]) {
+      const updateData: RawObject = (
         typeof value === "object"
           ? { ...value, "@id": object }
           : { "@id": object }
-      ) as AddObjectItem;
-      addObjectToDatasetRecurse(
+      ) as RawObject;
+      addRawObjectToDatasetRecursive(
         updateData,
         visitedObjects,
         shouldDeleteOldTriples,
@@ -104,14 +105,14 @@ export function addObjectValueToDatasetRecurse(
   }
 }
 
-export function addObjectToDatasetRecurse(
-  item: AddObjectItem,
+export function addRawObjectToDatasetRecursive(
+  item: RawObject,
   visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): SubjectProxy {
   const { dataset } = proxyContext;
-  const subject = getIdNode(item, proxyContext.contextUtil);
+  const subject = getNodeFromRawObject(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
     return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
   }
@@ -126,23 +127,21 @@ export function addObjectToDatasetRecurse(
     }
     if (Array.isArray(value)) {
       value.forEach((valueItem) => {
-        addObjectValueToDatasetRecurse(
-          key,
-          visitedObjects,
+        addRawValueToDatasetRecursive(
           subject,
-          predicate,
+          key,
           valueItem,
+          visitedObjects,
           true,
           proxyContext
         );
       });
     } else {
-      addObjectValueToDatasetRecurse(
-        key,
-        visitedObjects,
+      addRawValueToDatasetRecursive(
         subject,
-        predicate,
-        value as AddObjectValue,
+        key,
+        value as RawValue,
+        visitedObjects,
         true,
         proxyContext
       );
@@ -152,11 +151,11 @@ export function addObjectToDatasetRecurse(
 }
 
 export function addObjectToDataset(
-  item: AddObjectItem,
+  item: RawObject,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): SubjectProxy {
-  return addObjectToDatasetRecurse(
+  return addRawObjectToDatasetRecursive(
     item,
     new Set(),
     shouldDeleteOldTriples,
