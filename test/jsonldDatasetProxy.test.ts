@@ -492,14 +492,14 @@ describe("jsonldDatasetProxy", () => {
         name: ["jon"],
       };
       const patient2: PatientShape = {
-        "@id": "https://example.com/patient2",
+        "@id": "http://example.com/patient2",
         name: ["jane"],
         roommate: [patient1],
       };
       patient1.roommate = [patient2];
       observation.subject = patient1;
       expect(dataset.toString()).toBe(
-        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "jon" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <https://example.com/patient2> .\n<https://example.com/patient2> <http://hl7.org/fhir/name> "jane" .\n<https://example.com/patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> <http://example.com/Patient1> .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "jon" .\n<http://example.com/Patient1> <http://hl7.org/fhir/roommate> <http://example.com/patient2> .\n<http://example.com/patient2> <http://hl7.org/fhir/name> "jane" .\n<http://example.com/patient2> <http://hl7.org/fhir/roommate> <http://example.com/Patient1> .\n'
       );
     });
 
@@ -732,6 +732,21 @@ describe("jsonldDatasetProxy", () => {
       expect(arr).toEqual(["Garrett", "Bobby", "Ferguson"]);
     });
 
+    it("Prevents duplicates from being added when a value is overwritten", async () => {
+      const [, patient] = await getArrayLoadedDataset();
+      const arr = patient.name as string[];
+      arr[1] = "Garrett";
+      expect(arr).toEqual(["Garrett", "Ferguson"]);
+    });
+
+    it("Prevents duplicates for Objects", async () => {
+      const [, observation] = await getLoadedDataset();
+      const roommates = observation.subject?.roommate as PatientShape[];
+      roommates[0] = { "@id": "http://example.com/Patient3" };
+      expect(roommates.length).toBe(1);
+      expect(roommates[0].name?.[0]).toBe("Amy");
+    });
+
     it("Does nothing when you try to set a symbol on an array", async () => {
       const [, patient] = await getArrayLoadedDataset();
       const arr = patient.name as string[];
@@ -863,13 +878,13 @@ describe("jsonldDatasetProxy", () => {
           0,
           1,
           {
-            "@id": "https://example.com/Patient4",
+            "@id": "http://example.com/Patient4",
             type: { "@id": "Patient" },
             name: ["Dippy"],
             age: 2,
           },
           {
-            "@id": "https://example.com/Patient5",
+            "@id": "http://example.com/Patient5",
             type: { "@id": "Patient" },
             name: ["Licky"],
             age: 3,
@@ -943,7 +958,7 @@ describe("jsonldDatasetProxy", () => {
 
     it("Successfully adds a node to the list", async () => {
       patients.push({
-        "@id": "https://example.com/Patient4",
+        "@id": "http://example.com/Patient4",
         type: { "@id": "Patient" },
         name: ["Dippy"],
         age: 2,
@@ -956,7 +971,7 @@ describe("jsonldDatasetProxy", () => {
             namedNode("http://hl7.org/fhir/Patient")
           )
           .some((quad) => {
-            return quad.subject.value === "https://example.com/Patient4";
+            return quad.subject.value === "http://example.com/Patient4";
           })
       ).toBe(true);
       expect(patients[3].name?.[0]).toBe("Dippy");
@@ -965,14 +980,14 @@ describe("jsonldDatasetProxy", () => {
     it("will read a new object if something has been added to the dataset after object creation", async () => {
       dataset.add(
         quad(
-          namedNode("https://example.com/Patient4"),
+          namedNode("http://example.com/Patient4"),
           namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
           namedNode("http://hl7.org/fhir/Patient")
         )
       );
       dataset.add(
         quad(
-          namedNode("https://example.com/Patient4"),
+          namedNode("http://example.com/Patient4"),
           namedNode("http://hl7.org/fhir/name"),
           literal("Dippy")
         )
@@ -986,7 +1001,7 @@ describe("jsonldDatasetProxy", () => {
             namedNode("http://hl7.org/fhir/Patient")
           )
           .some((quad) => {
-            return quad.subject.value === "https://example.com/Patient4";
+            return quad.subject.value === "http://example.com/Patient4";
           })
       ).toBe(true);
       expect(patients[3].name?.[0]).toBe("Dippy");
@@ -995,7 +1010,7 @@ describe("jsonldDatasetProxy", () => {
     it("errors if an object is added without the correct parameters", async () => {
       expect(() =>
         patients.push({
-          "@id": "https://example.com/Patient4",
+          "@id": "http://example.com/Patient4",
           name: ["Dippy"],
           age: 2,
         })
@@ -1006,15 +1021,15 @@ describe("jsonldDatasetProxy", () => {
 
     it("Removes all an object and replaces in upon set", async () => {
       patients[0] = {
-        "@id": "https://example.com/Patient4",
+        "@id": "http://example.com/Patient4",
         type: { "@id": "Patient" },
         name: ["Dippy"],
         age: 2,
       };
 
-      expect(
-        dataset.match(namedNode("https://example.com/Patient1")).size
-      ).toBe(0);
+      expect(dataset.match(namedNode("http://example.com/Patient1")).size).toBe(
+        0
+      );
       expect(patients[0].name?.[0]).toBe("Dippy");
     });
 
@@ -1023,22 +1038,22 @@ describe("jsonldDatasetProxy", () => {
         1,
         1,
         {
-          "@id": "https://example.com/Patient4",
+          "@id": "http://example.com/Patient4",
           type: { "@id": "Patient" },
           name: ["Dippy"],
           age: 2,
         },
         {
-          "@id": "https://example.com/Patient5",
+          "@id": "http://example.com/Patient5",
           type: { "@id": "Patient" },
           name: ["Licky"],
           age: 3,
         }
       );
 
-      expect(
-        dataset.match(namedNode("https://example.com/Patient2")).size
-      ).toBe(0);
+      expect(dataset.match(namedNode("http://example.com/Patient2")).size).toBe(
+        0
+      );
       expect(patients[1].name?.[0]).toBe("Dippy");
       expect(patients[2].name?.[0]).toBe("Licky");
     });
@@ -1047,18 +1062,18 @@ describe("jsonldDatasetProxy", () => {
       // @ts-expect-error This violates the typings
       patients[0] = undefined;
 
-      expect(
-        dataset.match(namedNode("https://example.com/Patient1")).size
-      ).toBe(0);
+      expect(dataset.match(namedNode("http://example.com/Patient1")).size).toBe(
+        0
+      );
       expect(patients[0].name?.[0]).toBe("Rob");
     });
 
     it("Removes an object completely when using the delete parameter", async () => {
       delete patients[0];
 
-      expect(
-        dataset.match(namedNode("https://example.com/Patient1")).size
-      ).toBe(0);
+      expect(dataset.match(namedNode("http://example.com/Patient1")).size).toBe(
+        0
+      );
       expect(patients[0].name?.[0]).toBe("Rob");
     });
   });
@@ -1093,16 +1108,16 @@ describe("jsonldDatasetProxy", () => {
     it("lets a new patient get created in a new graph", async () => {
       // TODO
       // const [dataset, observation] = await getTinyGraphLoadedDataset();
-      // const patient1Doc = namedNode("https://example.com/patient1Doc");
-      // const patient2Doc = namedNode("https://example.com/patient2Doc");
-      // const patient3Doc = namedNode("https://example.com/patient3Doc");
+      // const patient1Doc = namedNode("http://example.com/patient1Doc");
+      // const patient2Doc = namedNode("http://example.com/patient2Doc");
+      // const patient3Doc = namedNode("http://example.com/patient3Doc");
       // const patient1 = observation.subject!;
       // const patient2 = patient1.roommate?.[0]!;
       // startGraph(patient3Doc);
       // const patient3 = jsonldDatasetProxy<PatientShape>(
       //   dataset,
       //   patientContext,
-      //   namedNode("https://example.com/patient3")
+      //   namedNode("http://example.com/patient3")
       // );
       // patient3.name?.push("Mr. Patient 3");
       // patient3.roommate = [patient1, patient2];

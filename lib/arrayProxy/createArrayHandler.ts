@@ -8,7 +8,6 @@ import {
   ArrayMethodBuildersType,
   arrayMethodsBuilders,
   methodNames,
-  modifyArray,
 } from "./arrayMethods";
 import {
   ProxyContext,
@@ -17,6 +16,7 @@ import {
   _getUnderlyingMatch,
   _isSubjectOriented,
 } from "../types";
+import { modifyArray } from "./modifyArray";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
@@ -70,6 +70,8 @@ export function createArrayHandler(
           return target[2];
       }
 
+      // TODO: Because of this, every get operation is O(n). Consider changing
+      // this
       const processedObjects = getProcessedObjects(target, proxyContext);
       if (methodNames.has(key as keyof ArrayMethodBuildersType)) {
         return arrayMethodsBuilders[key as keyof ArrayMethodBuildersType](
@@ -104,7 +106,7 @@ export function createArrayHandler(
             target,
             toAdd: [value],
             quadsToDelete(allQuads) {
-              return [allQuads[index]];
+              return allQuads[index] ? [allQuads[index]] : [];
             },
             modifyCoreArray(coreArray, addedValues) {
               coreArray[index] = addedValues?.[0] as ObjectJsonRepresentation;
