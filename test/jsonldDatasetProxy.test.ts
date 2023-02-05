@@ -891,8 +891,8 @@ describe("jsonldDatasetProxy", () => {
           }
         );
         expect(roommates[0].name?.[0]).toBe("Dippy");
-        expect(roommates[0].name?.[0]).toBe("Licky");
-        expect(roommates[0].name?.[0]).toBe("Amy");
+        expect(roommates[1].name?.[0]).toBe("Licky");
+        expect(roommates[2].name?.[0]).toBe("Amy");
       });
 
       it("handles splice with only two params", async () => {

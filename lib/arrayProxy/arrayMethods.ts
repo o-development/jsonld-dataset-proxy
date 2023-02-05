@@ -3,7 +3,7 @@ import { addObjectToDataset } from "../util/addObjectToDataset";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
 import { ProxyContext } from "../types";
 import { RawObject, RawValue } from "../util/RawObject";
-import { checkArrayModification } from "./modifyArray";
+import { checkArrayModification, modifyArray } from "./modifyArray";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,
@@ -104,13 +104,27 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   splice: (target, proxyContext) => {
     return (start, deleteCount, ...items: ObjectJsonRepresentation[]) => {
-      checkArrayModification(target, items, proxyContext);
-      const toReturn =
-        items.length > 0
-          ? target[1].splice(start, deleteCount as number, ...items)
-          : target[1].splice(start, deleteCount);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+      return modifyArray(
+        {
+          target,
+          toAdd: items,
+          quadsToDelete: (quads) => {
+            return quads.splice(start, deleteCount);
+          },
+          modifyCoreArray: (coreArray, addedValues = []) => {
+            return coreArray.splice(start, deleteCount || 0, ...addedValues);
+          },
+        },
+        proxyContext
+      );
+
+      // checkArrayModification(target, items, proxyContext);
+      // const toReturn =
+      //   items.length > 0
+      //     ? target[1].splice(start, deleteCount as number, ...items)
+      //     : target[1].splice(start, deleteCount);
+      // replaceArray(target, target[1], proxyContext);
+      // return toReturn;
     };
   },
   unshift: (target, proxyContext) => {

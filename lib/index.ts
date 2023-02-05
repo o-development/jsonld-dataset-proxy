@@ -10,6 +10,7 @@ export * from "./jsonldDatasetProxy";
 export * from "./arrayProxy/createArrayHandler";
 export * from "./arrayProxy/arrayMethods";
 export * from "./arrayProxy/ArrayProxy";
+export * from "./arrayProxy/modifyArray";
 
 export * from "./subjectProxy/createSubjectHandler";
 export * from "./subjectProxy/SubjectProxy";
