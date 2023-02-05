@@ -8,14 +8,11 @@ import {
   Quad,
 } from "@rdfjs/types";
 import { ArrayProxyTarget } from "./createArrayHandler";
-import {
-  RawObject,
-  RawValue,
-  addObjectToDataset,
-  getNodeFromRawObject,
-} from "../util/addObjectToDataset";
+import { addObjectToDataset } from "../util/addObjectToDataset";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
 import { ProxyContext } from "../types";
+import { RawObject, RawValue } from "../util/RawObject";
+import { getNodeFromRawObject } from "../util/getNodeFromRaw";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,

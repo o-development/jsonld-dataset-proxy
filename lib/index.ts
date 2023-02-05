@@ -14,8 +14,9 @@ export * from "./arrayProxy/ArrayProxy";
 export * from "./subjectProxy/createSubjectHandler";
 export * from "./subjectProxy/SubjectProxy";
 export * from "./subjectProxy/getValueForKey";
+export * from "./subjectProxy/deleteFromDataset";
 
 export * from "./util/addObjectToDataset";
-export * from "./subjectProxy/deleteFromDataset";
-export * from "./subjectProxy/getValueForKey";
 export * from "./util/objectToJsonRepresentation";
+export * from "./util/RawObject";
+export * from "./util/getNodeFromRaw";
