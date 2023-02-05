@@ -10,4 +10,4 @@ export type RawObject =
     })
   | SubjectProxy;
 
-export type RawValue = string | boolean | number | RawObject;
+export type RawValue = string | boolean | number | RawObject | undefined;

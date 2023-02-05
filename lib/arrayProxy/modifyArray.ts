@@ -39,6 +39,10 @@ export function checkArrayModification(
 ) {
   if (target[2]) {
     for (const objectToAdd of objectsToAdd) {
+      // Undefined is fine no matter what
+      if (objectToAdd === undefined) {
+        return;
+      }
       if (typeof objectToAdd !== "object") {
         throw new Error(
           `Cannot add a literal "${objectToAdd}"(${typeof objectToAdd}) to a subject-oriented collection.`
@@ -108,11 +112,15 @@ export function modifyArray<ReturnType>(
   }
 
   // Add new items to the dataset
-  const added = toAdd?.map((item) => {
-    return typeof item === "object"
-      ? addObjectToDataset(item, false, proxyContext)
-      : item;
-  }); // Filter items that were duplicates
+  const added = toAdd
+    ?.map((item) => {
+      return typeof item === "object"
+        ? addObjectToDataset(item, false, proxyContext)
+        : item;
+    })
+    .filter(
+      (val) => val !== undefined
+    ) as NonNullable<ObjectJsonRepresentation>[];
   if (!target[2] && target[0][0] && target[0][1] && added) {
     addObjectToDataset(
       {

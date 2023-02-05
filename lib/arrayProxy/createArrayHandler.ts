@@ -115,39 +115,6 @@ export function createArrayHandler(
           },
           proxyContext
         );
-
-        // const index = parseInt(key);
-        // checkArrayModification(target, [value], proxyContext);
-        // // If it is subject-oriented
-        // if (target[2]) {
-        //   const curSubject = dataset.match(...target[0]).toArray()[
-        //     index
-        //   ].subject;
-        //   dataset.deleteMatches(curSubject, undefined, undefined);
-        //   const object = addObjectToDataset(value, false, proxyContext);
-        //   target[1][index] = object;
-        //   return true;
-        // } else if (target[0][0] && target[0][1]) {
-        //   const curQuad = dataset.match(...target[0]).toArray()[index];
-        //   if (curQuad) {
-        //     dataset.delete(curQuad);
-        //   }
-        //   const addedObject =
-        //     typeof value === "object"
-        //       ? addObjectToDataset(value, false, proxyContext)
-        //       : value;
-        //   addObjectToDataset(
-        //     {
-        //       "@id": target[0][0],
-        //       [contextUtil.iriToKey(target[0][1].value)]: addedObject,
-        //     },
-        //     false,
-        //     proxyContext
-        //   );
-        //   target[1][index] = addedObject;
-        //   return true;
-        // }
-        // return false;
       }
       return Reflect.set(target[1], key, ...rest);
     },
@@ -158,7 +125,7 @@ export function createArrayHandler(
         if (!objectQuad) {
           return true;
         }
-        const term = objectQuad.object;
+        const term = target[2] ? objectQuad.subject : objectQuad.object;
         if (term.termType === "Literal") {
           const subject = target[0][0] as NamedNode;
           const predicate = target[0][1] as NamedNode;
