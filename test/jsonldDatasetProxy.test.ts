@@ -57,10 +57,10 @@ describe("jsonldDatasetProxy", () => {
     ];
   }
 
-  async function getTinyGraphLoadedDataset(): Promise<
+  async function getGraphLoadedDataset(): Promise<
     [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
-    const tempDataset = await serializedToDataset(tinyPatientData);
+    const tempDataset = await serializedToDataset(patientData);
     const dataset = createDataset();
     const subjectGraphMap: Record<string, NamedNode> = {
       "http://example.com/Observation1": namedNode(
@@ -71,6 +71,9 @@ describe("jsonldDatasetProxy", () => {
       ),
       "http://example.com/Patient2": namedNode(
         "http://example.com/Patient2Doc"
+      ),
+      "http://example.com/Patient3": namedNode(
+        "http://example.com/Patient3Doc"
       ),
     };
     tempDataset.forEach((tempQuad) => {
@@ -1076,10 +1079,61 @@ describe("jsonldDatasetProxy", () => {
       );
       expect(patients[0].name?.[0]).toBe("Rob");
     });
+
+    it("creates a collection that matches only collections in a certain graph", async () => {
+      const [, , builder] = await getGraphLoadedDataset();
+      patients = builder.matchSubject<PatientShape>(
+        namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        namedNode("http://hl7.org/fhir/Patient"),
+        namedNode("http://example.com/Patient1Doc")
+      );
+      expect(patients.length).toBe(1);
+      expect(patients[0]["@id"]).toBe("http://example.com/Patient1");
+    });
   });
 
   describe("matchObject", () => {
-    // TODO
+    let patients: PatientShape[];
+    let builder: JsonldDatasetProxyBuilder;
+
+    beforeEach(async () => {
+      const [, , receivedBuilder] = await getLoadedDataset();
+      builder = receivedBuilder;
+      patients = builder.matchObject<PatientShape>(
+        null,
+        namedNode("http://hl7.org/fhir/roommate"),
+        null
+      );
+    });
+
+    it("create a collection that matches the null, predicate, null pattern", async () => {
+      expect(patients[0].name?.[0]).toBe("Garrett");
+      expect(patients[1].name?.[0]).toBe("Amy");
+      expect(patients[2].name?.[0]).toBe("Rob");
+    });
+
+    it("cannot write to a collection that matches the null, predicate, null pattern", () => {
+      expect(
+        () => (patients[1] = { "@id": "http://example.com/Patient4" })
+      ).toThrow(
+        "A collection that does not specify a match for both a subject or predicate cannot be modified directly."
+      );
+    });
+
+    it("creates a collection that matches the subject, null, null pattern", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const hodgePodge = builder.matchObject<any>(
+        namedNode("http://example.com/Patient3"),
+        null,
+        null
+      );
+      expect(hodgePodge.length).toBe(5);
+      expect(hodgePodge[0]["@id"]).toBe("Patient");
+      expect(hodgePodge[1]).toBe("Amy");
+      expect(hodgePodge[2]).toBe("1988-01-01");
+      expect(hodgePodge[3]).toBe(33);
+      expect(hodgePodge[4]).toBe(true);
+    });
   });
 
   describe("fromJson", () => {
@@ -1095,6 +1149,28 @@ describe("jsonldDatasetProxy", () => {
           },
         ],
       });
+      expect(patient.name?.[0]).toBe("Jack");
+      expect(patient.name?.[1]).toBe("Horner");
+      expect(patient.birthdate).toBe("1725/11/03");
+      expect(patient.age).toBe(298);
+      expect(patient.roommate?.[0].name?.[0]).toBe("Ethical");
+      expect(patient.roommate?.[0].name?.[1]).toBe("Bug");
+    });
+
+    it("initializes a patient using the fromJSON method with a named node", async () => {
+      const [, , builder] = await getEmptyPatientDataset();
+      const patient = builder.fromJson<PatientShape>({
+        "@id": "http://example.com/Patient13",
+        name: ["Jack", "Horner"],
+        birthdate: "1725/11/03",
+        age: 298,
+        roommate: [
+          {
+            name: ["Ethical", "Bug"],
+          },
+        ],
+      });
+      expect(patient["@id"]).toBe("http://example.com/Patient13");
       expect(patient.name?.[0]).toBe("Jack");
       expect(patient.name?.[1]).toBe("Horner");
       expect(patient.birthdate).toBe("1725/11/03");

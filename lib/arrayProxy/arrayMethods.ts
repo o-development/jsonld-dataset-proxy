@@ -1,9 +1,7 @@
 import { ArrayProxyTarget } from "./createArrayHandler";
-import { addObjectToDataset } from "../util/addObjectToDataset";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
 import { ProxyContext } from "../types";
-import { RawObject, RawValue } from "../util/RawObject";
-import { checkArrayModification, modifyArray } from "./modifyArray";
+import { modifyArray } from "./modifyArray";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,
@@ -34,55 +32,84 @@ export const methodNames: Set<keyof ArrayMethodBuildersType> = new Set([
   "unshift",
 ]);
 
-export function replaceArray(
-  target: ArrayProxyTarget,
-  replacement: RawValue[],
-  proxyContext: ProxyContext
-) {
-  if (target[2]) {
-    replacement.forEach((item) => {
-      addObjectToDataset(item as RawObject, true, proxyContext);
-    });
-  } else if (target[0][0] && target[0][1]) {
-    const itemToAdd = {
-      "@id": target[0][0],
-      [proxyContext.contextUtil.iriToKey(target[0][1].value)]: replacement,
-    };
-    addObjectToDataset(itemToAdd as RawObject, true, proxyContext);
-  }
-}
-
 export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   copyWithin: (target, proxyContext) => {
-    return (...args) => {
-      const toReturn = target[1].copyWithin(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+    return (targetIndex, start, end) => {
+      return modifyArray(
+        {
+          target,
+          quadsToDelete: (quads) => {
+            const realEnd = end || quads.length - 1;
+            return quads.slice(targetIndex, targetIndex + (realEnd - start));
+          },
+          modifyCoreArray: (coreArray) => {
+            coreArray.copyWithin(targetIndex, start, end);
+            return proxyContext.proxyCreator.createArrayProxy(
+              target[0],
+              proxyContext,
+              target[2]
+            ) as ObjectJsonRepresentation[];
+          },
+        },
+        proxyContext
+      );
     };
   },
   fill: (target, proxyContext) => {
-    return (...args) => {
-      checkArrayModification(target, [args[0]], proxyContext);
-      const toReturn = target[1].fill(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+    return (value, start, end) => {
+      return modifyArray(
+        {
+          target,
+          toAdd: [value],
+          quadsToDelete: (quads) => {
+            return quads.slice(start, end);
+          },
+          modifyCoreArray: (coreArray, addedValues = []) => {
+            coreArray.fill(addedValues[0], start, end);
+            return proxyContext.proxyCreator.createArrayProxy(
+              target[0],
+              proxyContext,
+              target[2]
+            ) as ObjectJsonRepresentation[];
+          },
+        },
+        proxyContext
+      );
     };
   },
   pop: (target, proxyContext) => {
-    return (...args) => {
-      const toReturn = target[1].pop(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+    return () => {
+      return modifyArray(
+        {
+          target,
+          quadsToDelete: (quads) => {
+            return quads[quads.length - 1] ? [quads[quads.length - 1]] : [];
+          },
+          modifyCoreArray: (coreArray) => {
+            return coreArray.pop();
+          },
+        },
+        proxyContext
+      );
     };
   },
-  // TODO: Push is an O(n) operation. It could be made O(1), but I
-  // was lazy. I'll come back to fix this.
   push: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args, proxyContext);
-      const toReturn = target[1].push(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+      return modifyArray(
+        {
+          target,
+          toAdd: args,
+          modifyCoreArray: (coreArray, addedValues = []) => {
+            coreArray.push(...addedValues);
+            return proxyContext.proxyCreator.createArrayProxy(
+              target[0],
+              proxyContext,
+              target[2]
+            ).length;
+          },
+        },
+        proxyContext
+      );
     };
   },
   reverse: (target) => {
@@ -91,10 +118,19 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
     };
   },
   shift: (target, proxyContext) => {
-    return (...args) => {
-      const toReturn = target[1].shift(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+    return () => {
+      return modifyArray(
+        {
+          target,
+          quadsToDelete: (quads) => {
+            return quads[0] ? [quads[0]] : [];
+          },
+          modifyCoreArray: (coreArray) => {
+            return coreArray.shift();
+          },
+        },
+        proxyContext
+      );
     };
   },
   sort: (target) => {
@@ -117,22 +153,25 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
         },
         proxyContext
       );
-
-      // checkArrayModification(target, items, proxyContext);
-      // const toReturn =
-      //   items.length > 0
-      //     ? target[1].splice(start, deleteCount as number, ...items)
-      //     : target[1].splice(start, deleteCount);
-      // replaceArray(target, target[1], proxyContext);
-      // return toReturn;
     };
   },
   unshift: (target, proxyContext) => {
     return (...args) => {
-      checkArrayModification(target, args, proxyContext);
-      const toReturn = target[1].unshift(...args);
-      replaceArray(target, target[1], proxyContext);
-      return toReturn;
+      return modifyArray(
+        {
+          target,
+          toAdd: args,
+          modifyCoreArray: (coreArray, addedValues = []) => {
+            coreArray.unshift(...addedValues);
+            return proxyContext.proxyCreator.createArrayProxy(
+              target[0],
+              proxyContext,
+              target[2]
+            ).length;
+          },
+        },
+        proxyContext
+      );
     };
   },
 };
