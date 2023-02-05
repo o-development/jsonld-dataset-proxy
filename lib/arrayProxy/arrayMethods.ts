@@ -7,15 +7,15 @@ import {
   NamedNode,
   Quad,
 } from "@rdfjs/types";
-import { ArrayProxyTarget } from "../createArrayHandler";
-import { ProxyContext } from "../ProxyContext";
+import { ArrayProxyTarget } from "./createArrayHandler";
 import {
   AddObjectItem,
   addObjectToDataset,
   AddObjectValue,
   getIdNode,
-} from "./addObjectToDataset";
-import { ObjectJsonRepresentation } from "./objectToJsonRepresentation";
+} from "../util/addObjectToDataset";
+import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
+import { ProxyContext } from "../types";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,

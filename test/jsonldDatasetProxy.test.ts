@@ -1,9 +1,7 @@
 import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
   jsonldDatasetProxy,
-  JsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
-  _getUnderlyingContext,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _getUnderlyingNode,
@@ -60,7 +58,7 @@ describe("jsonldDatasetProxy", () => {
   }
 
   async function getTinyGraphLoadedDataset(): Promise<
-    [Dataset, JsonldDatasetProxy<ObservationShape>, JsonldDatasetProxyBuilder]
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
     const tempDataset = await serializedToDataset(tinyPatientData);
     const dataset = createDataset();
@@ -280,7 +278,7 @@ describe("jsonldDatasetProxy", () => {
 
     it("simulates getter object properties", async () => {
       const [, observation] = await getLoadedDataset();
-      const obj = observation.subject as JsonldDatasetProxy<PatientShape>;
+      const obj = observation.subject as PatientShape;
 
       expect(obj["@id"]).toEqual("http://example.com/Patient1");
       expect(obj.type).toEqual({ "@id": "Patient" });
@@ -915,10 +913,8 @@ describe("jsonldDatasetProxy", () => {
       expect(observation[_getUnderlyingNode].value).toBe(
         "http://example.com/Observation1"
       );
-      expect(observation[_getUnderlyingContext]).toBe(context);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const roommateArr = observation.subject!.roommate!;
-      expect(roommateArr[_getUnderlyingContext]).toBe(context);
       expect(roommateArr[_getUnderlyingDataset]).toBe(dataset);
       const match = roommateArr[_getUnderlyingMatch];
       expect(match[0].value).toBe("http://example.com/Patient1");

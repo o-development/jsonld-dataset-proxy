@@ -1,13 +1,13 @@
 import { Quad } from "@rdfjs/types";
-import { ObjectWithId } from "../createSubjectHandler";
-import { ProxyContext } from "../ProxyContext";
+import { SubjectProxy } from "../subjectProxy/SubjectProxy";
+import { ProxyContext } from "../types";
 
-export type ObjectJsonRepresentation = string | number | boolean | ObjectWithId;
+export type ObjectJsonRepresentation = string | number | boolean | SubjectProxy;
 
 export function objectToJsonldRepresentation(
   quad: Quad,
   proxyContext: ProxyContext
-): ObjectJsonRepresentation {
+): string | number | boolean | SubjectProxy {
   if (quad.object.termType === "Literal") {
     switch (quad.object.datatype.value) {
       case "http://www.w3.org/2001/XMLSchema#string":

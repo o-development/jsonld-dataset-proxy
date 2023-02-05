@@ -2,21 +2,21 @@ import { BlankNode, NamedNode } from "@rdfjs/types";
 import {
   ObjectJsonRepresentation,
   objectToJsonldRepresentation,
-} from "./helperFunctions/objectToJsonRepresentation";
+} from "../util/objectToJsonRepresentation";
 import { quad } from "@rdfjs/data-model";
 import {
   ArrayMethodBuildersType,
   arrayMethodsBuilders,
   methodNames,
   modifyArray,
-} from "./helperFunctions/arrayMethods";
-import { ProxyContext } from "./ProxyContext";
+} from "./arrayMethods";
 import {
-  _getUnderlyingContext,
+  ProxyContext,
+  QuadMatch,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
-} from "./JsonldDatasetProxyType";
-import { QuadMatch } from "./QuadMatch";
+  _isSubjectOriented,
+} from "../types";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
@@ -66,8 +66,8 @@ export function createArrayHandler(
           return proxyContext.dataset;
         case _getUnderlyingMatch:
           return target[0];
-        case _getUnderlyingContext:
-          return proxyContext.contextUtil.context;
+        case _isSubjectOriented:
+          return target[2];
       }
 
       const processedObjects = getProcessedObjects(target, proxyContext);
@@ -107,8 +107,6 @@ export function createArrayHandler(
               return [allQuads[index]];
             },
             modifyCoreArray(coreArray, addedValues) {
-              console.log("added values");
-              console.log(addedValues);
               coreArray[index] = addedValues?.[0] as ObjectJsonRepresentation;
               return true;
             },

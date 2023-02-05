@@ -1,6 +1,6 @@
 import { createDataset } from "o-dataset-pack";
 import { ContextUtil } from "../lib/ContextUtil";
-import { objectToJsonldRepresentation } from "../lib/helperFunctions/objectToJsonRepresentation";
+import { objectToJsonldRepresentation } from "../lib/util/objectToJsonRepresentation";
 import { ProxyCreator } from "../lib/ProxyCreator";
 import { quad, namedNode, literal, defaultGraph } from "@rdfjs/data-model";
 import { ProxyContext } from "../lib";

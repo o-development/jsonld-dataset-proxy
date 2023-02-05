@@ -1,10 +1,10 @@
 import { Term } from "@rdfjs/types";
-import { ObjectWithId } from "../createSubjectHandler";
 import { namedNode, quad } from "@rdfjs/data-model";
-import { ProxyContext } from "../ProxyContext";
+import { SubjectProxyTarget } from "./createSubjectHandler";
+import { ProxyContext } from "../types";
 
 export function deleteValueFromDataset(
-  target: ObjectWithId,
+  target: SubjectProxyTarget,
   key: string | symbol,
   proxyContext: ProxyContext
 ) {

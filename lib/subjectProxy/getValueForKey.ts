@@ -1,22 +1,24 @@
-import { ObjectWithId } from "../createSubjectHandler";
+import { SubjectProxyTarget } from "./createSubjectHandler";
 import { namedNode } from "@rdfjs/data-model";
-import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
-import { ProxyContext } from "../ProxyContext";
+import { objectToJsonldRepresentation } from "../util/objectToJsonRepresentation";
+import { ProxyContext } from "../types";
+import { SubjectProxy } from "./SubjectProxy";
+import { ArrayProxy } from "../arrayProxy/ArrayProxy";
 
-export function getProxyFromDataset(
-  target: ObjectWithId,
+/**
+ * Given a subject target and a key return the correct value
+ */
+export function getValueForKey(
+  target: SubjectProxyTarget,
   key: string | symbol,
   proxyContext: ProxyContext
-) {
+): SubjectProxy | ArrayProxy | string | number | boolean | undefined {
   const { contextUtil, dataset, proxyCreator } = proxyContext;
   if (key === "@id") {
     if (target["@id"].termType === "BlankNode") {
       return undefined;
     }
     return contextUtil.iriToKey(target["@id"].value);
-  }
-  if (key === "@context") {
-    return contextUtil.context;
   }
   if (key === "toString" || key === Symbol.toStringTag) {
     // TODO: this toString method right now returns [object Object],

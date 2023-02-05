@@ -1,37 +1,36 @@
 import { BlankNode, NamedNode } from "@rdfjs/types";
 import { namedNode, quad } from "@rdfjs/data-model";
-import { addObjectToDataset } from "./helperFunctions/addObjectToDataset";
-import { getProxyFromDataset } from "./helperFunctions/getProxyFromDataset";
-import { deleteValueFromDataset } from "./helperFunctions/deleteFromDataset";
-import { ProxyContext } from "./ProxyContext";
+import { addObjectToDataset } from "../util/addObjectToDataset";
+import { deleteValueFromDataset } from "./deleteFromDataset";
 import {
-  _getUnderlyingContext,
+  ProxyContext,
   _getUnderlyingDataset,
   _getUnderlyingNode,
-} from "./JsonldDatasetProxyType";
+} from "../types";
+import { getValueForKey } from "./getValueForKey";
 
-export interface ObjectWithId {
+export interface SubjectProxyTarget {
   "@id": NamedNode | BlankNode;
 }
 
 export function createSubjectHander(
   proxyContext: ProxyContext
-): ProxyHandler<ObjectWithId> {
+): ProxyHandler<SubjectProxyTarget> {
   return {
-    get(target: ObjectWithId, key: string | symbol) {
+    get(target: SubjectProxyTarget, key: string | symbol) {
       switch (key) {
         case _getUnderlyingDataset:
           return proxyContext.dataset;
         case _getUnderlyingNode:
           return target["@id"];
-        case _getUnderlyingContext:
+        case "@context":
           return proxyContext.contextUtil.context;
       }
-      return getProxyFromDataset(target, key, proxyContext);
+      return getValueForKey(target, key, proxyContext);
     },
-    getOwnPropertyDescriptor(target: ObjectWithId, key: string) {
+    getOwnPropertyDescriptor(target: SubjectProxyTarget, key: string) {
       return {
-        value: getProxyFromDataset(target, key, proxyContext),
+        value: getValueForKey(target, key, proxyContext),
         writable: true,
         enumerable: true,
         configurable: true,
@@ -46,7 +45,7 @@ export function createSubjectHander(
       });
       return Array.from(keys);
     },
-    set: (target: ObjectWithId, key: string, value) => {
+    set: (target: SubjectProxyTarget, key: string, value) => {
       if (key === "@id" && typeof value === "string") {
         const currentSubjectQuads = proxyContext.dataset
           .match(target["@id"])

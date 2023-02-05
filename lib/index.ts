@@ -1,16 +1,21 @@
 import { jsonldDatasetProxy } from "./jsonldDatasetProxy";
 
 export default jsonldDatasetProxy;
-export * from "./JsonldDatasetProxyType";
+export * from "./types";
 export * from "./ContextUtil";
 export * from "./ProxyCreator";
-export * from "./createArrayHandler";
-export * from "./createSubjectHandler";
+export * from "./JsonldDatasetProxyBuilder";
 export * from "./jsonldDatasetProxy";
-export * from "./helperFunctions/addObjectToDataset";
-export * from "./helperFunctions/arrayMethods";
-export * from "./helperFunctions/deleteFromDataset";
-export * from "./helperFunctions/getProxyFromDataset";
-export * from "./helperFunctions/objectToJsonRepresentation";
-export * from "./ProxyContext";
-export * from "./QuadMatch";
+
+export * from "./arrayProxy/createArrayHandler";
+export * from "./arrayProxy/arrayMethods";
+export * from "./arrayProxy/ArrayProxy";
+
+export * from "./subjectProxy/createSubjectHandler";
+export * from "./subjectProxy/SubjectProxy";
+export * from "./subjectProxy/getValueForKey";
+
+export * from "./util/addObjectToDataset";
+export * from "./subjectProxy/deleteFromDataset";
+export * from "./subjectProxy/getValueForKey";
+export * from "./util/objectToJsonRepresentation";

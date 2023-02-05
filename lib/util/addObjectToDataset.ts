@@ -1,9 +1,8 @@
 import { BlankNode, Literal, NamedNode } from "@rdfjs/types";
 import { namedNode, literal, quad, blankNode } from "@rdfjs/data-model";
 import { ContextUtil } from "../ContextUtil";
-import { _getUnderlyingNode } from "../JsonldDatasetProxyType";
-import { ProxyContext } from "../ProxyContext";
-import { ObjectWithId } from "../createSubjectHandler";
+import { ProxyContext, _getUnderlyingNode } from "../types";
+import { SubjectProxy } from "../subjectProxy/SubjectProxy";
 
 export type AddObjectItem = {
   "@id"?: string | NamedNode | BlankNode;
@@ -110,7 +109,7 @@ export function addObjectToDatasetRecurse(
   visitedObjects: Set<string>,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
-): ObjectWithId {
+): SubjectProxy {
   const { dataset } = proxyContext;
   const subject = getIdNode(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
@@ -156,7 +155,7 @@ export function addObjectToDataset(
   item: AddObjectItem,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
-): ObjectWithId {
+): SubjectProxy {
   return addObjectToDatasetRecurse(
     item,
     new Set(),
