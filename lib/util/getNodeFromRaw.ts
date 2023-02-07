@@ -1,8 +1,9 @@
 import { BlankNode, Literal, NamedNode } from "@rdfjs/types";
 import { namedNode, literal, blankNode } from "@rdfjs/data-model";
 import { ContextUtil } from "../ContextUtil";
-import { ProxyContext, _getUnderlyingNode } from "../types";
+import { _getUnderlyingNode } from "../types";
 import { RawObject, RawValue } from "./RawObject";
+import { ProxyContext } from "../ProxyContext";
 
 export function getNodeFromRawObject(
   item: RawObject,

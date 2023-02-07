@@ -5,34 +5,34 @@ interface InteractOptions {
   usingCopy<T extends ObjectLike>(...objects: T[]): T[];
 }
 
-export function write(...graphs: GraphType[]): InteractOptions {
+export function write(..._graphs: GraphType[]): InteractOptions {
   return {
-    using(...objects: ObjectLike[]): () => void {
+    using(..._objects: ObjectLike[]): () => void {
       throw new Error("Not Implemented");
     },
-    usingCopy<T extends ObjectLike>(...objects: T[]): T[] {
+    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
       throw new Error("Not Implemented");
     },
   };
 }
 
-export function read(...graphs: GraphType[]): InteractOptions {
+export function read(..._graphs: GraphType[]): InteractOptions {
   return {
-    using(...objects: ObjectLike[]): () => void {
+    using(..._objects: ObjectLike[]): () => void {
       throw new Error("Not Implemented");
     },
-    usingCopy<T extends ObjectLike>(...objects: T[]): T[] {
+    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
       throw new Error("Not Implemented");
     },
   };
 }
 
-export function interact(...graphs: GraphType[]): InteractOptions {
+export function interact(..._graphs: GraphType[]): InteractOptions {
   return {
-    using(...objects: ObjectLike[]): () => void {
+    using(..._objects: ObjectLike[]): () => void {
       throw new Error("Not Implemented");
     },
-    usingCopy<T extends ObjectLike>(...objects: T[]): T[] {
+    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
       throw new Error("Not Implemented");
     },
   };

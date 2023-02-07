@@ -3,7 +3,7 @@ import { jsonldDatasetProxy } from "./jsonldDatasetProxy";
 export default jsonldDatasetProxy;
 export * from "./types";
 export * from "./ContextUtil";
-export * from "./ProxyCreator";
+export * from "./ProxyContext";
 export * from "./JsonldDatasetProxyBuilder";
 export * from "./jsonldDatasetProxy";
 export * from "./interact";

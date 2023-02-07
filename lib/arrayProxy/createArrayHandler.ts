@@ -10,13 +10,13 @@ import {
   methodNames,
 } from "./arrayMethods";
 import {
-  ProxyContext,
   QuadMatch,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _isSubjectOriented,
 } from "../types";
 import { modifyArray } from "./modifyArray";
+import { ProxyContext } from "../ProxyContext";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
@@ -33,9 +33,8 @@ function getProcessedObjects(
     quads.toArray().map((quad) => {
       // If this this a subject-oriented document
       if (target[2]) {
-        return proxyContext.proxyCreator.createSubjectProxy(
-          quad.subject as NamedNode | BlankNode,
-          proxyContext
+        return proxyContext.createSubjectProxy(
+          quad.subject as NamedNode | BlankNode
         );
       }
       return objectToJsonldRepresentation(quad, proxyContext);

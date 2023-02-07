@@ -1,18 +1,16 @@
 import { createDataset } from "o-dataset-pack";
 import { ContextUtil } from "../lib/ContextUtil";
 import { objectToJsonldRepresentation } from "../lib/util/objectToJsonRepresentation";
-import { ProxyCreator } from "../lib/ProxyCreator";
 import { quad, namedNode, literal, defaultGraph } from "@rdfjs/data-model";
 import { ProxyContext } from "../lib";
 
 describe("objectToJsonRepresentation", () => {
-  const extraParams: ProxyContext = {
+  const extraParams: ProxyContext = new ProxyContext({
     dataset: createDataset(),
     contextUtil: new ContextUtil({}),
-    proxyCreator: new ProxyCreator(),
     writeGraphs: [defaultGraph()],
     readGraphs: [],
-  };
+  });
 
   it("returns a string for hexBinary", () => {
     expect(

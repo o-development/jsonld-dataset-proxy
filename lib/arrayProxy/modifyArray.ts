@@ -8,7 +8,7 @@ import {
 } from "@rdfjs/types";
 import { ProxyTransactionalDataset } from "o-dataset-pack";
 import { createExtendedDatasetFactory } from "o-dataset-pack/dist/createExtendedDataset";
-import { ProxyContext } from "../types";
+import { ProxyContext } from "../ProxyContext";
 import { addObjectToDataset } from "../util/addObjectToDataset";
 import { getNodeFromRawObject } from "../util/getNodeFromRaw";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
@@ -54,13 +54,14 @@ export function checkArrayModification(
         proxyContext.dataset,
         createExtendedDatasetFactory()
       );
-      addObjectToDataset(objectToAdd as RawObject, false, {
-        contextUtil: proxyContext.contextUtil,
-        dataset: testDataset,
-        proxyCreator: proxyContext.proxyCreator,
-        readGraphs: [],
-        writeGraphs: [defaultGraph()],
-      });
+      addObjectToDataset(
+        objectToAdd as RawObject,
+        false,
+        proxyContext.duplicate({
+          writeGraphs: [defaultGraph()],
+          readGraphs: [],
+        })
+      );
       const isValidAddition =
         testDataset.match(
           getNodeFromRawObject(objectToAdd, proxyContext.contextUtil),

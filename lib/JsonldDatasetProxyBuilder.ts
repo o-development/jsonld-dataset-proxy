@@ -1,7 +1,7 @@
 import { blankNode, namedNode } from "@rdfjs/data-model";
 import { BlankNode, NamedNode } from "@rdfjs/types";
-import { ProxyCreator } from "./ProxyCreator";
-import { GraphType, ObjectLike, ProxyContext, QuadMatch } from "./types";
+import { ProxyContext } from "./ProxyContext";
+import { GraphType, ObjectLike, QuadMatch } from "./types";
 
 /**
  * Helps build JSON LD Dataset Proxies for a specific dataset and context
@@ -18,11 +18,9 @@ export class JsonldDatasetProxyBuilder {
    * specified graphs
    */
   write(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
-    return new JsonldDatasetProxyBuilder({
-      ...this.proxyContext,
-      proxyCreator: new ProxyCreator(),
-      writeGraphs: graphs,
-    });
+    return new JsonldDatasetProxyBuilder(
+      this.proxyContext.duplicate({ writeGraphs: graphs })
+    );
   }
 
   /**
@@ -30,11 +28,9 @@ export class JsonldDatasetProxyBuilder {
    * specified graphs
    */
   read(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
-    return new JsonldDatasetProxyBuilder({
-      ...this.proxyContext,
-      proxyCreator: new ProxyCreator(),
-      readGraphs: graphs,
-    });
+    return new JsonldDatasetProxyBuilder(
+      this.proxyContext.duplicate({ readGraphs: graphs })
+    );
   }
 
   /**
@@ -42,11 +38,9 @@ export class JsonldDatasetProxyBuilder {
    * from the specified graphs
    */
   interact(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
-    return new JsonldDatasetProxyBuilder({
-      ...this.proxyContext,
-      proxyCreator: new ProxyCreator(),
-      readGraphs: graphs,
-    });
+    return new JsonldDatasetProxyBuilder(
+      this.proxyContext.duplicate({ readGraphs: graphs, writeGraphs: graphs })
+    );
   }
 
   /**
@@ -54,10 +48,7 @@ export class JsonldDatasetProxyBuilder {
    * @param subject The node to match
    */
   fromSubject<T extends ObjectLike>(subject: NamedNode | BlankNode): T {
-    return this.proxyContext.proxyCreator.createSubjectProxy(
-      subject,
-      this.proxyContext
-    ) as unknown as T;
+    return this.proxyContext.createSubjectProxy(subject) as unknown as T;
   }
 
   /**
@@ -72,9 +63,8 @@ export class JsonldDatasetProxyBuilder {
     object?: QuadMatch[2],
     graph?: QuadMatch[3]
   ): T[] {
-    return this.proxyContext.proxyCreator.createArrayProxy(
+    return this.proxyContext.createArrayProxy(
       [null, predicate, object, graph],
-      this.proxyContext,
       true
     ) as unknown as T[];
   }
@@ -91,10 +81,12 @@ export class JsonldDatasetProxyBuilder {
     predicate: QuadMatch[1],
     graph: QuadMatch[3]
   ): T[] {
-    return this.proxyContext.proxyCreator.createArrayProxy(
-      [subject, predicate, null, graph],
-      this.proxyContext
-    ) as unknown as T[];
+    return this.proxyContext.createArrayProxy([
+      subject,
+      predicate,
+      null,
+      graph,
+    ]) as unknown as T[];
   }
 
   /**

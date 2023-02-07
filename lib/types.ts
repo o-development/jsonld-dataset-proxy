@@ -1,6 +1,4 @@
-import { BlankNode, Dataset, DefaultGraph, NamedNode } from "@rdfjs/types";
-import { ContextUtil } from "./ContextUtil";
-import { ProxyCreator } from "./ProxyCreator";
+import { BlankNode, DefaultGraph, NamedNode } from "@rdfjs/types";
 
 export const _getUnderlyingNode = Symbol("_getUnderlyingNode");
 export const _getUnderlyingMatch = Symbol("_getUnderlyingMatch");
@@ -23,11 +21,3 @@ export type QuadMatch = [
   ObjectType | undefined | null,
   GraphType | undefined | null
 ];
-
-export interface ProxyContext {
-  dataset: Dataset;
-  contextUtil: ContextUtil;
-  proxyCreator: ProxyCreator;
-  readGraphs: GraphType[];
-  writeGraphs: GraphType[];
-}

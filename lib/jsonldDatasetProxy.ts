@@ -3,8 +3,7 @@ import { Dataset } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 import { ContextUtil } from "./ContextUtil";
 import { JsonldDatasetProxyBuilder } from "./JsonldDatasetProxyBuilder";
-import { ProxyCreator } from "./ProxyCreator";
-import { ProxyContext } from "./types";
+import { ProxyContext } from "./ProxyContext";
 
 /**
  * Creates a JSON-LD Dataset Proxy
@@ -18,14 +17,11 @@ export function jsonldDatasetProxy(
   context: ContextDefinition
 ): JsonldDatasetProxyBuilder {
   const contextUtil = new ContextUtil(context);
-  const proxyCreator = new ProxyCreator();
-
-  const proxyContext: ProxyContext = {
+  const proxyContext = new ProxyContext({
     dataset: inputDataset,
     contextUtil,
-    proxyCreator,
     readGraphs: [],
     writeGraphs: [defaultGraph()],
-  };
+  });
   return new JsonldDatasetProxyBuilder(proxyContext);
 }

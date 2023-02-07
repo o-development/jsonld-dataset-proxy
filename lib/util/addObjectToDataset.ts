@@ -1,9 +1,10 @@
 import { BlankNode, NamedNode } from "@rdfjs/types";
 import { namedNode, quad } from "@rdfjs/data-model";
-import { ProxyContext, _getUnderlyingNode } from "../types";
+import { _getUnderlyingNode } from "../types";
 import { SubjectProxy } from "../subjectProxy/SubjectProxy";
 import { getNodeFromRawObject, getNodeFromRawValue } from "./getNodeFromRaw";
 import { RawObject, RawValue } from "./RawObject";
+import { ProxyContext } from "../ProxyContext";
 
 function nodeToSetKey(node: NamedNode | BlankNode): string {
   if (node.termType === "NamedNode") {
@@ -63,7 +64,7 @@ export function addRawObjectToDatasetRecursive(
   const { dataset } = proxyContext;
   const subject = getNodeFromRawObject(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
-    return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
+    return proxyContext.createSubjectProxy(subject);
   }
   visitedObjects.add(nodeToSetKey(subject));
   Object.entries(item).forEach(([key, value]) => {
@@ -96,7 +97,7 @@ export function addRawObjectToDatasetRecursive(
       );
     }
   });
-  return proxyContext.proxyCreator.createSubjectProxy(subject, proxyContext);
+  return proxyContext.createSubjectProxy(subject);
 }
 
 export function addObjectToDataset(

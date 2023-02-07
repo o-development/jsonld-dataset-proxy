@@ -1,9 +1,9 @@
 import { SubjectProxyTarget } from "./createSubjectHandler";
 import { namedNode } from "@rdfjs/data-model";
 import { objectToJsonldRepresentation } from "../util/objectToJsonRepresentation";
-import { ProxyContext } from "../types";
 import { SubjectProxy } from "./SubjectProxy";
 import { ArrayProxy } from "../arrayProxy/ArrayProxy";
+import { ProxyContext } from "../ProxyContext";
 
 /**
  * Given a subject target and a key return the correct value
@@ -13,7 +13,7 @@ export function getValueForKey(
   key: string | symbol,
   proxyContext: ProxyContext
 ): SubjectProxy | ArrayProxy | string | number | boolean | undefined {
-  const { contextUtil, dataset, proxyCreator } = proxyContext;
+  const { contextUtil, dataset } = proxyContext;
   if (key === "@id") {
     if (target["@id"].termType === "BlankNode") {
       return undefined;
@@ -32,10 +32,12 @@ export function getValueForKey(
   const subject = target["@id"];
   const predicate = namedNode(contextUtil.keyToIri(key));
   if (contextUtil.isArray(key)) {
-    const arrayProxy = proxyCreator.createArrayProxy(
-      [subject, predicate, null, null],
-      proxyContext
-    );
+    const arrayProxy = proxyContext.createArrayProxy([
+      subject,
+      predicate,
+      null,
+      null,
+    ]);
     return arrayProxy;
   }
   const objectDataset = dataset.match(subject, predicate);
@@ -47,9 +49,6 @@ export function getValueForKey(
       proxyContext
     );
   } else {
-    return proxyCreator.createArrayProxy(
-      [subject, predicate, null, null],
-      proxyContext
-    );
+    return proxyContext.createArrayProxy([subject, predicate, null, null]);
   }
 }

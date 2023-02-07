@@ -1,7 +1,7 @@
 import { ArrayProxyTarget } from "./createArrayHandler";
 import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
-import { ProxyContext } from "../types";
 import { modifyArray } from "./modifyArray";
+import { ProxyContext } from "../ProxyContext";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,
@@ -44,9 +44,8 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           },
           modifyCoreArray: (coreArray) => {
             coreArray.copyWithin(targetIndex, start, end);
-            return proxyContext.proxyCreator.createArrayProxy(
+            return proxyContext.createArrayProxy(
               target[0],
-              proxyContext,
               target[2]
             ) as ObjectJsonRepresentation[];
           },
@@ -66,9 +65,8 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           },
           modifyCoreArray: (coreArray, addedValues) => {
             coreArray.fill(addedValues[0], start, end);
-            return proxyContext.proxyCreator.createArrayProxy(
+            return proxyContext.createArrayProxy(
               target[0],
-              proxyContext,
               target[2]
             ) as ObjectJsonRepresentation[];
           },
@@ -101,11 +99,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           toAdd: args,
           modifyCoreArray: (coreArray, addedValues) => {
             coreArray.push(...addedValues);
-            return proxyContext.proxyCreator.createArrayProxy(
-              target[0],
-              proxyContext,
-              target[2]
-            ).length;
+            return proxyContext.createArrayProxy(target[0], target[2]).length;
           },
         },
         proxyContext
@@ -163,11 +157,7 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
           toAdd: args,
           modifyCoreArray: (coreArray, addedValues) => {
             coreArray.unshift(...addedValues);
-            return proxyContext.proxyCreator.createArrayProxy(
-              target[0],
-              proxyContext,
-              target[2]
-            ).length;
+            return proxyContext.createArrayProxy(target[0], target[2]).length;
           },
         },
         proxyContext

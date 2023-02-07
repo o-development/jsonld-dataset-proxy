@@ -3,13 +3,13 @@ import { namedNode, quad } from "@rdfjs/data-model";
 import { addObjectToDataset } from "../util/addObjectToDataset";
 import { deleteValueFromDataset } from "./deleteFromDataset";
 import {
-  ProxyContext,
   _getUnderlyingDataset,
   _getUnderlyingNode,
   _readGraphs,
   _writeGraphs,
 } from "../types";
 import { getValueForKey } from "./getValueForKey";
+import { ProxyContext } from "../ProxyContext";
 
 export interface SubjectProxyTarget {
   "@id": NamedNode | BlankNode;

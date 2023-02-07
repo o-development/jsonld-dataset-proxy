@@ -1,27 +1,44 @@
-import { BlankNode, NamedNode } from "@rdfjs/types";
+import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { createArrayHandler } from "./arrayProxy/createArrayHandler";
 import { createSubjectHander } from "./subjectProxy/createSubjectHandler";
 import { SubjectProxy } from "./subjectProxy/SubjectProxy";
 import { ArrayProxy } from "./arrayProxy/ArrayProxy";
-import { ProxyContext, QuadMatch } from "./types";
+import { GraphType, QuadMatch } from "./types";
+import { ContextUtil } from "./ContextUtil";
+
+interface ProxyContextOptions {
+  dataset: Dataset;
+  contextUtil: ContextUtil;
+  readGraphs: GraphType[];
+  writeGraphs: GraphType[];
+}
 
 /**
  * This file keeps track of the target objects used in the proxies.
  * The reason is so that JSON.stringify does not recurse inifinitely
  * when it encounters a circular object.
  */
-export class ProxyCreator {
+export class ProxyContext {
   private subjectMap: Map<string, SubjectProxy> = new Map();
   private arrayMap: Map<string, ArrayProxy> = new Map();
 
-  public createSubjectProxy(
-    node: NamedNode | BlankNode,
-    proxyContext: ProxyContext
-  ): SubjectProxy {
+  readonly dataset: Dataset;
+  readonly contextUtil: ContextUtil;
+  readonly readGraphs: GraphType[];
+  readonly writeGraphs: GraphType[];
+
+  constructor(options: ProxyContextOptions) {
+    this.dataset = options.dataset;
+    this.contextUtil = options.contextUtil;
+    this.readGraphs = options.readGraphs;
+    this.writeGraphs = options.writeGraphs;
+  }
+
+  public createSubjectProxy(node: NamedNode | BlankNode): SubjectProxy {
     if (!this.subjectMap.has(node.value)) {
       const proxy = new Proxy(
         { "@id": node },
-        createSubjectHander(proxyContext)
+        createSubjectHander(this)
       ) as unknown as SubjectProxy;
       this.subjectMap.set(node.value, proxy);
     }
@@ -38,17 +55,29 @@ export class ProxyCreator {
 
   public createArrayProxy(
     quadMatch: QuadMatch,
-    proxyContext: ProxyContext,
     isSubjectOriented = false
   ): ArrayProxy {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
         [quadMatch, [], isSubjectOriented],
-        createArrayHandler(proxyContext)
+        createArrayHandler(this)
       ) as unknown as ArrayProxy;
       this.arrayMap.set(key, proxy);
     }
     return this.arrayMap.get(key) as ArrayProxy;
+  }
+
+  public duplicate(alternativeOptions: Partial<ProxyContextOptions>) {
+    const fullOptions: ProxyContextOptions = {
+      ...{
+        dataset: this.dataset,
+        contextUtil: this.contextUtil,
+        writeGraphs: this.writeGraphs,
+        readGraphs: this.readGraphs,
+      },
+      ...alternativeOptions,
+    };
+    return new ProxyContext(fullOptions);
   }
 }

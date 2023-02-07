@@ -1,6 +1,6 @@
 import { Quad } from "@rdfjs/types";
+import { ProxyContext } from "../ProxyContext";
 import { SubjectProxy } from "../subjectProxy/SubjectProxy";
-import { ProxyContext } from "../types";
 
 export type ObjectJsonRepresentation = string | number | boolean | SubjectProxy;
 
@@ -63,10 +63,7 @@ export function objectToJsonldRepresentation(
     quad.object.termType === "NamedNode" ||
     quad.object.termType === "BlankNode"
   ) {
-    return proxyContext.proxyCreator.createSubjectProxy(
-      quad.object,
-      proxyContext
-    );
+    return proxyContext.createSubjectProxy(quad.object);
   } else {
     throw new Error("Can only convert NamedNodes or Literals or BlankNodes");
   }
