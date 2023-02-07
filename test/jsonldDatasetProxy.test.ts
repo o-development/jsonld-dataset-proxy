@@ -7,6 +7,8 @@ import {
   _getUnderlyingMatch,
   _getUnderlyingNode,
   _isSubjectOriented,
+  _readGraphs,
+  _writeGraphs,
 } from "../lib";
 import {
   ObservationShape,
@@ -963,6 +965,8 @@ describe("jsonldDatasetProxy", () => {
       expect(observation[_getUnderlyingNode].value).toBe(
         "http://example.com/Observation1"
       );
+      expect(observation[_writeGraphs][0].termType).toBe("DefaultGraph");
+      expect(observation[_readGraphs].length).toBe(0);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const roommateArr = observation.subject!.roommate!;
       expect(roommateArr[_getUnderlyingDataset]).toBe(dataset);
@@ -1232,9 +1236,6 @@ describe("jsonldDatasetProxy", () => {
       const patient2 = patient1.roommate?.[0] as PatientShape;
       const patient3 = patient1.roommate?.[1] as PatientShape;
 
-      /**
-       * How readable is this?
-       */
       const patient4 = builder
         .write(patient4Doc)
         .fromSubject<PatientShape>(namedNode("http://example.com/Patient4"));
@@ -1250,6 +1251,8 @@ describe("jsonldDatasetProxy", () => {
       reset1();
       reset2();
       reset3();
+
+      console.log(dataset.toString());
 
       // let patient4: PatientShape;
       // await write(patient4Doc, async function fancyCallback() {

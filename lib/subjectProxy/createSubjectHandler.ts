@@ -6,6 +6,8 @@ import {
   ProxyContext,
   _getUnderlyingDataset,
   _getUnderlyingNode,
+  _readGraphs,
+  _writeGraphs,
 } from "../types";
 import { getValueForKey } from "./getValueForKey";
 
@@ -23,6 +25,10 @@ export function createSubjectHander(
           return proxyContext.dataset;
         case _getUnderlyingNode:
           return target["@id"];
+        case _writeGraphs:
+          return proxyContext.writeGraphs;
+        case _readGraphs:
+          return proxyContext.readGraphs;
         case "@context":
           return proxyContext.contextUtil.context;
       }
