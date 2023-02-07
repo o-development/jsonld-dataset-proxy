@@ -1,3 +1,4 @@
+import { defaultGraph } from "@rdfjs/data-model";
 import { Dataset } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 import { ContextUtil } from "./ContextUtil";
@@ -23,6 +24,8 @@ export function jsonldDatasetProxy(
     dataset: inputDataset,
     contextUtil,
     proxyCreator,
+    readGraphs: [],
+    writeGraphs: [defaultGraph()],
   };
   return new JsonldDatasetProxyBuilder(proxyContext);
 }

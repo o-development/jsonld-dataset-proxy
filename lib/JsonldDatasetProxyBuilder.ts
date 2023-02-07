@@ -1,6 +1,7 @@
 import { blankNode, namedNode } from "@rdfjs/data-model";
 import { BlankNode, NamedNode } from "@rdfjs/types";
-import { ObjectLike, ProxyContext, QuadMatch } from "./types";
+import { ProxyCreator } from "./ProxyCreator";
+import { GraphType, ObjectLike, ProxyContext, QuadMatch } from "./types";
 
 /**
  * Helps build JSON LD Dataset Proxies for a specific dataset and context
@@ -10,6 +11,42 @@ export class JsonldDatasetProxyBuilder {
 
   constructor(proxyContext: ProxyContext) {
     this.proxyContext = proxyContext;
+  }
+
+  /**
+   * Designates that all Jsonld Dataset Proxies created should write to the
+   * specified graphs
+   */
+  write(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
+    return new JsonldDatasetProxyBuilder({
+      ...this.proxyContext,
+      proxyCreator: new ProxyCreator(),
+      writeGraphs: graphs,
+    });
+  }
+
+  /**
+   * Designates that all Jsonld Dataset Proxies created should read from the
+   * specified graphs
+   */
+  read(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
+    return new JsonldDatasetProxyBuilder({
+      ...this.proxyContext,
+      proxyCreator: new ProxyCreator(),
+      readGraphs: graphs,
+    });
+  }
+
+  /**
+   * Designates that all Jsonld Dataset Proxies created should read and write
+   * from the specified graphs
+   */
+  interact(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
+    return new JsonldDatasetProxyBuilder({
+      ...this.proxyContext,
+      proxyCreator: new ProxyCreator(),
+      readGraphs: graphs,
+    });
   }
 
   /**

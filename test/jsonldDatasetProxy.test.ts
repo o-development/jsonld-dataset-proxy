@@ -2,6 +2,7 @@ import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
   jsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
+  write,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _getUnderlyingNode,
@@ -1222,13 +1223,48 @@ describe("jsonldDatasetProxy", () => {
   describe("Graph Methods", () => {
     it("lets a new patient get created in a new graph", async () => {
       // TODO
-      // const [dataset, observation] = await getTinyGraphLoadedDataset();
-      // const patient1Doc = namedNode("http://example.com/patient1Doc");
-      // const patient2Doc = namedNode("http://example.com/patient2Doc");
-      // const patient3Doc = namedNode("http://example.com/patient3Doc");
-      // const patient1 = observation.subject!;
-      // const patient2 = patient1.roommate?.[0]!;
-      // startGraph(patient3Doc);
+      const [dataset, observation, builder] = await getGraphLoadedDataset();
+      const patient1Doc = namedNode("http://example.com/patient1Doc");
+      const patient2Doc = namedNode("http://example.com/patient2Doc");
+      const patient3Doc = namedNode("http://example.com/patient3Doc");
+      const patient4Doc = namedNode("http://example.com/patient3Doc");
+      const patient1 = observation.subject as PatientShape;
+      const patient2 = patient1.roommate?.[0] as PatientShape;
+      const patient3 = patient1.roommate?.[1] as PatientShape;
+
+      /**
+       * How readable is this?
+       */
+      const patient4 = builder
+        .write(patient4Doc)
+        .fromSubject<PatientShape>(namedNode("http://example.com/Patient4"));
+      patient4.name = ["Licky"];
+      patient4.age = 3;
+      patient4.roommate = [patient1, patient2, patient3];
+      const reset1 = write(patient1Doc).using(patient1);
+      patient1.roommate?.push(patient4);
+      const reset2 = write(patient2Doc).using(patient2);
+      patient2.roommate?.push(patient4);
+      const reset3 = write(patient3Doc).using(patient3);
+      patient3.roommate?.push(patient4);
+      reset1();
+      reset2();
+      reset3();
+
+      // let patient4: PatientShape;
+      // await write(patient4Doc, async function fancyCallback() {
+      //   await new Promise((resolve) => setTimeout(resolve, 10));
+      //   patient4 = builder.fromJson<PatientShape>({
+      //     name: ["Licky"],
+      //     age: 3,
+      //     roommate: [patient1, patient2, patient3],
+      //   });
+      //   await new Promise<void>((resolve) => resolve());
+      // });
+      // write(patient1Doc, () => patient1.roommate?.push(patient4));
+      // write(patient2Doc, () => patient2.roommate?.push(patient4));
+      // write(patient3Doc, () => patient3.roommate?.push(patient4));
+
       // const patient3 = jsonldDatasetProxy<PatientShape>(
       //   dataset,
       //   patientContext,

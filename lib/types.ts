@@ -26,4 +26,6 @@ export interface ProxyContext {
   dataset: Dataset;
   contextUtil: ContextUtil;
   proxyCreator: ProxyCreator;
+  readGraphs: GraphType[];
+  writeGraphs: GraphType[];
 }

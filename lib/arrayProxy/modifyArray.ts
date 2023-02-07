@@ -1,3 +1,4 @@
+import { defaultGraph } from "@rdfjs/data-model";
 import {
   BlankNode,
   DefaultGraph,
@@ -57,6 +58,8 @@ export function checkArrayModification(
         contextUtil: proxyContext.contextUtil,
         dataset: testDataset,
         proxyCreator: proxyContext.proxyCreator,
+        readGraphs: [],
+        writeGraphs: [defaultGraph()],
       });
       const isValidAddition =
         testDataset.match(
