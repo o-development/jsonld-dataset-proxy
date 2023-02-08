@@ -1,9 +1,11 @@
 import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
+import { ProxyContext } from "../ProxyContext";
 import {
   GraphType,
   _getUnderlyingDataset,
   _getUnderlyingNode,
+  _proxyContext,
   _readGraphs,
   _writeGraphs,
 } from "../types";
@@ -11,9 +13,10 @@ import {
 export type SubjectProxy = {
   "@id"?: string;
   "@context": ContextDefinition;
-  [key: string | number | symbol]: unknown;
-  [_getUnderlyingDataset]: Dataset;
-  [_getUnderlyingNode]: NamedNode | BlankNode;
-  [_writeGraphs]: GraphType[];
-  [_readGraphs]: GraphType[];
+  readonly [key: string | number | symbol]: unknown;
+  readonly [_getUnderlyingDataset]: Dataset;
+  readonly [_getUnderlyingNode]: NamedNode | BlankNode;
+  [_proxyContext]: ProxyContext;
+  readonly [_writeGraphs]: GraphType[];
+  readonly [_readGraphs]: GraphType[];
 };

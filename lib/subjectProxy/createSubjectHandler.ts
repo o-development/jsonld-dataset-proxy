@@ -5,6 +5,7 @@ import { deleteValueFromDataset } from "./deleteFromDataset";
 import {
   _getUnderlyingDataset,
   _getUnderlyingNode,
+  _proxyContext,
   _readGraphs,
   _writeGraphs,
 } from "../types";
@@ -16,8 +17,9 @@ export interface SubjectProxyTarget {
 }
 
 export function createSubjectHander(
-  proxyContext: ProxyContext
+  initialProxyContext: ProxyContext
 ): ProxyHandler<SubjectProxyTarget> {
+  let proxyContext = initialProxyContext;
   return {
     get(target: SubjectProxyTarget, key: string | symbol) {
       switch (key) {
@@ -25,6 +27,8 @@ export function createSubjectHander(
           return proxyContext.dataset;
         case _getUnderlyingNode:
           return target["@id"];
+        case _proxyContext:
+          return proxyContext;
         case _writeGraphs:
           return proxyContext.writeGraphs;
         case _readGraphs:
@@ -51,7 +55,10 @@ export function createSubjectHander(
       });
       return Array.from(keys);
     },
-    set: (target: SubjectProxyTarget, key: string, value) => {
+    set: (target: SubjectProxyTarget, key, value) => {
+      if (key === _proxyContext) {
+        proxyContext = value;
+      }
       if (key === "@id" && typeof value === "string") {
         const currentSubjectQuads = proxyContext.dataset
           .match(target["@id"])

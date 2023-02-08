@@ -2,6 +2,7 @@ import {
   ObjectLike,
   _getUnderlyingDataset,
   _getUnderlyingNode,
+  _proxyContext,
   _readGraphs,
   _writeGraphs,
 } from "../types";
@@ -13,7 +14,8 @@ export function getSubjectProxyFromObject(object: ObjectLike): SubjectProxy {
     typeof potentialSubjectProxy[_writeGraphs] !== "object" ||
     typeof potentialSubjectProxy[_readGraphs] !== "object" ||
     typeof potentialSubjectProxy[_getUnderlyingDataset] !== "object" ||
-    typeof potentialSubjectProxy[_getUnderlyingNode] !== "object"
+    typeof potentialSubjectProxy[_getUnderlyingNode] !== "object" ||
+    typeof potentialSubjectProxy[_proxyContext] !== "object"
   ) {
     throw new Error(`${object} is not a Jsonld Dataset Proxy`);
   }

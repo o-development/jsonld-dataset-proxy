@@ -7,6 +7,7 @@ import {
   _getUnderlyingMatch,
   _getUnderlyingNode,
   _isSubjectOriented,
+  _proxyContext,
   _readGraphs,
   _writeGraphs,
 } from "../lib";
@@ -967,6 +968,9 @@ describe("jsonldDatasetProxy", () => {
       );
       expect(observation[_writeGraphs][0].termType).toBe("DefaultGraph");
       expect(observation[_readGraphs].length).toBe(0);
+      expect(observation[_proxyContext].writeGraphs[0].termType).toBe(
+        "DefaultGraph"
+      );
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const roommateArr = observation.subject!.roommate!;
       expect(roommateArr[_getUnderlyingDataset]).toBe(dataset);
@@ -1225,7 +1229,7 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("Graph Methods", () => {
-    it.skip("lets a new patient get created in a new graph", async () => {
+    it("lets a new patient get created in a new graph", async () => {
       // TODO
       const [dataset, observation, builder] = await getGraphLoadedDataset();
       const patient1Doc = namedNode("http://example.com/patient1Doc");
