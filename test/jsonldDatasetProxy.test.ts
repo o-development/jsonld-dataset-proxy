@@ -1229,13 +1229,13 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("Graph Methods", () => {
-    it("lets a new patient get created in a new graph", async () => {
+    it.skip("lets a new patient get created in a new graph", async () => {
       // TODO
       const [dataset, observation, builder] = await getGraphLoadedDataset();
       const patient1Doc = namedNode("http://example.com/patient1Doc");
       const patient2Doc = namedNode("http://example.com/patient2Doc");
       const patient3Doc = namedNode("http://example.com/patient3Doc");
-      const patient4Doc = namedNode("http://example.com/patient3Doc");
+      const patient4Doc = namedNode("http://example.com/patient4Doc");
       const patient1 = observation.subject as PatientShape;
       const patient2 = patient1.roommate?.[0] as PatientShape;
       const patient3 = patient1.roommate?.[1] as PatientShape;
@@ -1246,17 +1246,20 @@ describe("jsonldDatasetProxy", () => {
       patient4.name = ["Licky"];
       patient4.age = 3;
       patient4.roommate = [patient1, patient2, patient3];
+      console.log("After setup ==============================================");
       const reset1 = write(patient1Doc).using(patient1);
       patient1.roommate?.push(patient4);
-      const reset2 = write(patient2Doc).using(patient2);
-      patient2.roommate?.push(patient4);
-      const reset3 = write(patient3Doc).using(patient3);
-      patient3.roommate?.push(patient4);
-      reset1();
-      reset2();
-      reset3();
+      // const reset2 = write(patient2Doc).using(patient2);
+      // patient2.roommate?.push(patient4);
+      // const reset3 = write(patient3Doc).using(patient3);
+      // patient3.roommate?.push(patient4);
+      // reset1();
+      // reset2();
+      // reset3();
 
-      console.log(dataset.toString());
+      const patient4Node = namedNode("http://example.com/Patient4");
+      console.log(dataset.match(patient4Node).toString());
+      console.log(dataset.match(null, null, patient4Node).toString());
 
       // let patient4: PatientShape;
       // await write(patient4Doc, async function fancyCallback() {

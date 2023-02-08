@@ -60,6 +60,7 @@ export function createSubjectHander(
         proxyContext = value;
       }
       if (key === "@id" && typeof value === "string") {
+        // Replace Subject Quads
         const currentSubjectQuads = proxyContext.dataset
           .match(target["@id"])
           .toArray();
@@ -75,6 +76,7 @@ export function createSubjectHander(
           proxyContext.dataset.delete(curQuad)
         );
         proxyContext.dataset.addAll(newSubjectQuads);
+        // Replace Object Quads
         const currentObjectQuads = proxyContext.dataset
           .match(undefined, undefined, target["@id"])
           .toArray();

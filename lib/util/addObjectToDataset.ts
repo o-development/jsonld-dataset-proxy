@@ -5,6 +5,7 @@ import { SubjectProxy } from "../subjectProxy/SubjectProxy";
 import { getNodeFromRawObject, getNodeFromRawValue } from "./getNodeFromRaw";
 import { RawObject, RawValue } from "./RawObject";
 import { ProxyContext } from "../ProxyContext";
+import { isSubjectProxy } from "../subjectProxy/isSubjectProxy";
 
 function nodeToSetKey(node: NamedNode | BlankNode): string {
   if (node.termType === "NamedNode") {
@@ -29,17 +30,18 @@ export function addRawValueToDatasetRecursive(
   if (object == undefined) {
     dataset.deleteMatches(subject, predicate);
   } else if (object.termType === "Literal") {
-    proxyContext.dataset.add(quad(subject, predicate, object));
+    proxyContext.writeGraphs.forEach((graph) => {
+      proxyContext.dataset.add(quad(subject, predicate, object, graph));
+    });
   } else {
     // Delete any triples if the id is the same
-    if (
-      !visitedObjects.has(nodeToSetKey(object)) &&
-      !(value as RawObject)[_getUnderlyingNode]
-    ) {
+    if (!visitedObjects.has(nodeToSetKey(object)) && !isSubjectProxy(value)) {
       dataset.deleteMatches(object, undefined, undefined);
     }
-    dataset.add(quad(subject, predicate, object));
-    if (!(value as RawObject)[_getUnderlyingNode]) {
+    proxyContext.writeGraphs.forEach((graph) => {
+      dataset.add(quad(subject, predicate, object, graph));
+    });
+    if (!isSubjectProxy(value)) {
       const updateData: RawObject = (
         typeof value === "object"
           ? { ...value, "@id": object }
@@ -61,6 +63,9 @@ export function addRawObjectToDatasetRecursive(
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): SubjectProxy {
+  if (isSubjectProxy(item)) {
+    return item as SubjectProxy;
+  }
   const { dataset } = proxyContext;
   const subject = getNodeFromRawObject(item, proxyContext.contextUtil);
   if (visitedObjects.has(nodeToSetKey(subject))) {
@@ -72,7 +77,7 @@ export function addRawObjectToDatasetRecursive(
       return;
     }
     const predicate = namedNode(proxyContext.contextUtil.keyToIri(key));
-    if (shouldDeleteOldTriples && !item[_getUnderlyingNode]) {
+    if (shouldDeleteOldTriples) {
       dataset.deleteMatches(subject, predicate);
     }
     if (Array.isArray(value)) {
