@@ -6,7 +6,6 @@ export const _isSubjectOriented = Symbol("_isSubjectOriented");
 export const _getUnderlyingDataset = Symbol("_getUnderlyingDataset");
 export const _proxyContext = Symbol("_proxyContext");
 export const _writeGraphs = Symbol("_writeGraphs");
-export const _readGraphs = Symbol("_readGraphs");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ObjectLike = Record<string | number | symbol, any>;

@@ -20,7 +20,6 @@ export function jsonldDatasetProxy(
   const proxyContext = new ProxyContext({
     dataset: inputDataset,
     contextUtil,
-    readGraphs: [],
     writeGraphs: [defaultGraph()],
   });
   return new JsonldDatasetProxyBuilder(proxyContext);

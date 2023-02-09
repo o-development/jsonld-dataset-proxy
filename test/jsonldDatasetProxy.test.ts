@@ -8,7 +8,6 @@ import {
   _getUnderlyingNode,
   _isSubjectOriented,
   _proxyContext,
-  _readGraphs,
   _writeGraphs,
 } from "../lib";
 import {
@@ -967,7 +966,6 @@ describe("jsonldDatasetProxy", () => {
         "http://example.com/Observation1"
       );
       expect(observation[_writeGraphs][0].termType).toBe("DefaultGraph");
-      expect(observation[_readGraphs].length).toBe(0);
       expect(observation[_proxyContext].writeGraphs[0].termType).toBe(
         "DefaultGraph"
       );
@@ -1240,40 +1238,6 @@ describe("jsonldDatasetProxy", () => {
         expect(dataset.toString()).toBe(
           '<https://example.com/Patient4> <http://hl7.org/fhir/name> "Jackson" <http://example.com/Patient4Doc> .\n'
         );
-      });
-
-      it("sets read graph", async () => {
-        const [, , builder] = await getGraphLoadedDataset();
-        const patient1 = builder
-          .read(
-            namedNode("http://example.com/Patient1Doc"),
-            namedNode("http://example.com/Patient2Doc")
-          )
-          .fromSubject<PatientShape>(namedNode("http://example.com/Patient1"));
-        expect(patient1.name?.[0]).toBe("Garrett");
-        expect(patient1.roommate?.length).toBe(2);
-        expect(patient1.roommate?.[0].name?.[0]).toBe("Rob");
-        expect(patient1.roommate?.[1].name).toBe(undefined);
-        expect(patient1.roommate?.[1]["@id"]).toBe(
-          "http://example.com/Patient2"
-        );
-      });
-
-      it("sets interaction graph", async () => {
-        const [dataset, , builder] = await getGraphLoadedDataset();
-        const patient1 = builder
-          .interact(namedNode("http://example.com/Patient1Doc"))
-          .fromSubject<PatientShape>(namedNode("http://example.com/Patient1"));
-        patient1.name = ["Othername"];
-        expect(patient1.roommate?.[1].name).toBe(undefined);
-        expect(
-          dataset
-            .match(
-              namedNode("https://example.com/Patient1"),
-              namedNode("http://hl7.org/fhir/name")
-            )
-            .toArray()[0].graph.value
-        ).toBe("http://example.com/Patient1Doc");
       });
     });
 

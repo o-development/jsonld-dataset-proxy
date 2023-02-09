@@ -6,7 +6,7 @@ export * from "./ContextUtil";
 export * from "./ProxyContext";
 export * from "./JsonldDatasetProxyBuilder";
 export * from "./jsonldDatasetProxy";
-export * from "./interact";
+export * from "./write";
 export * from "./graphOf";
 
 export * from "./arrayProxy/createArrayHandler";

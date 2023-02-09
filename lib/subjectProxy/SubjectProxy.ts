@@ -6,7 +6,6 @@ import {
   _getUnderlyingDataset,
   _getUnderlyingNode,
   _proxyContext,
-  _readGraphs,
   _writeGraphs,
 } from "../types";
 
@@ -18,5 +17,4 @@ export type SubjectProxy = {
   readonly [_getUnderlyingNode]: NamedNode | BlankNode;
   [_proxyContext]: ProxyContext;
   readonly [_writeGraphs]: GraphType[];
-  readonly [_readGraphs]: GraphType[];
 };

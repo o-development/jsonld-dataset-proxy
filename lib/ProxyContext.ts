@@ -9,7 +9,6 @@ import { ContextUtil } from "./ContextUtil";
 interface ProxyContextOptions {
   dataset: Dataset;
   contextUtil: ContextUtil;
-  readGraphs: GraphType[];
   writeGraphs: GraphType[];
 }
 
@@ -24,13 +23,11 @@ export class ProxyContext {
 
   readonly dataset: Dataset;
   readonly contextUtil: ContextUtil;
-  readonly readGraphs: GraphType[];
   readonly writeGraphs: GraphType[];
 
   constructor(options: ProxyContextOptions) {
     this.dataset = options.dataset;
     this.contextUtil = options.contextUtil;
-    this.readGraphs = options.readGraphs;
     this.writeGraphs = options.writeGraphs;
   }
 
@@ -74,7 +71,6 @@ export class ProxyContext {
         dataset: this.dataset,
         contextUtil: this.contextUtil,
         writeGraphs: this.writeGraphs,
-        readGraphs: this.readGraphs,
       },
       ...alternativeOptions,
     };

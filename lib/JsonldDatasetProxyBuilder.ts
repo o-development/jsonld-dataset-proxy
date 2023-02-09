@@ -24,26 +24,6 @@ export class JsonldDatasetProxyBuilder {
   }
 
   /**
-   * Designates that all Jsonld Dataset Proxies created should read from the
-   * specified graphs
-   */
-  read(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
-    return new JsonldDatasetProxyBuilder(
-      this.proxyContext.duplicate({ readGraphs: graphs })
-    );
-  }
-
-  /**
-   * Designates that all Jsonld Dataset Proxies created should read and write
-   * from the specified graphs
-   */
-  interact(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
-    return new JsonldDatasetProxyBuilder(
-      this.proxyContext.duplicate({ readGraphs: graphs, writeGraphs: graphs })
-    );
-  }
-
-  /**
    * Creates a JSON LD Dataset Proxy that matches the given subject
    * @param subject The node to match
    */

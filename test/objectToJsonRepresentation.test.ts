@@ -9,7 +9,6 @@ describe("objectToJsonRepresentation", () => {
     dataset: createDataset(),
     contextUtil: new ContextUtil({}),
     writeGraphs: [defaultGraph()],
-    readGraphs: [],
   });
 
   it("returns a string for hexBinary", () => {

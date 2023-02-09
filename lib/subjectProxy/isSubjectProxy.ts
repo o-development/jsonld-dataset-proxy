@@ -3,7 +3,6 @@ import {
   _getUnderlyingDataset,
   _getUnderlyingNode,
   _proxyContext,
-  _readGraphs,
   _writeGraphs,
 } from "../types";
 import { SubjectProxy } from "./SubjectProxy";
@@ -14,7 +13,6 @@ export function isSubjectProxy(someObject?: unknown) {
   const potentialSubjectProxy = someObject as SubjectProxy;
   return !(
     typeof potentialSubjectProxy[_writeGraphs] !== "object" ||
-    typeof potentialSubjectProxy[_readGraphs] !== "object" ||
     typeof potentialSubjectProxy[_getUnderlyingDataset] !== "object" ||
     typeof potentialSubjectProxy[_getUnderlyingNode] !== "object" ||
     typeof potentialSubjectProxy[_proxyContext] !== "object"

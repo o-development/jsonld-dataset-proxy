@@ -29,25 +29,3 @@ export function write(...graphs: GraphType[]): InteractOptions {
     },
   };
 }
-
-export function read(..._graphs: GraphType[]): InteractOptions {
-  return {
-    using(..._objects: ObjectLike[]): () => void {
-      throw new Error("Not Implemented");
-    },
-    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
-      throw new Error("Not Implemented");
-    },
-  };
-}
-
-export function interact(..._graphs: GraphType[]): InteractOptions {
-  return {
-    using(..._objects: ObjectLike[]): () => void {
-      throw new Error("Not Implemented");
-    },
-    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
-      throw new Error("Not Implemented");
-    },
-  };
-}

@@ -59,7 +59,6 @@ export function checkArrayModification(
         false,
         proxyContext.duplicate({
           writeGraphs: [defaultGraph()],
-          readGraphs: [],
         })
       );
       const isValidAddition =
