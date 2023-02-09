@@ -1,5 +1,6 @@
 import { createDataset, serializedToDataset } from "o-dataset-pack";
 import {
+  graphOf,
   jsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
   write,
@@ -1234,15 +1235,61 @@ describe("jsonldDatasetProxy", () => {
           .write(namedNode("http://example.com/Patient4Doc"))
           .fromSubject<PatientShape>(namedNode("https://example.com/Patient4"));
         patient4.name = ["Jackson"];
-        console.log(JSON.stringify(dataset.toString()));
         expect(dataset.toString()).toBe(
           '<https://example.com/Patient4> <http://hl7.org/fhir/name> "Jackson" <http://example.com/Patient4Doc> .\n'
         );
       });
     });
 
+    describe("graphOf", () => {
+      it("detects the graph of a single value", async () => {
+        const [, observation] = await getGraphLoadedDataset();
+        expect(graphOf(observation, "subject")[0].value).toBe(
+          "http://example.com/Observation1Doc"
+        );
+        expect(
+          graphOf(observation, "subject", observation.subject)[0].value
+        ).toBe("http://example.com/Observation1Doc");
+        expect(
+          graphOf(observation.subject as PatientShape, "age")[0].value
+        ).toBe("http://example.com/Patient1Doc");
+      });
+
+      it("detects the graph of an array value", async () => {
+        const [, observation] = await getGraphLoadedDataset();
+        const patient1 = observation.subject as PatientShape;
+        expect(graphOf(patient1, "name", 0)[0].value).toBe(
+          "http://example.com/Patient1Doc"
+        );
+        expect(graphOf(patient1, "roommate", 0)[0].value).toBe(
+          "http://example.com/Patient1Doc"
+        );
+        expect(
+          graphOf(patient1, "roommate", patient1.roommate?.[1])[0].value
+        ).toBe("http://example.com/Patient1Doc");
+      });
+
+      it("detects the graph of a value in multiple graphs", async () => {
+        const [dataset, observation] = await getGraphLoadedDataset();
+        dataset.add(
+          quad(
+            namedNode("http://example.com/Observation1"),
+            namedNode("http://hl7.org/fhir/subject"),
+            namedNode("http://example.com/Patient1"),
+            namedNode("http://example.com/SomeOtherDoc")
+          )
+        );
+        expect(graphOf(observation, "subject")[0].value).toBe(
+          "http://example.com/Observation1Doc"
+        );
+        expect(graphOf(observation, "subject")[1].value).toBe(
+          "http://example.com/SomeOtherDoc"
+        );
+      });
+    });
+
     describe.skip("write method", () => {
-      // it("changes the write graph", () => {});
+      // it("changes the write graph", async () => {});
       // it("allows the write graph to be reset", () => {});
     });
 
