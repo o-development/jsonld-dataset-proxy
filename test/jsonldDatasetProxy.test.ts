@@ -1229,6 +1229,59 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("Graph Methods", () => {
+    describe("builder", () => {
+      it("sets write graph", async () => {
+        const [dataset, , builder] = await getEmptyObservationDataset();
+        const patient4 = builder
+          .write(namedNode("http://example.com/Patient4Doc"))
+          .fromSubject<PatientShape>(namedNode("https://example.com/Patient4"));
+        patient4.name = ["Jackson"];
+        console.log(JSON.stringify(dataset.toString()));
+        expect(dataset.toString()).toBe(
+          '<https://example.com/Patient4> <http://hl7.org/fhir/name> "Jackson" <http://example.com/Patient4Doc> .\n'
+        );
+      });
+
+      it("sets read graph", async () => {
+        const [, , builder] = await getGraphLoadedDataset();
+        const patient1 = builder
+          .read(
+            namedNode("http://example.com/Patient1Doc"),
+            namedNode("http://example.com/Patient2Doc")
+          )
+          .fromSubject<PatientShape>(namedNode("http://example.com/Patient1"));
+        expect(patient1.name?.[0]).toBe("Garrett");
+        expect(patient1.roommate?.length).toBe(2);
+        expect(patient1.roommate?.[0].name?.[0]).toBe("Rob");
+        expect(patient1.roommate?.[1].name).toBe(undefined);
+        expect(patient1.roommate?.[1]["@id"]).toBe(
+          "http://example.com/Patient2"
+        );
+      });
+
+      it("sets interaction graph", async () => {
+        const [dataset, , builder] = await getGraphLoadedDataset();
+        const patient1 = builder
+          .interact(namedNode("http://example.com/Patient1Doc"))
+          .fromSubject<PatientShape>(namedNode("http://example.com/Patient1"));
+        patient1.name = ["Othername"];
+        expect(patient1.roommate?.[1].name).toBe(undefined);
+        expect(
+          dataset
+            .match(
+              namedNode("https://example.com/Patient1"),
+              namedNode("http://hl7.org/fhir/name")
+            )
+            .toArray()[0].graph.value
+        ).toBe("http://example.com/Patient1Doc");
+      });
+    });
+
+    describe.skip("write method", () => {
+      // it("changes the write graph", () => {});
+      // it("allows the write graph to be reset", () => {});
+    });
+
     it.skip("lets a new patient get created in a new graph", async () => {
       // TODO
       const [dataset, observation, builder] = await getGraphLoadedDataset();
@@ -1246,18 +1299,19 @@ describe("jsonldDatasetProxy", () => {
       patient4.name = ["Licky"];
       patient4.age = 3;
       patient4.roommate = [patient1, patient2, patient3];
-      console.log("After setup ==============================================");
       const reset1 = write(patient1Doc).using(patient1);
       patient1.roommate?.push(patient4);
-      // const reset2 = write(patient2Doc).using(patient2);
-      // patient2.roommate?.push(patient4);
-      // const reset3 = write(patient3Doc).using(patient3);
-      // patient3.roommate?.push(patient4);
-      // reset1();
-      // reset2();
-      // reset3();
+      const reset2 = write(patient2Doc).using(patient2);
+      patient2.roommate?.push(patient4);
+      const reset3 = write(patient3Doc).using(patient3);
+      patient3.roommate?.push(patient4);
+      reset1();
+      reset2();
+      reset3();
+      patient3.name?.push("Some other name");
 
       const patient4Node = namedNode("http://example.com/Patient4");
+      console.log(dataset.toString());
       console.log(dataset.match(patient4Node).toString());
       console.log(dataset.match(null, null, patient4Node).toString());
 
