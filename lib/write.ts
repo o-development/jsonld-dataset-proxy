@@ -1,5 +1,11 @@
 import { getSubjectProxyFromObject } from "./subjectProxy/isSubjectProxy";
-import { GraphType, ObjectLike, _proxyContext, _writeGraphs } from "./types";
+import {
+  GraphType,
+  ObjectLike,
+  _getUnderlyingNode,
+  _proxyContext,
+  _writeGraphs,
+} from "./types";
 
 interface InteractOptions {
   using(...objects: ObjectLike[]): () => void;
@@ -24,8 +30,16 @@ export function write(...graphs: GraphType[]): InteractOptions {
         onEndFunctions.forEach((func) => func());
       };
     },
-    usingCopy<T extends ObjectLike>(..._objects: T[]): T[] {
-      throw new Error("Not Implemented");
+    usingCopy<T extends ObjectLike>(...objects: T[]): T[] {
+      return objects.map((object) => {
+        const proxy = getSubjectProxyFromObject(object);
+        const newProxyContext = proxy[_proxyContext].duplicate({
+          writeGraphs: graphs,
+        });
+        return newProxyContext.createSubjectProxy(
+          proxy[_getUnderlyingNode]
+        ) as unknown as T;
+      });
     },
   };
 }

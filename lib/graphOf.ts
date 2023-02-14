@@ -1,5 +1,5 @@
 import { namedNode } from "@rdfjs/data-model";
-import { getSubjectProxyFromObject } from "./subjectProxy/isSubjectProxy";
+import { getSubjectProxyFromObject, isSubjectProxy } from "./subjectProxy/isSubjectProxy";
 import {
   GraphType,
   ObjectLike,
@@ -20,7 +20,7 @@ import {
 export function graphOf<Subject extends ObjectLike, Key extends keyof Subject>(
   subject: Subject,
   predicate: Key,
-  object?: NonNullable<Subject[Key]> extends Array<any>
+  object?: NonNullable<Subject[Key]> extends Array<unknown>
     ? number | ObjectLike
     : ObjectLike
 ): GraphType[] {
@@ -40,8 +40,15 @@ export function graphOf<Subject extends ObjectLike, Key extends keyof Subject>(
         `Key "${String(predicate)}" of ${subject} is not an array.`
       );
     }
+
+    // PICKUP: Problem: arrays will return regular values that are not nodes, so it's not always possible to correlate these value with nodes
+    // Might want to consider a _getNodeAtIndex(index) function. This will require a rewrite of the array get method
+    const objectValue[object];
     if (!proxyArray[object]) {
       throw new Error(`Index ${object} does not exist.`);
+    }
+    if (isSubjectProxy(proxyArray[object])) {
+      objectNode = proxyArray[object][1]
     }
     objectNode = proxyArray[object];
   } else {
@@ -53,5 +60,6 @@ export function graphOf<Subject extends ObjectLike, Key extends keyof Subject>(
     predicateNode,
     objectNode
   );
+  console.log(subjectNode, predicateNode, objectNode);
   return quads.toArray().map((quad): GraphType => quad.graph as GraphType);
 }

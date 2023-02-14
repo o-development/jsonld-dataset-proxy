@@ -21,7 +21,7 @@ import {
   patientDataWithBlankNodes,
   tinyPatientDataWithBlankNodes,
 } from "./patientExampleData";
-import { namedNode, quad, literal } from "@rdfjs/data-model";
+import { namedNode, quad, literal, defaultGraph } from "@rdfjs/data-model";
 import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 
@@ -1288,9 +1288,57 @@ describe("jsonldDatasetProxy", () => {
       });
     });
 
-    describe.skip("write method", () => {
-      // it("changes the write graph", async () => {});
-      // it("allows the write graph to be reset", () => {});
+    describe("write method", () => {
+      it("changes the write graph", async () => {
+        const [, observation] = await getGraphLoadedDataset();
+        write(namedNode("http://example.com/SomeOtherDoc")).using(observation);
+        observation.notes = "Cool Notes";
+        expect(graphOf(observation, "notes")[0].value).toBe(
+          "http://example.com/SomeOtherDoc"
+        );
+      });
+
+      it("allows the write graph to be reset", async () => {
+        const doc1 = namedNode("http://example.com/Doc1");
+        const doc2 = namedNode("http://example.com/Doc2");
+        const doc3 = namedNode("http://example.com/Doc3");
+
+        const [dataset, patient] = await getEmptyPatientDataset();
+        patient.name?.push("default");
+        const end1 = write(doc1).using(patient);
+        patient.name?.push("1");
+        const end2 = write(doc2).using(patient);
+        patient.name?.push("2");
+        const end3 = write(doc3).using(patient);
+        patient.name?.push("3");
+        end3();
+        patient.name?.push("2 again");
+        end2();
+        patient.name?.push("1 again");
+        end1();
+        patient.name?.push("default again");
+
+        console.log(dataset.toString());
+
+        expect(graphOf(patient, "name", 0)[0].value).toBe(defaultGraph().value);
+        expect(graphOf(patient, "name", 1)[0].value).toBe(doc1.value);
+        expect(graphOf(patient, "name", 2)[0].value).toBe(doc2.value);
+        expect(graphOf(patient, "name", 3)[0].value).toBe(doc3.value);
+        expect(graphOf(patient, "name", 4)[0].value).toBe(doc2.value);
+        expect(graphOf(patient, "name", 5)[0].value).toBe(doc1.value);
+        expect(graphOf(patient, "name", 6)[0].value).toBe(defaultGraph().value);
+      });
+
+      it("copies the proxy and changes the write graphs without modifying the original", async () => {
+        const doc1 = namedNode("http://example.com/Doc1");
+
+        const [, patient] = await getEmptyPatientDataset();
+        patient.name?.push("Default");
+        const [patientOnDoc1] = write(doc1).usingCopy(patient);
+        patientOnDoc1.name?.push("Doc1");
+        expect(graphOf(patient, "name", 0)[0].value).toBe(defaultGraph().value);
+        expect(graphOf(patient, "name", 0)[1].value).toBe(doc1.value);
+      });
     });
 
     it.skip("lets a new patient get created in a new graph", async () => {
