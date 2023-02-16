@@ -1,8 +1,8 @@
-import { BlankNode, NamedNode } from "@rdfjs/types";
+import { NamedNode } from "@rdfjs/types";
 import {
   ObjectJsonRepresentation,
-  objectToJsonldRepresentation,
-} from "../util/objectToJsonRepresentation";
+  nodeToJsonldRepresentation,
+} from "../util/nodeToJsonldRepresentation";
 import { quad } from "@rdfjs/data-model";
 import {
   ArrayMethodBuildersType,
@@ -10,49 +10,59 @@ import {
   methodNames,
 } from "./arrayMethods";
 import {
+  ObjectType,
   QuadMatch,
+  SubjectType,
+  _getNodeAtIndex,
+  _getUnderlyingArrayTarget,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _isSubjectOriented,
 } from "../types";
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
+import { NodeSet } from "../util/NodeSet";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
-  curArray: ObjectJsonRepresentation[],
+  curArray: ObjectType[],
   isSubjectOriented?: boolean
 ];
 
-function getProcessedObjects(
+function updateArrayOrder(
   target: ArrayProxyTarget,
   proxyContext: ProxyContext
-): ObjectJsonRepresentation[] {
+): void {
   const quads = proxyContext.dataset.match(...target[0]);
-  const datasetObjects = new Set(
-    quads.toArray().map((quad) => {
-      // If this this a subject-oriented document
-      if (target[2]) {
-        return proxyContext.createSubjectProxy(
-          quad.subject as NamedNode | BlankNode
-        );
-      }
-      return objectToJsonldRepresentation(quad, proxyContext);
-    })
-  );
-  const processedObjects: ObjectJsonRepresentation[] = [];
+  const datasetObjects = new NodeSet();
+  quads.toArray().forEach((quad) => {
+    // If this this a subject-oriented document
+    if (target[2]) {
+      datasetObjects.add(quad.subject as SubjectType);
+    } else {
+      datasetObjects.add(quad.object as ObjectType);
+    }
+  });
+  const processedObjects: ObjectType[] = [];
   target[1].forEach((arrItem) => {
     if (datasetObjects.has(arrItem)) {
       processedObjects.push(arrItem);
       datasetObjects.delete(arrItem);
     }
   });
-  Array.from(datasetObjects).forEach((datasetObject) => {
+  datasetObjects.toArray().forEach((datasetObject) => {
     processedObjects.push(datasetObject);
   });
   target[1] = processedObjects;
+}
 
-  return processedObjects;
+function getProcessedArray(
+  target: ArrayProxyTarget,
+  proxyContext: ProxyContext
+): ObjectJsonRepresentation[] {
+  return target[1].map((node) => {
+    return nodeToJsonldRepresentation(node, proxyContext);
+  });
 }
 
 export function createArrayHandler(
@@ -67,42 +77,56 @@ export function createArrayHandler(
           return target[0];
         case _isSubjectOriented:
           return target[2];
+        case _getUnderlyingArrayTarget:
+          return target;
+        case _getNodeAtIndex:
+          return (index: number): ObjectType | undefined => {
+            updateArrayOrder(target, proxyContext);
+            return target[1][index];
+          };
       }
 
       // TODO: Because of this, every get operation is O(n). Consider changing
       // this
-      const processedObjects = getProcessedObjects(target, proxyContext);
+      updateArrayOrder(target, proxyContext);
+      const processedArray = getProcessedArray(target, proxyContext);
       if (methodNames.has(key as keyof ArrayMethodBuildersType)) {
         return arrayMethodsBuilders[key as keyof ArrayMethodBuildersType](
           target,
+          key as string,
           proxyContext
         );
       }
-      return Reflect.get(processedObjects, key, ...rest);
+      return Reflect.get(processedArray, key, ...rest);
     },
     getOwnPropertyDescriptor(target, key, ...rest) {
-      const processedObjects = getProcessedObjects(target, proxyContext);
-      return Reflect.getOwnPropertyDescriptor(processedObjects, key, ...rest);
+      updateArrayOrder(target, proxyContext);
+      const processedArray = getProcessedArray(target, proxyContext);
+      return Reflect.getOwnPropertyDescriptor(processedArray, key, ...rest);
     },
     ownKeys(target, ...rest) {
-      const processedObjects = getProcessedObjects(target, proxyContext);
-      return Reflect.ownKeys(processedObjects, ...rest);
+      updateArrayOrder(target, proxyContext);
+      const processedArray = getProcessedArray(target, proxyContext);
+      return Reflect.ownKeys(processedArray, ...rest);
     },
     getPrototypeOf(target, ...rest) {
-      const processedObjects = getProcessedObjects(target, proxyContext);
+      updateArrayOrder(target, proxyContext);
+      const processedObjects = getProcessedArray(target, proxyContext);
       return Reflect.getPrototypeOf(processedObjects, ...rest);
     },
     has(target, ...rest) {
-      const processedObjects = getProcessedObjects(target, proxyContext);
+      updateArrayOrder(target, proxyContext);
+      const processedObjects = getProcessedArray(target, proxyContext);
       return Reflect.has(processedObjects, ...rest);
     },
     set(target, key, value, ...rest) {
-      getProcessedObjects(target, proxyContext);
+      updateArrayOrder(target, proxyContext);
       if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const index = parseInt(key);
         return modifyArray(
           {
             target,
+            key,
             toAdd: [value],
             quadsToDelete(allQuads) {
               return allQuads[index] ? [allQuads[index]] : [];

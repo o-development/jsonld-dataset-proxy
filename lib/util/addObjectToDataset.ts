@@ -6,20 +6,13 @@ import { getNodeFromRawObject, getNodeFromRawValue } from "./getNodeFromRaw";
 import { RawObject, RawValue } from "./RawObject";
 import { ProxyContext } from "../ProxyContext";
 import { isSubjectProxy } from "../subjectProxy/isSubjectProxy";
-
-function nodeToSetKey(node: NamedNode | BlankNode): string {
-  if (node.termType === "NamedNode") {
-    return `NamedNode${node.value}`;
-  } else {
-    return `BlankNode${node.value}`;
-  }
-}
+import { NodeSet } from "./NodeSet";
 
 export function addRawValueToDatasetRecursive(
   subject: NamedNode | BlankNode,
   key: string,
   value: RawValue,
-  visitedObjects: Set<string>,
+  visitedObjects: NodeSet,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): void {
@@ -35,7 +28,7 @@ export function addRawValueToDatasetRecursive(
     });
   } else {
     // Delete any triples if the id is the same
-    if (!visitedObjects.has(nodeToSetKey(object)) && !isSubjectProxy(value)) {
+    if (!visitedObjects.has(object) && !isSubjectProxy(value)) {
       dataset.deleteMatches(object, undefined, undefined);
     }
     proxyContext.writeGraphs.forEach((graph) => {
@@ -59,7 +52,7 @@ export function addRawValueToDatasetRecursive(
 
 export function addRawObjectToDatasetRecursive(
   item: RawObject,
-  visitedObjects: Set<string>,
+  visitedObjects: NodeSet,
   shouldDeleteOldTriples: boolean,
   proxyContext: ProxyContext
 ): SubjectProxy {
@@ -68,10 +61,10 @@ export function addRawObjectToDatasetRecursive(
   }
   const { dataset } = proxyContext;
   const subject = getNodeFromRawObject(item, proxyContext.contextUtil);
-  if (visitedObjects.has(nodeToSetKey(subject))) {
+  if (visitedObjects.has(subject)) {
     return proxyContext.createSubjectProxy(subject);
   }
-  visitedObjects.add(nodeToSetKey(subject));
+  visitedObjects.add(subject);
   Object.entries(item).forEach(([key, value]) => {
     if (key === "@id") {
       return;
@@ -112,7 +105,7 @@ export function addObjectToDataset(
 ): SubjectProxy {
   return addRawObjectToDatasetRecursive(
     item,
-    new Set(),
+    new NodeSet(),
     shouldDeleteOldTriples,
     proxyContext
   );

@@ -4,6 +4,8 @@ import {
   jsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
   write,
+  _getNodeAtIndex,
+  _getUnderlyingArrayTarget,
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _getUnderlyingNode,
@@ -977,6 +979,17 @@ describe("jsonldDatasetProxy", () => {
       const match = roommateArr[_getUnderlyingMatch];
       expect(match[0].value).toBe("http://example.com/Patient1");
       expect(match[1].value).toBe("http://hl7.org/fhir/roommate");
+      expect(roommateArr[_getNodeAtIndex](0).value).toBe(
+        "http://example.com/Patient2"
+      );
+      expect(roommateArr[_getNodeAtIndex](10)).toBe(undefined);
+      expect(observation.subject.name[_getNodeAtIndex](0).value).toBe(
+        "Garrett"
+      );
+      const underlyingArrayTarget = roommateArr[_getUnderlyingArrayTarget];
+      expect(underlyingArrayTarget[1][0].value).toBe(
+        "http://example.com/Patient2"
+      );
     });
   });
 
@@ -1058,7 +1071,7 @@ describe("jsonldDatasetProxy", () => {
           age: 2,
         })
       ).toThrowError(
-        `Cannot add value to collection. This must contain a quad that matches (null, namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), namedNode("http://hl7.org/fhir/Patient"), null)`
+        `Cannot add value to collection. This must contain a quad that matches (null, namedNode(http://www.w3.org/1999/02/22-rdf-syntax-ns#type), namedNode(http://hl7.org/fhir/Patient), null)`
       );
     });
 
@@ -1318,8 +1331,6 @@ describe("jsonldDatasetProxy", () => {
         end1();
         patient.name?.push("default again");
 
-        console.log(dataset.toString());
-
         expect(graphOf(patient, "name", 0)[0].value).toBe(defaultGraph().value);
         expect(graphOf(patient, "name", 1)[0].value).toBe(doc1.value);
         expect(graphOf(patient, "name", 2)[0].value).toBe(doc2.value);
@@ -1343,7 +1354,7 @@ describe("jsonldDatasetProxy", () => {
 
     it.skip("lets a new patient get created in a new graph", async () => {
       // TODO
-      const [dataset, observation, builder] = await getGraphLoadedDataset();
+      const [, observation, builder] = await getGraphLoadedDataset();
       const patient1Doc = namedNode("http://example.com/patient1Doc");
       const patient2Doc = namedNode("http://example.com/patient2Doc");
       const patient3Doc = namedNode("http://example.com/patient3Doc");
@@ -1370,9 +1381,6 @@ describe("jsonldDatasetProxy", () => {
       patient3.name?.push("Some other name");
 
       const patient4Node = namedNode("http://example.com/Patient4");
-      console.log(dataset.toString());
-      console.log(dataset.match(patient4Node).toString());
-      console.log(dataset.match(null, null, patient4Node).toString());
 
       // let patient4: PatientShape;
       // await write(patient4Doc, async function fancyCallback() {

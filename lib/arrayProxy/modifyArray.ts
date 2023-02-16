@@ -1,37 +1,18 @@
 import { defaultGraph } from "@rdfjs/data-model";
-import {
-  BlankNode,
-  DefaultGraph,
-  Literal,
-  NamedNode,
-  Quad,
-} from "@rdfjs/types";
+import { Quad } from "@rdfjs/types";
 import { ProxyTransactionalDataset } from "o-dataset-pack";
 import { createExtendedDatasetFactory } from "o-dataset-pack/dist/createExtendedDataset";
 import { ProxyContext } from "../ProxyContext";
+import { ObjectType } from "../types";
 import { addObjectToDataset } from "../util/addObjectToDataset";
-import { getNodeFromRawObject } from "../util/getNodeFromRaw";
-import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
+import {
+  getNodeFromRawObject,
+  getNodeFromRawValue,
+} from "../util/getNodeFromRaw";
+import { nodeToString } from "../util/NodeSet";
+import { ObjectJsonRepresentation } from "../util/nodeToJsonldRepresentation";
 import { RawObject, RawValue } from "../util/RawObject";
 import { ArrayProxyTarget } from "./createArrayHandler";
-
-export function nodeToString(
-  node: NamedNode | BlankNode | DefaultGraph | Literal | null | undefined
-): string {
-  if (node == null) {
-    return "null";
-  }
-  switch (node.termType) {
-    case "NamedNode":
-      return `namedNode("${node.value}")`;
-    case "BlankNode":
-      return `blankNode("${node.value}")`;
-    case "Literal":
-      return `literal(${node.value}, ${node.datatype.value})`;
-    case "DefaultGraph":
-      return "defaultGraph()";
-  }
-}
 
 export function checkArrayModification(
   target: ArrayProxyTarget,
@@ -87,16 +68,17 @@ export function checkArrayModification(
 export function modifyArray<ReturnType>(
   config: {
     target: ArrayProxyTarget;
+    key: string;
     toAdd?: RawValue[];
     quadsToDelete?: (quads: Quad[]) => Quad[];
     modifyCoreArray: (
       coreArray: ArrayProxyTarget[1],
-      addedValues: ObjectJsonRepresentation[]
+      addedValues: ArrayProxyTarget[1]
     ) => ReturnType;
   },
   proxyContext: ProxyContext
 ): ReturnType {
-  const { target, toAdd, quadsToDelete, modifyCoreArray } = config;
+  const { target, toAdd, quadsToDelete, modifyCoreArray, key } = config;
   const { dataset, contextUtil } = proxyContext;
   checkArrayModification(target, toAdd || [], proxyContext);
 
@@ -122,7 +104,7 @@ export function modifyArray<ReturnType>(
         : item;
     })
     .filter(
-      (val) => val !== undefined
+      (val) => val != undefined
     ) as NonNullable<ObjectJsonRepresentation>[];
   if (!target[2] && target[0][0] && target[0][1] && added) {
     addObjectToDataset(
@@ -134,7 +116,14 @@ export function modifyArray<ReturnType>(
       proxyContext
     );
   }
+  const addedNodes = added
+    ? (added
+        .map((addedValue) => {
+          return getNodeFromRawValue(key, addedValue, proxyContext);
+        })
+        .filter((val) => val != undefined) as ObjectType[])
+    : [];
 
   // Allow the base array to be modified
-  return modifyCoreArray(target[1], added);
+  return modifyCoreArray(target[1], addedNodes);
 }

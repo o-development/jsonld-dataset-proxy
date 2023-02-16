@@ -18,8 +18,10 @@ export * from "./subjectProxy/createSubjectHandler";
 export * from "./subjectProxy/SubjectProxy";
 export * from "./subjectProxy/getValueForKey";
 export * from "./subjectProxy/deleteFromDataset";
+export * from "./subjectProxy/isSubjectProxy";
 
 export * from "./util/addObjectToDataset";
-export * from "./util/objectToJsonRepresentation";
+export * from "./util/nodeToJsonldRepresentation";
 export * from "./util/RawObject";
 export * from "./util/getNodeFromRaw";
+export * from "./util/NodeSet";

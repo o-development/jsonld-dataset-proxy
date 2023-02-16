@@ -1,10 +1,14 @@
 import { ArrayProxyTarget } from "./createArrayHandler";
-import { ObjectJsonRepresentation } from "../util/objectToJsonRepresentation";
+import {
+  nodeToJsonldRepresentation,
+  ObjectJsonRepresentation,
+} from "../util/nodeToJsonldRepresentation";
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
 
 export type methodBuilder<Return> = (
   target: ArrayProxyTarget,
+  key: string,
   proxyContext: ProxyContext
 ) => Return;
 
@@ -33,11 +37,12 @@ export const methodNames: Set<keyof ArrayMethodBuildersType> = new Set([
 ]);
 
 export const arrayMethodsBuilders: ArrayMethodBuildersType = {
-  copyWithin: (target, proxyContext) => {
+  copyWithin: (target, key, proxyContext) => {
     return (targetIndex, start, end) => {
       return modifyArray(
         {
           target,
+          key,
           quadsToDelete: (quads) => {
             const realEnd = end || quads.length;
             return quads.slice(targetIndex, targetIndex + (realEnd - start));
@@ -54,11 +59,12 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
       );
     };
   },
-  fill: (target, proxyContext) => {
+  fill: (target, key, proxyContext) => {
     return (value, start, end) => {
       return modifyArray(
         {
           target,
+          key,
           toAdd: [value],
           quadsToDelete: (quads) => {
             return quads.slice(start, end);
@@ -75,27 +81,32 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
       );
     };
   },
-  pop: (target, proxyContext) => {
+  pop: (target, key, proxyContext) => {
     return () => {
       return modifyArray(
         {
           target,
+          key,
           quadsToDelete: (quads) => {
             return quads[quads.length - 1] ? [quads[quads.length - 1]] : [];
           },
           modifyCoreArray: (coreArray) => {
-            return coreArray.pop();
+            const popped = coreArray.pop();
+            return popped
+              ? nodeToJsonldRepresentation(popped, proxyContext)
+              : undefined;
           },
         },
         proxyContext
       );
     };
   },
-  push: (target, proxyContext) => {
+  push: (target, key, proxyContext) => {
     return (...args) => {
       return modifyArray(
         {
           target,
+          key,
           toAdd: args,
           modifyCoreArray: (coreArray, addedValues) => {
             coreArray.push(...addedValues);
@@ -106,54 +117,84 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
       );
     };
   },
-  reverse: (target) => {
+  reverse: (target, _key, proxyContext) => {
     return () => {
-      return target[1].reverse();
+      target[1].reverse();
+      return proxyContext.createArrayProxy(
+        target[0],
+        target[2]
+      ) as ObjectJsonRepresentation[];
     };
   },
-  shift: (target, proxyContext) => {
+  shift: (target, key, proxyContext) => {
     return () => {
       return modifyArray(
         {
           target,
+          key,
           quadsToDelete: (quads) => {
             return quads[0] ? [quads[0]] : [];
           },
           modifyCoreArray: (coreArray) => {
-            return coreArray.shift();
+            const shifted = coreArray.shift();
+            return shifted
+              ? nodeToJsonldRepresentation(shifted, proxyContext)
+              : undefined;
           },
         },
         proxyContext
       );
     };
   },
-  sort: (target) => {
-    return (...args) => {
-      return target[1].sort(...args);
+  sort: (target, _key, proxyContext) => {
+    return (compareFunction) => {
+      target[1].sort(
+        compareFunction
+          ? (a, b) => {
+              return compareFunction(
+                nodeToJsonldRepresentation(a, proxyContext),
+                nodeToJsonldRepresentation(b, proxyContext)
+              );
+            }
+          : undefined
+      );
+      return proxyContext.createArrayProxy(
+        target[0],
+        target[2]
+      ) as ObjectJsonRepresentation[];
     };
   },
-  splice: (target, proxyContext) => {
+  splice: (target, key, proxyContext) => {
     return (start, deleteCount, ...items: ObjectJsonRepresentation[]) => {
       return modifyArray(
         {
           target,
+          key,
           toAdd: items,
           quadsToDelete: (quads) => {
             return quads.splice(start, deleteCount);
           },
           modifyCoreArray: (coreArray, addedValues) => {
-            return coreArray.splice(start, deleteCount || 0, ...addedValues);
+            const spliced = coreArray.splice(
+              start,
+              deleteCount || 0,
+              ...addedValues
+            );
+            return spliced.map((node) => {
+              return nodeToJsonldRepresentation(node, proxyContext);
+            });
           },
         },
         proxyContext
       );
     };
   },
-  unshift: (target, proxyContext) => {
+  unshift: (target, key, proxyContext) => {
     return (...args) => {
       return modifyArray(
         {
           target,
+          key,
           toAdd: args,
           modifyCoreArray: (coreArray, addedValues) => {
             coreArray.unshift(...addedValues);

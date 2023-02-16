@@ -1,15 +1,19 @@
 import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
-import { createArrayHandler } from "./arrayProxy/createArrayHandler";
+import {
+  ArrayProxyTarget,
+  createArrayHandler,
+} from "./arrayProxy/createArrayHandler";
 import { createSubjectHander } from "./subjectProxy/createSubjectHandler";
 import { SubjectProxy } from "./subjectProxy/SubjectProxy";
 import { ArrayProxy } from "./arrayProxy/ArrayProxy";
-import { GraphType, QuadMatch } from "./types";
+import { GraphType, QuadMatch, _getUnderlyingArrayTarget } from "./types";
 import { ContextUtil } from "./ContextUtil";
 
 interface ProxyContextOptions {
   dataset: Dataset;
   contextUtil: ContextUtil;
   writeGraphs: GraphType[];
+  prefilledArrayTargets?: ArrayProxyTarget[];
 }
 
 /**
@@ -29,6 +33,11 @@ export class ProxyContext {
     this.dataset = options.dataset;
     this.contextUtil = options.contextUtil;
     this.writeGraphs = options.writeGraphs;
+    if (options.prefilledArrayTargets) {
+      options.prefilledArrayTargets.forEach((target) => {
+        this.createArrayProxy(target[0], target[2], target);
+      });
+    }
   }
 
   public createSubjectProxy(node: NamedNode | BlankNode): SubjectProxy {
@@ -52,12 +61,13 @@ export class ProxyContext {
 
   public createArrayProxy(
     quadMatch: QuadMatch,
-    isSubjectOriented = false
+    isSubjectOriented = false,
+    initialTarget?: ArrayProxyTarget
   ): ArrayProxy {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
-        [quadMatch, [], isSubjectOriented],
+        initialTarget || [quadMatch, [], isSubjectOriented],
         createArrayHandler(this)
       ) as unknown as ArrayProxy;
       this.arrayMap.set(key, proxy);
@@ -66,11 +76,16 @@ export class ProxyContext {
   }
 
   public duplicate(alternativeOptions: Partial<ProxyContextOptions>) {
+    const prefilledArrayTargets: ArrayProxyTarget[] = [];
+    this.arrayMap.forEach((value) => {
+      prefilledArrayTargets.push(value[_getUnderlyingArrayTarget]);
+    });
     const fullOptions: ProxyContextOptions = {
       ...{
         dataset: this.dataset,
         contextUtil: this.contextUtil,
         writeGraphs: this.writeGraphs,
+        prefilledArrayTargets,
       },
       ...alternativeOptions,
     };

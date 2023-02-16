@@ -1,6 +1,6 @@
 import { SubjectProxyTarget } from "./createSubjectHandler";
 import { namedNode } from "@rdfjs/data-model";
-import { objectToJsonldRepresentation } from "../util/objectToJsonRepresentation";
+import { nodeToJsonldRepresentation } from "../util/nodeToJsonldRepresentation";
 import { SubjectProxy } from "./SubjectProxy";
 import { ArrayProxy } from "../arrayProxy/ArrayProxy";
 import { ProxyContext } from "../ProxyContext";
@@ -44,8 +44,8 @@ export function getValueForKey(
   if (objectDataset.size === 0) {
     return undefined;
   } else if (objectDataset.size === 1) {
-    return objectToJsonldRepresentation(
-      objectDataset.toArray()[0],
+    return nodeToJsonldRepresentation(
+      objectDataset.toArray()[0].object,
       proxyContext
     );
   } else {
