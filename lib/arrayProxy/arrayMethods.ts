@@ -148,16 +148,26 @@ export const arrayMethodsBuilders: ArrayMethodBuildersType = {
   },
   sort: (target, _key, proxyContext) => {
     return (compareFunction) => {
-      target[1].sort(
-        compareFunction
-          ? (a, b) => {
-              return compareFunction(
-                nodeToJsonldRepresentation(a, proxyContext),
-                nodeToJsonldRepresentation(b, proxyContext)
-              );
-            }
-          : undefined
-      );
+      if (compareFunction) {
+        target[1].sort((a, b) => {
+          return compareFunction(
+            nodeToJsonldRepresentation(a, proxyContext),
+            nodeToJsonldRepresentation(b, proxyContext)
+          );
+        });
+      } else if (target) {
+        target[1].sort((a, b) => {
+          const aReal = nodeToJsonldRepresentation(a, proxyContext);
+          const bReal = nodeToJsonldRepresentation(b, proxyContext);
+          if (aReal > bReal) {
+            return 1;
+          } else if (bReal > aReal) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+      }
       return proxyContext.createArrayProxy(
         target[0],
         target[2]

@@ -513,6 +513,17 @@ describe("jsonldDatasetProxy", () => {
       );
     });
 
+    it("adds a proxy object to the array", async () => {
+      const [dataset, observation, builder] = await getTinyLoadedDataset();
+      const patient3 = builder.fromSubject(
+        namedNode("http://example.com/Patient3")
+      );
+      const patient1 = builder.fromSubject(
+        namedNode("http://example.com/Patient1")
+      );
+      patient3.roommate.push(patient1);
+    });
+
     it("sets a primitive on an array", async () => {
       const [dataset, patient] = await getEmptyPatientDataset();
       (patient.name as string[])[0] = "jon";
@@ -618,7 +629,7 @@ describe("jsonldDatasetProxy", () => {
       const [dataset, observation] = await getTinyLoadedDatasetWithBlankNodes();
       delete observation.subject?.roommate?.[0];
       expect(dataset.toString()).toBe(
-        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> _:b24_Patient1 .\n_:b24_Patient1 <http://hl7.org/fhir/name> "Garrett" .\n'
+        '<http://example.com/Observation1> <http://hl7.org/fhir/subject> _:b25_Patient1 .\n_:b25_Patient1 <http://hl7.org/fhir/name> "Garrett" .\n'
       );
     });
 
@@ -899,6 +910,28 @@ describe("jsonldDatasetProxy", () => {
         expect(dataset.toString()).toBe(
           '<http://example.com/Patient1> <http://hl7.org/fhir/name> "Garrett" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Bobby" .\n<http://example.com/Patient1> <http://hl7.org/fhir/name> "Ferguson" .\n'
         );
+      });
+
+      it("handles sort without a sort function", async () => {
+        const [, patient] = await getArrayLoadedDataset();
+        patient.name?.sort();
+        expect(patient.name).toEqual(["Bobby", "Ferguson", "Garrett"]);
+      });
+
+      it("handles sort without a sort function and there are two equal values", async () => {
+        const [dataset, patient] = await getArrayLoadedDataset();
+        dataset.add(
+          quad(
+            namedNode("http://example.com/Patient1"),
+            namedNode("http://hl7.org/fhir/name"),
+            literal(
+              "Bobby",
+              namedNode("http://www.w3.org/2001/XMLSchema#token")
+            )
+          )
+        );
+        patient.name?.sort();
+        expect(patient.name).toEqual(["Bobby", "Bobby", "Ferguson", "Garrett"]);
       });
 
       it("handles splice", async () => {
@@ -1299,6 +1332,21 @@ describe("jsonldDatasetProxy", () => {
           "http://example.com/SomeOtherDoc"
         );
       });
+
+      it("throws an error if a number is provided as an object and the object is not an array", async () => {
+        const [, observation] = await getGraphLoadedDataset();
+        // @ts-expect-error this should not be allowed
+        expect(() => graphOf(observation, "subject", 0)).toThrowError(
+          `Key "subject" of [object Object] is not an array.`
+        );
+      });
+
+      it("throws an error if the index is out of bounds", async () => {
+        const [, observation] = await getGraphLoadedDataset();
+        expect(() =>
+          graphOf(observation.subject as PatientShape, "name", 10)
+        ).toThrowError(`Index 10 does not exist.`);
+      });
     });
 
     describe("write method", () => {
@@ -1316,7 +1364,7 @@ describe("jsonldDatasetProxy", () => {
         const doc2 = namedNode("http://example.com/Doc2");
         const doc3 = namedNode("http://example.com/Doc3");
 
-        const [dataset, patient] = await getEmptyPatientDataset();
+        const [, patient] = await getEmptyPatientDataset();
         patient.name?.push("default");
         const end1 = write(doc1).using(patient);
         patient.name?.push("1");
@@ -1348,69 +1396,8 @@ describe("jsonldDatasetProxy", () => {
         const [patientOnDoc1] = write(doc1).usingCopy(patient);
         patientOnDoc1.name?.push("Doc1");
         expect(graphOf(patient, "name", 0)[0].value).toBe(defaultGraph().value);
-        expect(graphOf(patient, "name", 0)[1].value).toBe(doc1.value);
+        expect(graphOf(patient, "name", 1)[0].value).toBe(doc1.value);
       });
-    });
-
-    it.skip("lets a new patient get created in a new graph", async () => {
-      // TODO
-      const [, observation, builder] = await getGraphLoadedDataset();
-      const patient1Doc = namedNode("http://example.com/patient1Doc");
-      const patient2Doc = namedNode("http://example.com/patient2Doc");
-      const patient3Doc = namedNode("http://example.com/patient3Doc");
-      const patient4Doc = namedNode("http://example.com/patient4Doc");
-      const patient1 = observation.subject as PatientShape;
-      const patient2 = patient1.roommate?.[0] as PatientShape;
-      const patient3 = patient1.roommate?.[1] as PatientShape;
-
-      const patient4 = builder
-        .write(patient4Doc)
-        .fromSubject<PatientShape>(namedNode("http://example.com/Patient4"));
-      patient4.name = ["Licky"];
-      patient4.age = 3;
-      patient4.roommate = [patient1, patient2, patient3];
-      const reset1 = write(patient1Doc).using(patient1);
-      patient1.roommate?.push(patient4);
-      const reset2 = write(patient2Doc).using(patient2);
-      patient2.roommate?.push(patient4);
-      const reset3 = write(patient3Doc).using(patient3);
-      patient3.roommate?.push(patient4);
-      reset1();
-      reset2();
-      reset3();
-      patient3.name?.push("Some other name");
-
-      const patient4Node = namedNode("http://example.com/Patient4");
-
-      // let patient4: PatientShape;
-      // await write(patient4Doc, async function fancyCallback() {
-      //   await new Promise((resolve) => setTimeout(resolve, 10));
-      //   patient4 = builder.fromJson<PatientShape>({
-      //     name: ["Licky"],
-      //     age: 3,
-      //     roommate: [patient1, patient2, patient3],
-      //   });
-      //   await new Promise<void>((resolve) => resolve());
-      // });
-      // write(patient1Doc, () => patient1.roommate?.push(patient4));
-      // write(patient2Doc, () => patient2.roommate?.push(patient4));
-      // write(patient3Doc, () => patient3.roommate?.push(patient4));
-
-      // const patient3 = jsonldDatasetProxy<PatientShape>(
-      //   dataset,
-      //   patientContext,
-      //   namedNode("http://example.com/patient3")
-      // );
-      // patient3.name?.push("Mr. Patient 3");
-      // patient3.roommate = [patient1, patient2];
-      // // alternatively
-      // patient3 = proxyObject<PatientShape>({
-      //   name: [""],
-      //   roommate: [patient1, patient2],
-      // });
-      // endGraph();
-      // patient1.roommate[patient1Doc].push(patient3);
-      // patient3.roommate[patient2Doc].push(patient3);
     });
   });
 });

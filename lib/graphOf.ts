@@ -35,7 +35,7 @@ export function graphOf<Subject extends ObjectLike, Key extends keyof Subject>(
     proxyContext.contextUtil.keyToIri(predicate as string)
   );
   let objectNode: ObjectType | null;
-  if (!object) {
+  if (object == null) {
     objectNode = null;
   } else if (typeof object === "number") {
     const proxyArray = subject[predicate];
