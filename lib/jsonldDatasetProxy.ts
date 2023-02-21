@@ -1,39 +1,26 @@
-import { BlankNode, Dataset, NamedNode } from "@rdfjs/types";
+import { defaultGraph } from "@rdfjs/data-model";
+import { Dataset } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
 import { ContextUtil } from "./ContextUtil";
-import { ProxyCreator } from "./ProxyCreator";
+import { JsonldDatasetProxyBuilder } from "./JsonldDatasetProxyBuilder";
+import { ProxyContext } from "./ProxyContext";
 
-type JsonldFields = {
-  "@id"?: string;
-  "@context"?: ContextDefinition;
-};
-
-type AugmentArray<OriginalType> = OriginalType extends Array<infer SubType>
-  ? Array<JsonldDatasetProxy<SubType>>
-  : JsonldDatasetProxy<OriginalType>;
-
-type AugmentWithType<OriginalType> = undefined extends OriginalType
-  ? AugmentArray<NonNullable<OriginalType>> | undefined
-  : AugmentArray<OriginalType>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type JsonldDatasetProxy<Type> = Type extends Record<string, any>
-  ? {
-      [Key in keyof Type]: AugmentWithType<Type[Key]>;
-    } & JsonldFields
-  : Type;
-
-export function jsonldDatasetProxy<Type>(
+/**
+ * Creates a JSON-LD Dataset Proxy
+ *
+ * @param inputDataset the source dataset
+ * @param context JSON-LD Context
+ * @returns a JSON-LD Dataset proxy
+ */
+export function jsonldDatasetProxy(
   inputDataset: Dataset,
-  context: ContextDefinition,
-  entryNode: NamedNode | BlankNode
-): Type {
+  context: ContextDefinition
+): JsonldDatasetProxyBuilder {
   const contextUtil = new ContextUtil(context);
-  const proxyCreator = new ProxyCreator();
-
-  return proxyCreator.createSubjectProxy(
-    entryNode,
-    inputDataset,
-    contextUtil
-  ) as unknown as Type;
+  const proxyContext = new ProxyContext({
+    dataset: inputDataset,
+    contextUtil,
+    writeGraphs: [defaultGraph()],
+  });
+  return new JsonldDatasetProxyBuilder(proxyContext);
 }

@@ -1,13 +1,12 @@
-import { Dataset, Term } from "@rdfjs/types";
-import { ContextUtil } from "../ContextUtil";
-import { ObjectWithId } from "../createSubjectHandler";
+import { Term } from "@rdfjs/types";
 import { namedNode, quad } from "@rdfjs/data-model";
+import { SubjectProxyTarget } from "./createSubjectHandler";
+import { ProxyContext } from "../ProxyContext";
 
 export function deleteValueFromDataset(
-  target: ObjectWithId,
+  target: SubjectProxyTarget,
   key: string | symbol,
-  dataset: Dataset,
-  contextUtil: ContextUtil
+  proxyContext: ProxyContext
 ) {
   const nodesToRemove: Term[] = [];
   if (key === "@context") {
@@ -20,11 +19,11 @@ export function deleteValueFromDataset(
     return true;
   }
   const subject = target["@id"];
-  const predicate = namedNode(contextUtil.keyToIri(key));
+  const predicate = namedNode(proxyContext.contextUtil.keyToIri(key));
   if (key === "@id") {
     nodesToRemove.push(target["@id"]);
   } else {
-    const objectDataset = dataset.match(subject, predicate);
+    const objectDataset = proxyContext.dataset.match(subject, predicate);
     if (objectDataset.size === 0) {
       return true;
     } else {
@@ -33,11 +32,11 @@ export function deleteValueFromDataset(
   }
   nodesToRemove.forEach((term) => {
     if (term.termType === "Literal") {
-      dataset.delete(quad(subject, predicate, term));
+      proxyContext.dataset.delete(quad(subject, predicate, term));
       return true;
     } else if (term.termType === "NamedNode") {
-      dataset.deleteMatches(term, undefined, undefined);
-      dataset.deleteMatches(undefined, undefined, term);
+      proxyContext.dataset.deleteMatches(term, undefined, undefined);
+      proxyContext.dataset.deleteMatches(undefined, undefined, term);
       return true;
     }
   });

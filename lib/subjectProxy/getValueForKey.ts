@@ -1,25 +1,24 @@
-import { Dataset } from "@rdfjs/types";
-import { ContextUtil } from "../ContextUtil";
-import { ObjectWithId } from "../createSubjectHandler";
-import { ProxyCreator } from "../ProxyCreator";
+import { SubjectProxyTarget } from "./createSubjectHandler";
 import { namedNode } from "@rdfjs/data-model";
-import { objectToJsonldRepresentation } from "./objectToJsonRepresentation";
+import { nodeToJsonldRepresentation } from "../util/nodeToJsonldRepresentation";
+import { SubjectProxy } from "./SubjectProxy";
+import { ArrayProxy } from "../arrayProxy/ArrayProxy";
+import { ProxyContext } from "../ProxyContext";
 
-export function getProxyFromDataset(
-  target: ObjectWithId,
+/**
+ * Given a subject target and a key return the correct value
+ */
+export function getValueForKey(
+  target: SubjectProxyTarget,
   key: string | symbol,
-  dataset: Dataset,
-  contextUtil: ContextUtil,
-  proxyCreator: ProxyCreator
-) {
+  proxyContext: ProxyContext
+): SubjectProxy | ArrayProxy | string | number | boolean | undefined {
+  const { contextUtil, dataset } = proxyContext;
   if (key === "@id") {
     if (target["@id"].termType === "BlankNode") {
       return undefined;
     }
     return contextUtil.iriToKey(target["@id"].value);
-  }
-  if (key === "@context") {
-    return contextUtil.context;
   }
   if (key === "toString" || key === Symbol.toStringTag) {
     // TODO: this toString method right now returns [object Object],
@@ -33,28 +32,23 @@ export function getProxyFromDataset(
   const subject = target["@id"];
   const predicate = namedNode(contextUtil.keyToIri(key));
   if (contextUtil.isArray(key)) {
-    const arrayProxy = proxyCreator.createArrayProxy(
-      [subject, predicate],
-      dataset,
-      contextUtil
-    );
+    const arrayProxy = proxyContext.createArrayProxy([
+      subject,
+      predicate,
+      null,
+      null,
+    ]);
     return arrayProxy;
   }
   const objectDataset = dataset.match(subject, predicate);
   if (objectDataset.size === 0) {
     return undefined;
   } else if (objectDataset.size === 1) {
-    return objectToJsonldRepresentation(
-      objectDataset.toArray()[0],
-      dataset,
-      contextUtil,
-      proxyCreator
+    return nodeToJsonldRepresentation(
+      objectDataset.toArray()[0].object,
+      proxyContext
     );
   } else {
-    return proxyCreator.createArrayProxy(
-      [subject, predicate],
-      dataset,
-      contextUtil
-    );
+    return proxyContext.createArrayProxy([subject, predicate, null, null]);
   }
 }

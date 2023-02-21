@@ -1,6 +1,6 @@
 {
   "name": "jsonld-dataset-proxy",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -46,6 +46,6 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",
     "jsonld2graphobject": "^0.0.4",
-    "o-dataset-pack": "^0.2.11"
+    "o-dataset-pack": "^0.2.14"
   }
 }

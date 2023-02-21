@@ -7,7 +7,10 @@ Edit RDFJS Dataset just like regular JavaScript Object Literals.
 Just a few lines of familiar code:
 ```typescript
 const personNode = namedNode("http://example.com/Person1");
-const person = jsonldDatasetProxy<IPerson>(dataset, PersonContext, personNode);
+const person = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.age = 23;
 person.name.push("John");
 ```
@@ -45,7 +48,7 @@ npm install jsonld-dataset-proxy
 
 ## Simple Example
 ```typescript
-import jsonldDatasetProxy from "jsonld-dataset-proxy";
+import jsonldDatasetProxy, { write } from "jsonld-dataset-proxy";
 import { ContextDefinition } from "jsonld";
 import { serializedToDataset } from "o-dataset-pack";
 import { namedNode } from "@rdfjs/data-model";
@@ -64,20 +67,22 @@ async function start() {
   // Create a dataset loaded with initial data
   const dataset = await serializedToDataset(initialData);
   // Make a JSONLD Dataset Proxy
-  const person = jsonldDatasetProxy<IPerson>(
+  const person = jsonldDatasetProxy(
     dataset,
-    PersonContext,
-    namedNode("http://example.com/Person1")
-  );
+    PersonContext
+  ).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
   // Make Modifications
   person.age = 23;
   person.name.push("John");
+  write(namedNode("http://example.com/otherGraph")).using(person);
+  person.name.push("Smith");
 
-  console.log(dataset.toString);
+  console.log(dataset.toString());
   // Logs:
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Johnathan" .
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "John" .
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/age> "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
+  // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Smith" <http://example.com/otherGraph> .
 }
 
 // Person Typescript Typing
@@ -103,6 +108,28 @@ start();
 ```
 
 ## Full Usage
+
+ - [Defining a Context and Type](#defining-a-context-and-type)
+ - [Getting a Jsonld DatasetProxy](#getting-a-jsonld-dataset-proxy)
+   - [`.fromSubject<T>(entryNode)`](#fromsubjecttentrynode)
+   - [`.matchSubject<T>(predicate?, object?, graph?)`](#matchsubjecttpredicate-object-graph)
+   - [`.matchObject<T>(subject?, predicate?, graph?)`](#matchobjecttsubject-predicate-object)
+   - [`.fromJson<T>(inputData)`](#fromjsontinputdata)
+ - [Getting Field Values and Traversing](#getting-field-values-and-traversing)
+ - [Setting a Primitive](#setting-a-primitive)
+ - [Setting an Object](#setting-an-object)
+ - [Array Methods](#array-methods)
+ - [Overwriting an Object](#overwriting-an-object)
+ - [Changing an Object's Id](#changing-an-objects-id)
+ - [Removing an Object Connection](#removing-an-object-connection)
+ - [Deleting an Entire Object](#deleting-an-entire-object)
+ - [Using Blank Nodes](#using-blank-nodes)
+ - [Writing Information to a Specific Graph](#writing-information-to-a-specific-graph)
+    - [`jsonldDatasetProxy(...).write(...graphs)`](#jsonlddatasetproxywritegraphs)
+    - [`write(...graphs).using(...jsonldDatasetProxies)`](#writegraphsusingjsonlddatasetproxies)
+    - [`write(...graphs).usingCopy(...jsonldDatasetProxies)`](#writegraphsusingcopyjsonlddatasetproxies)
+ - [Detecting a the graph of specific information](#detecting-a-the-graph-of-specific-information)
+
 For the most part, a JSONLD Dataset Proxy has parity with JavaScript Object Literals. However, there are a few differences to highlight. This section details how you would do different tasks.
 
 ### Defining a Context and Type
@@ -157,7 +184,7 @@ To do this, create an object that has corresponding fields to your type. Each fi
 
 Note that only the features described here work with JSONLD Dataset Proxy. Other features of JSONLD Contexts are not yet supported.
 
-### Getting a JSONLD Dataset Proxy
+### Getting a Jsonld Dataset Proxy
 Once the Typescript Typings and Context have been defined, we can get the JSONLD Dataset Proxy for a specific dataset.
 
 ```typescript
@@ -166,19 +193,74 @@ import { createDataset } from "o-dataset-pack";
 
 const dataset = await createDataset();
 // Make a JSONLD Dataset Proxy
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+) // ...
 ```
 
 The functon `jsonldDatasetProxy` takes in three parameters:
  - `dataset`: The dataset you wish to traverse and manipulate. This can be any dataset that follows the [RDFJS Dataset Interface](https://rdf.js.org/dataset-spec/#dataset-interface). Note that this is not to be confused with the RDFJS Dataset ***Core*** interface. This example uses the "o-dataset-pack", but any implementation of the RDFJS Dataset Interface is acceptable.
  - `context`: The JSONLD context.
- - `entryNode`: The place of entry for the graph. The object returned by `jsonldDatasetProxy` will represent the given node. This parameter accepts both `namedNode`s and `blankNode`s.
 
-The returned object is a JSONLD Dataset Proxy. The data of this proxy is automatically updated when the dataset itself is updated. Any modifications to this object will to automatically reflected in the dataset.
+ After defining the `dataset` and `context` there are a few ways to get Jsonld Dataset Proxies:
+
+#### `.fromSubject<T>(entryNode)`
+`fromSubject` lets you define a an `entryNode`, the place of entry for the graph. The object returned by `jsonldDatasetProxy` will represent the given node. This parameter accepts both `namedNode`s and `blankNode`s. `fromSubject` takes a generic type representing the typescript type of the given subject.
+
+```typescript
+const person = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+```
+
+#### `.matchSubject<T>(predicate?, object?, graph?)`
+`matchSubject` returns a Jsonld Dataset Proxy representing all subjects in the dataset matching the given predicate, object, and graph.
+
+```typescript
+const people = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).matchSubject<IPerson>(
+  namedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+  namedNode("http://xmlns.com/foaf/0.1/Person")
+);
+people.forEach((person) => {
+  console.log(person.name);
+});
+```
+
+#### `.matchObject<T>(subject?, predicate?, object?)`
+`matchObject` returns a Jsonld Dataset Proxy representing all objects in the dataset matching the given subject, predicate, and graph.
+
+```typescript
+const friendsOfPerson1 = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).matchSubject<IPerson>(
+  namedNode("http://example.com/Person1"),
+  namedNode("http://xmlns.com/foaf/0.1/knows")
+);
+friendsOfPerson1.forEach((person) => {
+  console.log(person.name);
+});
+```
+
+#### `.fromJson<T>(inputData)`
+`fromJson` will take any regular Json, add the information to the dataset, and return a Jsonld Dataset Proxy representing the given data.
+
+```typescript
+const person2 = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromJson<IPerson>({
+  "@id": "http://example.com/Person2",
+  name: ["Jane", "Doe"],
+  birthdate: "1990/11/03",
+  age: 33,
+});
+```
 
 ### Getting Field Values and Traversing
 Getting a field and traversing the object is just as easy as getting data out of a standard JavaScript Object Literal.
@@ -205,11 +287,10 @@ const dataset = await serializedToDataset(`
     foaf:name "Dave"^^xsd:string;
     foaf:age "33"^^xsd:integer.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 // Get primitives
 console.log(person.age); // 22
 // Get nested primitives
@@ -233,11 +314,10 @@ Setting a non-array primitive will remove the existing triple from the dataset a
 
 ```typescript
 const dataset = createDataset();
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"))
 person.age = 23;
 console.log(dataset.toString());
 // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/age> "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
@@ -248,11 +328,10 @@ Setting a field to a JavaScript object literal will recursively add all parts of
 
 ```typescript
 const dataset = createDataset();
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.bestFriend = {
   "@id": "http://example.com/Person2",
   name: ["Alice"],
@@ -280,11 +359,10 @@ const dataset = await serializedToDataset(`
   example:Person1
     foaf:name "Garrett"^^xsd:string, "Bobby"^^xsd:string.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.name?.push("Ferguson");
 console.log(dataset.toString());
 // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Garrett" .
@@ -305,11 +383,10 @@ const dataset = await serializedToDataset(`
     foaf:name "Alice"^^xsd:string;
     foaf:age "28"^^xsd:integer.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
   PersonContext,
-  namedNode("http://example.com/Person1")
-);
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.bestFriend = {
   "@id": "http://example.com/Person2",
   name: ["Jane"],
@@ -335,11 +412,10 @@ const dataset = await serializedToDataset(`
   example:Person2
     foaf:bestFriend example:Person1.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"))
 person["@id"] = "http://example.com/NewPersonId";
 console.log(dataset.toString());
 // <http://example.com/Person2> <http://xmlns.com/foaf/0.1/bestFriend> <http://example.com/NewPersonId> .
@@ -364,11 +440,10 @@ const dataset = await serializedToDataset(`
     foaf:name "Bob"^^xsd:string;
     foaf:bestFriend example:Person1.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.bestFriend = undefined;
 console.log(dataset.toString());
 // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Alice" .
@@ -394,11 +469,10 @@ const dataset = await serializedToDataset(`
     foaf:name "Bob"^^xsd:string;
     foaf:bestFriend example:Person1.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 delete person.bestFriend;
 console.log(dataset.toString());
 // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Alice" .
@@ -419,11 +493,10 @@ const dataset = await serializedToDataset(`
     foaf:name "Bob"^^xsd:string;
     foaf:bestFriend example:Person1.
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 delete person["@id"];
 console.log(dataset.toString());
 // <http://example.com/Person2> <http://xmlns.com/foaf/0.1/name> "Bob" .
@@ -433,11 +506,10 @@ console.log(dataset.toString());
 If you want to create an object with a blankNode subject, simply omit the `@id` field when you're making the object.
 ```typescript
 const dataset = await createDataset();
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
-  PersonContext,
-  namedNode("http://example.com/Person1")
-);
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
 person.bestFriend = {
   name: ["Charlie"],
 };
@@ -458,11 +530,11 @@ const dataset = await serializedToDataset(`
       foaf:name "Alice"^^xsd:string;
     ].
 `);
-const person = jsonldDatasetProxy<IPerson>(
+const person = jsonldDatasetProxy(
   dataset,
   PersonContext,
-  namedNode("http://example.com/Person1")
-);
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+
 const alice = person.knows?.[0];
 person.bestFriend = alice;
 console.log(dataset.toString());
@@ -471,12 +543,115 @@ console.log(dataset.toString());
 // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/bestFriend> _:n3-0 .
 ```
 
+### Writing Information to a Specific Graph
+By default, all new quads are added to the default graph, but you can change the graph to which new quads are added in a few different ways:
+
+NOTE: These operations only dictate the graph for new triples. Any operations that delete triples will delete triples regardless of their graph.
+
+#### `jsonldDatasetProxy(...).write(...graphs)`
+The write graph can be set upon creating a jsonld dataset proxy by using the `write` method. This method takes in any number of graphs.
+
+```typescript
+const person1 = jsonldDatasetProxy(dataset, PersonContext)
+  .write(namedNode("http://example.com/ExampleGraph"))
+  .fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+person1.name.push("Jack");
+console.log(dataset.toString());
+// Logs:
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Jack" <http://example.com/ExampleGraph> .
+```
+
+#### `write(...graphs).using(...jsonldDatasetProxies)`
+The `write(...).using(...)` function lets you define the graphs you wish to write to using specific jsonldDatasetProxies.
+
+```typescript
+import jsonldDatasetProxy, { write } from "jsonld-dataset-proxy";
+
+const person1 = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+// Now all additions with person1 will be on ExampleGraph1
+write(namedNode("http://example.com/ExampleGraph1")).using(person1);
+person1.name.push("Jack");
+// Now all additions with person1 will be on ExampleGraph2
+write(namedNode("http://example.com/ExampleGraph2")).using(person1);
+person1.name.push("Spicer");
+
+console.log(dataset.toString());
+// Logs:
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Jack" <http://example.com/ExampleGraph1> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Spicer" <http://example.com/ExampleGraph2> .
+```
+
+The function also returns an `end` function that will reset the graph to what it was before. This is useful for nesting graph modifications.
+
+```typescript
+const person1 = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+person1.name.push("default");
+const end1 = write(namedNode("http://example.com/Graph1")).using(person1);
+person1.name.push("1");
+const end2 = write(namedNode("http://example.com/Graph2")).using(person1);
+person1.name.push("2");
+const end3 = write(namedNode("http://example.com/Graph3")).using(person1);
+person1.name.push("3");
+end3();
+person1.name.push("2 again");
+end2();
+person1.name.push("1 again");
+end1();
+person1.name.push("default again");
+console.log(dataset.toString());
+// Logs:
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "default" .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "default again" .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "1" <http://example.com/Graph1> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "1 again" <http://example.com/Graph1> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "2" <http://example.com/Graph2> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "2 again" <http://example.com/Graph2> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "3" <http://example.com/Graph3> .
+```
+
+#### `write(...graphs).usingCopy(...jsonldDatasetProxies)`
+If you would like a new variable to write to without modifying the original Jsonld Dataset Proxy, you can use `write(...).usingCopy(...)`.
+
+```typescript
+const person1 = jsonldDatasetProxy(
+  dataset,
+  PersonContext
+).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
+const [person1WritingToNewGraph] = write(
+  namedNode("http://example.com/NewGraph")
+).usingCopy(person1);
+person1WritingToNewGraph.name.push("Brandon");
+person1.name.push("Sanderson");
+console.log(dataset.toString());
+// Logs:
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Brandon" <http://example.com/NewGraph> .
+// <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Sanderson" .
+```
+
+### Detecting a the graph of specific information
+
+The graph of specific information can be detected using the `graphOf(subject, predicate, object)` function. The `graphOf` function takes in two to three arguments.
+
+ - `subject`: A Jsonld Dataset Proxy that represents the subject of a quad.
+ - `predicate`: A string key
+ - `object?`: An optional parameter that represents the direct object of a statement. This could be a Jsonld Dataset Proxy or a number to indicate the location in an array. This argument can be left blank if the given field is not an array.
+
+```typescript
+graphOf(person, "name", 0); // returns defaultGraph()
+graphOf(person, "age"); // returns defaultGraph()
+```
+
 ## Limitations
  - Currently this library only supports the following features of JSON-LD context:
    - "@id",
    - "@type",
    - "@container": "@set"
- - No support for named graphs (All additions are on the default graph)
 
 ## Liscense
 MIT

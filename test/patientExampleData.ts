@@ -1,12 +1,12 @@
 import { ContextDefinition } from "jsonld";
 import { Schema } from "shexj";
 
-export type ObservationShape = {
+export interface ObservationShape {
   "@id"?: string;
   "@context"?: ContextDefinition;
   subject?: PatientShape;
   notes?: string;
-};
+}
 
 export type PatientShape = {
   "@id"?: string;

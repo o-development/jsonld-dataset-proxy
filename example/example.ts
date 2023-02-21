@@ -1,4 +1,4 @@
-import jsonldDatasetProxy from "../lib";
+import jsonldDatasetProxy, { write } from "../lib";
 import { ContextDefinition } from "jsonld";
 import { serializedToDataset } from "o-dataset-pack";
 import { namedNode } from "@rdfjs/data-model";
@@ -17,20 +17,22 @@ async function start() {
   // Create a dataset loaded with initial data
   const dataset = await serializedToDataset(initialData);
   // Make a JSONLD Dataset Proxy
-  const person = jsonldDatasetProxy<IPerson>(
+  const person = jsonldDatasetProxy(
     dataset,
-    PersonContext,
-    namedNode("http://example.com/Person1")
-  );
+    PersonContext
+  ).fromSubject<IPerson>(namedNode("http://example.com/Person1"));
   // Make Modifications
   person.age = 23;
   person.name.push("John");
+  write(namedNode("http://example.com/otherGraph")).using(person);
+  person.name.push("Smith");
 
-  console.log(dataset.toString);
+  console.log(dataset.toString());
   // Logs:
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Johnathan" .
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "John" .
   // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/age> "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
+  // <http://example.com/Person1> <http://xmlns.com/foaf/0.1/name> "Smith" <http://example.com/otherGraph> .
 }
 
 // Person Typescript Typing
