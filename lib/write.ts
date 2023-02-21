@@ -8,10 +8,27 @@ import {
 } from "./types";
 
 interface InteractOptions {
+  /**
+   * Given a dataset proxy, this makes all write actions to the dataset proxy
+   * occur on the given graph.
+   * @param objects Any number of dataset proxies
+   * @returns void
+   */
   using(...objects: ObjectLike[]): () => void;
+  /**
+   * Given a dataset proxy this will return a dataset proxy where all write
+   * operation will occur on the given graph. The original proxy is unmodified.
+   * @param objects Any number of dataset proxies
+   * @returns cloned dataset proxies
+   */
   usingCopy<T extends ObjectLike>(...objects: T[]): T[];
 }
 
+/**
+ * Set the graphs that should be written to
+ * @param graphs The graphs that should be written to
+ * @returns a write builder
+ */
 export function write(...graphs: GraphType[]): InteractOptions {
   return {
     using(...objects: ObjectLike[]): () => void {

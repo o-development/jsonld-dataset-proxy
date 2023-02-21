@@ -76,7 +76,7 @@ export class JsonldDatasetProxyBuilder {
    * @param inputData Initial Data
    * @param graph Optional graph to save this data to
    */
-  fromJson<T extends ObjectLike>(inputData: T, _graph?: QuadMatch[3]): T {
+  fromJson<T extends ObjectLike>(inputData: T): T {
     const entryNode = inputData["@id"]
       ? namedNode(inputData["@id"])
       : blankNode();

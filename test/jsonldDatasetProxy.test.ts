@@ -514,7 +514,7 @@ describe("jsonldDatasetProxy", () => {
     });
 
     it("adds a proxy object to the array", async () => {
-      const [dataset, observation, builder] = await getTinyLoadedDataset();
+      const [, , builder] = await getTinyLoadedDataset();
       const patient3 = builder.fromSubject(
         namedNode("http://example.com/Patient3")
       );
