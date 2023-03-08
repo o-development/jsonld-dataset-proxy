@@ -18,6 +18,7 @@ import {
   _getUnderlyingDataset,
   _getUnderlyingMatch,
   _isSubjectOriented,
+  _proxyContext,
 } from "../types";
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
@@ -79,6 +80,8 @@ export function createArrayHandler(
           return target[2];
         case _getUnderlyingArrayTarget:
           return target;
+        case _proxyContext:
+          return proxyContext;
         case _getNodeAtIndex:
           return (index: number): ObjectType | undefined => {
             updateArrayOrder(target, proxyContext);
@@ -120,6 +123,10 @@ export function createArrayHandler(
       return Reflect.has(processedObjects, ...rest);
     },
     set(target, key, value, ...rest) {
+      if (key === _proxyContext) {
+        proxyContext = value;
+        return true;
+      }
       updateArrayOrder(target, proxyContext);
       if (typeof key !== "symbol" && !isNaN(parseInt(key as string))) {
         const index = parseInt(key);

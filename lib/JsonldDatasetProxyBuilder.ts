@@ -39,7 +39,7 @@ export class JsonldDatasetProxyBuilder {
    * @param graph The graph to match
    */
   matchSubject<T extends ObjectLike>(
-    predicate: QuadMatch[1],
+    predicate?: QuadMatch[1],
     object?: QuadMatch[2],
     graph?: QuadMatch[3]
   ): T[] {
@@ -57,9 +57,9 @@ export class JsonldDatasetProxyBuilder {
    * @param graph The graph to match
    */
   matchObject<T extends ObjectLike>(
-    subject: QuadMatch[0],
-    predicate: QuadMatch[1],
-    graph: QuadMatch[3]
+    subject?: QuadMatch[0],
+    predicate?: QuadMatch[1],
+    graph?: QuadMatch[3]
   ): T[] {
     return this.proxyContext.createArrayProxy([
       subject,

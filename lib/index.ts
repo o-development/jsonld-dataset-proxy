@@ -13,6 +13,7 @@ export * from "./arrayProxy/createArrayHandler";
 export * from "./arrayProxy/arrayMethods";
 export * from "./arrayProxy/ArrayProxy";
 export * from "./arrayProxy/modifyArray";
+export * from "./arrayProxy/isArrayProxy";
 
 export * from "./subjectProxy/createSubjectHandler";
 export * from "./subjectProxy/SubjectProxy";
@@ -25,3 +26,4 @@ export * from "./util/nodeToJsonldRepresentation";
 export * from "./util/RawObject";
 export * from "./util/getNodeFromRaw";
 export * from "./util/NodeSet";
+export * from "./util/isProxy";
