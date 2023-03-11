@@ -7,7 +7,9 @@ import {
 } from "../types";
 import { SubjectProxy } from "./SubjectProxy";
 
-export function isSubjectProxy(someObject?: unknown) {
+export function isSubjectProxy(
+  someObject?: unknown
+): someObject is SubjectProxy {
   if (!someObject) return false;
   if (typeof someObject !== "object") return false;
   const potentialSubjectProxy = someObject as SubjectProxy;
@@ -22,7 +24,7 @@ export function isSubjectProxy(someObject?: unknown) {
 export function getSubjectProxyFromObject(object: ObjectLike): SubjectProxy {
   const potentialSubjectProxy = object as SubjectProxy;
   if (!isSubjectProxy(potentialSubjectProxy)) {
-    throw new Error(`${object} is not a Jsonld Dataset Proxy`);
+    throw new Error(`${object} is not a Jsonld Dataset Proxy Subject`);
   }
   return potentialSubjectProxy;
 }

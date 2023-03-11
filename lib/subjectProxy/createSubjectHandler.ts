@@ -55,6 +55,7 @@ export function createSubjectHander(
     set: (target: SubjectProxyTarget, key, value) => {
       if (key === _proxyContext) {
         proxyContext = value;
+        return true;
       }
       if (key === "@id" && typeof value === "string") {
         // Replace Subject Quads

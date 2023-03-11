@@ -6,8 +6,9 @@ import {
   _proxyContext,
   _writeGraphs,
 } from "./types";
+import { getProxyFromObject } from "./util/isProxy";
 
-interface InteractOptions {
+export interface InteractOptions {
   /**
    * Given a dataset proxy, this makes all write actions to the dataset proxy
    * occur on the given graph.
@@ -34,7 +35,7 @@ export function write(...graphs: GraphType[]): InteractOptions {
     using(...objects: ObjectLike[]): () => void {
       const onEndFunctions: (() => void)[] = [];
       objects.forEach((object) => {
-        const proxy = getSubjectProxyFromObject(object);
+        const proxy = getProxyFromObject(object);
         const oldProxyContext = proxy[_proxyContext];
         proxy[_proxyContext] = proxy[_proxyContext].duplicate({
           writeGraphs: graphs,

@@ -1398,6 +1398,22 @@ describe("jsonldDatasetProxy", () => {
         expect(graphOf(patient, "name", 0)[0].value).toBe(defaultGraph().value);
         expect(graphOf(patient, "name", 1)[0].value).toBe(doc1.value);
       });
+
+      it("works with array proxies", async () => {
+        const [, , builder] = await getTinyLoadedDataset();
+        const allRoommates = builder.matchObject<PatientShape>(
+          namedNode("http://example.com/Patient1"),
+          namedNode("http://hl7.org/fhir/roommate")
+        );
+        write(namedNode("http://example.com/SomeGraph")).using(
+          allRoommates,
+          allRoommates
+        );
+        allRoommates[0].age = 20;
+        expect(graphOf(allRoommates[0], "age")[0].value).toBe(
+          "http://example.com/SomeGraph"
+        );
+      });
     });
   });
 });

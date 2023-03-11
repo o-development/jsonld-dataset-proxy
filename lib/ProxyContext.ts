@@ -14,6 +14,7 @@ interface ProxyContextOptions {
   contextUtil: ContextUtil;
   writeGraphs: GraphType[];
   prefilledArrayTargets?: ArrayProxyTarget[];
+  state?: Record<string, unknown>;
 }
 
 /**
@@ -28,11 +29,13 @@ export class ProxyContext {
   readonly dataset: Dataset;
   readonly contextUtil: ContextUtil;
   readonly writeGraphs: GraphType[];
+  public state: Record<string, unknown>;
 
   constructor(options: ProxyContextOptions) {
     this.dataset = options.dataset;
     this.contextUtil = options.contextUtil;
     this.writeGraphs = options.writeGraphs;
+    this.state = options.state || {};
     if (options.prefilledArrayTargets) {
       options.prefilledArrayTargets.forEach((target) => {
         this.createArrayProxy(target[0], target[2], target);

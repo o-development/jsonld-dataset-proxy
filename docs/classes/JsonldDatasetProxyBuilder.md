@@ -42,7 +42,7 @@ Helps build JSON LD Dataset Proxies for a specific dataset and context
 
 #### Defined in
 
-[lib/JsonldDatasetProxyBuilder.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/JsonldDatasetProxyBuilder.ts#L10)
+[lib/JsonldDatasetProxyBuilder.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/JsonldDatasetProxyBuilder.ts#L10)
 
 ## Methods
 
@@ -97,7 +97,7 @@ ___
 
 ### matchObject
 
-▸ **matchObject**<`T`\>(`subject`, `predicate`, `graph`): `T`[]
+▸ **matchObject**<`T`\>(`subject?`, `predicate?`, `graph?`): `T`[]
 
 Matches Objects to provided subjects, predicates, and graphs. Returns a
 JSON LD Dataset that can be read an modified.
@@ -112,9 +112,9 @@ JSON LD Dataset that can be read an modified.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `subject` | `undefined` \| ``null`` \| [`SubjectType`](../modules.md#subjecttype) | The subject to match |
-| `predicate` | `undefined` \| ``null`` \| [`PredicateType`](../modules.md#predicatetype) | The predicate to match |
-| `graph` | `undefined` \| ``null`` \| [`GraphType`](../modules.md#graphtype) | The graph to match |
+| `subject?` | ``null`` \| [`SubjectType`](../modules.md#subjecttype) | The subject to match |
+| `predicate?` | ``null`` \| [`PredicateType`](../modules.md#predicatetype) | The predicate to match |
+| `graph?` | ``null`` \| [`GraphType`](../modules.md#graphtype) | The graph to match |
 
 #### Returns
 
@@ -124,7 +124,7 @@ ___
 
 ### matchSubject
 
-▸ **matchSubject**<`T`\>(`predicate`, `object?`, `graph?`): `T`[]
+▸ **matchSubject**<`T`\>(`predicate?`, `object?`, `graph?`): `T`[]
 
 Matches Subjects to provided predicates, objects, and graphs. Returns a
 JSON LD Dataset that can be read an modified.
@@ -139,7 +139,7 @@ JSON LD Dataset that can be read an modified.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `predicate` | `undefined` \| ``null`` \| [`PredicateType`](../modules.md#predicatetype) | The predicate to match |
+| `predicate?` | ``null`` \| [`PredicateType`](../modules.md#predicatetype) | The predicate to match |
 | `object?` | ``null`` \| [`ObjectType`](../modules.md#objecttype) | The object to match |
 | `graph?` | ``null`` \| [`GraphType`](../modules.md#graphtype) | The graph to match |
 
