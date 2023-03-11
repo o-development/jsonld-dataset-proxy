@@ -8,7 +8,7 @@ import {
 } from "./types";
 import { getProxyFromObject } from "./util/isProxy";
 
-interface InteractOptions {
+export interface InteractOptions {
   /**
    * Given a dataset proxy, this makes all write actions to the dataset proxy
    * occur on the given graph.

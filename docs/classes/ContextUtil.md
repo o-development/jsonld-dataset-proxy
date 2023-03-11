@@ -44,7 +44,7 @@ Handles the JSON-LD context and allows conversion between IRIs and terms
 
 #### Defined in
 
-[lib/ContextUtil.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ContextUtil.ts#L13)
+[lib/ContextUtil.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ContextUtil.ts#L13)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ContextUtil.ts#L14)
+[lib/ContextUtil.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ContextUtil.ts#L14)
 
 ## Methods
 

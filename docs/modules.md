@@ -18,6 +18,7 @@
 ### Interfaces
 
 - [ArrayMethodBuildersType](interfaces/ArrayMethodBuildersType.md)
+- [InteractOptions](interfaces/InteractOptions.md)
 - [SubjectProxyTarget](interfaces/SubjectProxyTarget.md)
 
 ### Type Aliases
@@ -60,9 +61,12 @@
 - [deleteValueFromDataset](modules.md#deletevaluefromdataset)
 - [getNodeFromRawObject](modules.md#getnodefromrawobject)
 - [getNodeFromRawValue](modules.md#getnodefromrawvalue)
+- [getProxyFromObject](modules.md#getproxyfromobject)
 - [getSubjectProxyFromObject](modules.md#getsubjectproxyfromobject)
 - [getValueForKey](modules.md#getvalueforkey)
 - [graphOf](modules.md#graphof)
+- [isArrayProxy](modules.md#isarrayproxy)
+- [isProxy](modules.md#isproxy)
 - [isSubjectProxy](modules.md#issubjectproxy)
 - [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
 - [literalToJsonldRepresentation](modules.md#literaltojsonldrepresentation)
@@ -81,11 +85,11 @@ Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
 
 ### ArrayProxy
 
-Ƭ **ArrayProxy**: `unknown`[] & { `[_getNodeAtIndex]`: (`index`: `number`) => [`ObjectType`](modules.md#objecttype) \| `undefined` ; `[_getUnderlyingArrayTarget]`: [`ArrayProxyTarget`](modules.md#arrayproxytarget) ; `[_getUnderlyingDataset]`: `Dataset` ; `[_getUnderlyingMatch]`: [`ArrayProxyTarget`](modules.md#arrayproxytarget)[``0``] ; `[_getUnderlyingNode]`: `boolean`  }
+Ƭ **ArrayProxy**: `unknown`[] & { `[_getNodeAtIndex]`: (`index`: `number`) => [`ObjectType`](modules.md#objecttype) \| `undefined` ; `[_getUnderlyingArrayTarget]`: [`ArrayProxyTarget`](modules.md#arrayproxytarget) ; `[_getUnderlyingDataset]`: `Dataset` ; `[_getUnderlyingMatch]`: [`ArrayProxyTarget`](modules.md#arrayproxytarget)[``0``] ; `[_proxyContext]`: [`ProxyContext`](classes/ProxyContext.md)  }
 
 #### Defined in
 
-[lib/arrayProxy/ArrayProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/arrayProxy/ArrayProxy.ts#L12)
+[lib/arrayProxy/ArrayProxy.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/ArrayProxy.ts#L14)
 
 ___
 
@@ -95,7 +99,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/createArrayHandler.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/arrayProxy/createArrayHandler.ts#L26)
+[lib/arrayProxy/createArrayHandler.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/createArrayHandler.ts#L27)
 
 ___
 
@@ -105,7 +109,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L18)
+[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L18)
 
 ___
 
@@ -115,7 +119,7 @@ ___
 
 #### Defined in
 
-[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/util/nodeToJsonldRepresentation.ts#L5)
+[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/nodeToJsonldRepresentation.ts#L5)
 
 ___
 
@@ -125,7 +129,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L13)
+[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L13)
 
 ___
 
@@ -135,7 +139,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L17)
+[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L17)
 
 ___
 
@@ -145,7 +149,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L16)
+[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L16)
 
 ___
 
@@ -155,7 +159,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L20)
+[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L20)
 
 ___
 
@@ -165,7 +169,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/util/RawObject.ts#L5)
+[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/RawObject.ts#L5)
 
 ___
 
@@ -175,7 +179,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/util/RawObject.ts#L13)
+[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/RawObject.ts#L13)
 
 ___
 
@@ -200,7 +204,7 @@ ___
 
 #### Defined in
 
-[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/subjectProxy/SubjectProxy.ts#L12)
+[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/subjectProxy/SubjectProxy.ts#L12)
 
 ___
 
@@ -210,7 +214,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L15)
+[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L15)
 
 ___
 
@@ -242,7 +246,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/arrayProxy/arrayMethods.ts#L9)
+[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L9)
 
 ## Variables
 
@@ -252,7 +256,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L6)
+[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L6)
 
 ___
 
@@ -262,7 +266,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L8)
+[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L8)
 
 ___
 
@@ -272,7 +276,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L7)
+[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L7)
 
 ___
 
@@ -282,7 +286,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L4)
+[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L4)
 
 ___
 
@@ -292,7 +296,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L3)
+[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L3)
 
 ___
 
@@ -302,7 +306,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L5)
+[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L5)
 
 ___
 
@@ -312,7 +316,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L9)
+[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L9)
 
 ___
 
@@ -322,7 +326,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/types.ts#L10)
+[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L10)
 
 ___
 
@@ -332,7 +336,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/arrayProxy/arrayMethods.ts#L39)
+[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L39)
 
 ___
 
@@ -342,7 +346,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/arrayProxy/arrayMethods.ts#L27)
+[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L27)
 
 ## Functions
 
@@ -507,6 +511,22 @@ ___
 
 ___
 
+### getProxyFromObject
+
+▸ **getProxyFromObject**(`object`): [`SubjectProxy`](modules.md#subjectproxy) \| [`ArrayProxy`](modules.md#arrayproxy)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `object` | [`ObjectLike`](modules.md#objectlike) \| [`ObjectLike`](modules.md#objectlike)[] |
+
+#### Returns
+
+[`SubjectProxy`](modules.md#subjectproxy) \| [`ArrayProxy`](modules.md#arrayproxy)
+
+___
+
 ### getSubjectProxyFromObject
 
 ▸ **getSubjectProxyFromObject**(`object`): [`SubjectProxy`](modules.md#subjectproxy)
@@ -572,9 +592,9 @@ a list of graphs for which the triples are members
 
 ___
 
-### isSubjectProxy
+### isArrayProxy
 
-▸ **isSubjectProxy**(`someObject?`): `boolean`
+▸ **isArrayProxy**(`someObject?`): someObject is ArrayProxy
 
 #### Parameters
 
@@ -584,7 +604,39 @@ ___
 
 #### Returns
 
-`boolean`
+someObject is ArrayProxy
+
+___
+
+### isProxy
+
+▸ **isProxy**(`someObject?`): someObject is SubjectProxy \| ArrayProxy
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `someObject?` | `unknown` |
+
+#### Returns
+
+someObject is SubjectProxy \| ArrayProxy
+
+___
+
+### isSubjectProxy
+
+▸ **isSubjectProxy**(`someObject?`): someObject is SubjectProxy
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `someObject?` | `unknown` |
+
+#### Returns
+
+someObject is SubjectProxy
 
 ___
 
@@ -688,7 +740,7 @@ ___
 
 ### write
 
-▸ **write**(...`graphs`): `InteractOptions`
+▸ **write**(...`graphs`): [`InteractOptions`](interfaces/InteractOptions.md)
 
 Set the graphs that should be written to
 
@@ -700,6 +752,6 @@ Set the graphs that should be written to
 
 #### Returns
 
-`InteractOptions`
+[`InteractOptions`](interfaces/InteractOptions.md)
 
 a write builder

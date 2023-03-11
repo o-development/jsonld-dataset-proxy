@@ -17,6 +17,7 @@ when it encounters a circular object.
 - [arrayMap](ProxyContext.md#arraymap)
 - [contextUtil](ProxyContext.md#contextutil)
 - [dataset](ProxyContext.md#dataset)
+- [state](ProxyContext.md#state)
 - [subjectMap](ProxyContext.md#subjectmap)
 - [writeGraphs](ProxyContext.md#writegraphs)
 
@@ -47,7 +48,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyContext.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ProxyContext.ts#L26)
+[lib/ProxyContext.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L27)
 
 ___
 
@@ -57,7 +58,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ProxyContext.ts#L29)
+[lib/ProxyContext.ts:30](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L30)
 
 ___
 
@@ -67,7 +68,17 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ProxyContext.ts#L28)
+[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L29)
+
+___
+
+### state
+
+• **state**: `Record`<`string`, `unknown`\>
+
+#### Defined in
+
+[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L32)
 
 ___
 
@@ -77,7 +88,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:25](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ProxyContext.ts#L25)
+[lib/ProxyContext.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L26)
 
 ___
 
@@ -87,7 +98,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:30](https://github.com/o-development/jsonld-dataset-proxy/blob/0a2498d/lib/ProxyContext.ts#L30)
+[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L31)
 
 ## Methods
 
