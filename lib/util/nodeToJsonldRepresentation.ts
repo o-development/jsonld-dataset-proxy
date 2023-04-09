@@ -52,6 +52,11 @@ export function literalToJsonldRepresentation(literal: Literal) {
       return literal.value;
     case "http://www.w3.org/2001/XMLSchema#anyURI":
       return literal.value;
+    case "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML":
+    case "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral":
+    case "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral":
+    case "http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON":
+      return literal.value;
     default:
       return literal.value;
   }

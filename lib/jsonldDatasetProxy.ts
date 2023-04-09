@@ -21,6 +21,7 @@ export function jsonldDatasetProxy(
     dataset: inputDataset,
     contextUtil,
     writeGraphs: [defaultGraph()],
+    languageOrdering: ["none", "en", "other"],
   });
   return new JsonldDatasetProxyBuilder(proxyContext);
 }

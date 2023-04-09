@@ -23,3 +23,5 @@ export type QuadMatch = [
   ObjectType | undefined | null,
   GraphType | undefined | null
 ];
+
+export type LanguageOrdering = ("@none" | "@other" | string)[];

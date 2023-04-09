@@ -77,4 +77,14 @@ export class ContextUtil {
       (this.context[key] as ExpandedTermDefinition)["@container"] === "@set"
     );
   }
+
+  public isLangString(key: string): boolean {
+    return !!(
+      this.context[key] &&
+      typeof this.context[key] === "object" &&
+      (this.context[key] as ExpandedTermDefinition)["@type"] &&
+      (this.context[key] as ExpandedTermDefinition)["@type"] ===
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
+    );
+  }
 }

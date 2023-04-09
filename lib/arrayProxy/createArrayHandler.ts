@@ -23,18 +23,24 @@ import {
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
 import { NodeSet } from "../util/NodeSet";
+import { filterDatasetByLanguageOrdering } from "../util/filterDatasetByLanguageOrdering";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
   curArray: ObjectType[],
-  isSubjectOriented?: boolean
+  isSubjectOriented?: boolean,
+  isLangStringArray?: boolean
 ];
 
 function updateArrayOrder(
   target: ArrayProxyTarget,
   proxyContext: ProxyContext
 ): void {
-  const quads = proxyContext.dataset.match(...target[0]);
+  let quads = proxyContext.dataset.match(...target[0]);
+  if (target[3]) {
+    // Is lang string array
+    quads = filterDatasetByLanguageOrdering(quads, proxyContext);
+  }
   const datasetObjects = new NodeSet();
   quads.toArray().forEach((quad) => {
     // If this this a subject-oriented document

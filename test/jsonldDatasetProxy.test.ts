@@ -3,6 +3,8 @@ import {
   graphOf,
   jsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
+  setLanguagePreferences,
+  SubjectProxy,
   write,
   _getNodeAtIndex,
   _getUnderlyingArrayTarget,
@@ -22,10 +24,12 @@ import {
   tinyArrayPatientData,
   patientDataWithBlankNodes,
   tinyPatientDataWithBlankNodes,
+  tinyPatientDataWithLanguageTags,
 } from "./patientExampleData";
 import { namedNode, quad, literal, defaultGraph } from "@rdfjs/data-model";
 import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
+import { Literal } from "n3";
 
 describe("jsonldDatasetProxy", () => {
   async function getLoadedDataset(): Promise<
@@ -105,6 +109,18 @@ describe("jsonldDatasetProxy", () => {
     [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
   > {
     const dataset = await serializedToDataset(tinyPatientDataWithBlankNodes);
+    const builder = await jsonldDatasetProxy(dataset, patientContext);
+    return [
+      dataset,
+      builder.fromSubject(namedNode("http://example.com/Observation1")),
+      builder,
+    ];
+  }
+
+  async function getTinyLoadedDatasetWithLanguageTags(): Promise<
+    [Dataset, ObservationShape, JsonldDatasetProxyBuilder]
+  > {
+    const dataset = await serializedToDataset(tinyPatientDataWithLanguageTags);
     const builder = await jsonldDatasetProxy(dataset, patientContext);
     return [
       dataset,
@@ -1414,6 +1430,28 @@ describe("jsonldDatasetProxy", () => {
           "http://example.com/SomeGraph"
         );
       });
+    });
+  });
+
+  describe("languageTag Support", () => {
+    it("abides by language order", async () => {
+      const [, , builder] = await getTinyLoadedDatasetWithLanguageTags();
+
+      const observation = builder
+        .setLanguagePreferences("fr", "en")
+        .fromSubject<ObservationShape>(
+          namedNode("http://example.com/Observation1")
+        );
+
+      const patient = observation.subject as PatientShape;
+
+      expect(observation.langNotes).toBe("Notes Sympas");
+      expect(patient.langName?.[0]).toBe("Jean");
+
+      setLanguagePreferences("ru", "cn").using(observation, patient);
+
+      expect(observation.langNotes).toBeUndefined();
+      expect(patient.langName?.length).toBe(0);
     });
   });
 });

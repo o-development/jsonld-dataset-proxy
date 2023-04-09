@@ -1,7 +1,7 @@
 import { blankNode, namedNode } from "@rdfjs/data-model";
 import { BlankNode, NamedNode } from "@rdfjs/types";
 import { ProxyContext } from "./ProxyContext";
-import { GraphType, ObjectLike, QuadMatch } from "./types";
+import { GraphType, LanguageOrdering, ObjectLike, QuadMatch } from "./types";
 
 /**
  * Helps build JSON LD Dataset Proxies for a specific dataset and context
@@ -20,6 +20,21 @@ export class JsonldDatasetProxyBuilder {
   write(...graphs: GraphType[]): JsonldDatasetProxyBuilder {
     return new JsonldDatasetProxyBuilder(
       this.proxyContext.duplicate({ writeGraphs: graphs })
+    );
+  }
+
+  /**
+   * List the language tags in the order they should be used. When a langString
+   * is accessed, LDO will search for values in the order of language given.
+   * @param languageOrdering The ordering of languages. For example
+   * ("en", "fr", "none", "other"). Defaults to
+   * ("none", "en", "other")
+   */
+  setLanguagePreferences(
+    ...languageOrdering: LanguageOrdering
+  ): JsonldDatasetProxyBuilder {
+    return new JsonldDatasetProxyBuilder(
+      this.proxyContext.duplicate({ languageOrdering })
     );
   }
 
