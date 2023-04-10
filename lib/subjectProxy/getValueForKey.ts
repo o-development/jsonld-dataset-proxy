@@ -4,7 +4,7 @@ import { nodeToJsonldRepresentation } from "../util/nodeToJsonldRepresentation";
 import { SubjectProxy } from "./SubjectProxy";
 import { ArrayProxy } from "../arrayProxy/ArrayProxy";
 import { ProxyContext } from "../ProxyContext";
-import { filterDatasetByLanguageOrdering } from "../util/filterDatasetByLanguageOrdering";
+import { filterDatasetByLanguageOrdering } from "../util/languageUtils";
 
 /**
  * Given a subject target and a key return the correct value

@@ -3,8 +3,8 @@ import {
   graphOf,
   jsonldDatasetProxy,
   JsonldDatasetProxyBuilder,
+  languagesOf,
   setLanguagePreferences,
-  SubjectProxy,
   write,
   _getNodeAtIndex,
   _getUnderlyingArrayTarget,
@@ -29,7 +29,6 @@ import {
 import { namedNode, quad, literal, defaultGraph } from "@rdfjs/data-model";
 import { Dataset, NamedNode } from "@rdfjs/types";
 import { ContextDefinition } from "jsonld";
-import { Literal } from "n3";
 
 describe("jsonldDatasetProxy", () => {
   async function getLoadedDataset(): Promise<
@@ -1434,7 +1433,7 @@ describe("jsonldDatasetProxy", () => {
   });
 
   describe("languageTag Support", () => {
-    it("abides by language order", async () => {
+    it("Retrieves the proper language given the languageOrdering", async () => {
       const [, , builder] = await getTinyLoadedDatasetWithLanguageTags();
 
       const observation = builder
@@ -1448,10 +1447,145 @@ describe("jsonldDatasetProxy", () => {
       expect(observation.langNotes).toBe("Notes Sympas");
       expect(patient.langName?.[0]).toBe("Jean");
 
-      setLanguagePreferences("ru", "cn").using(observation, patient);
+      setLanguagePreferences("ru", "zh").using(observation, patient);
 
       expect(observation.langNotes).toBeUndefined();
       expect(patient.langName?.length).toBe(0);
+
+      setLanguagePreferences("@other", "fr").using(observation, patient);
+      expect(observation.langNotes).not.toBe("Notes Sympas");
+      expect(patient.langName?.[0]).not.toBe("Jean");
+
+      setLanguagePreferences().using(observation, patient);
+      expect(observation.langNotes).toBe(undefined);
+      expect(patient.langName?.length).toBe(0);
+    });
+
+    it("sets language strings based on the default language", async () => {
+      const [, , builder] = await getTinyLoadedDatasetWithLanguageTags();
+      const observation = builder
+        .setLanguagePreferences("fr", "en")
+        .fromSubject<ObservationShape>(
+          namedNode("http://example.com/Observation1")
+        );
+      observation.langNotes = "quelques notes";
+      expect(languagesOf(observation, "langNotes")).toEqual({
+        fr: "quelques notes",
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "Notas Geniales",
+      });
+      const patient = observation.subject as PatientShape;
+      patient.langName?.push("Luc");
+      expect(languagesOf(patient, "langName")).toEqual({
+        fr: ["Jean", "Luc"],
+        "@none": ["Jon"],
+        en: ["John"],
+        es: ["Juan"],
+      });
+
+      // Skips other in favor of setting the next language
+      setLanguagePreferences("@other", "es").using(observation, patient);
+      observation.langNotes = "algunas notas";
+      expect(languagesOf(observation, "langNotes")).toEqual({
+        fr: "quelques notes",
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "algunas notas",
+      });
+
+      // Does not set a language if only other
+      setLanguagePreferences("@other").using(observation, patient);
+      observation.langNotes = "Some Notes that will never be written";
+      expect(languagesOf(observation, "langNotes")).toEqual({
+        fr: "quelques notes",
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "algunas notas",
+      });
+
+      // Does not set a language if empty
+      setLanguagePreferences().using(observation, patient);
+      observation.langNotes = "Some Notes that will never be written";
+      expect(languagesOf(observation, "langNotes")).toEqual({
+        fr: "quelques notes",
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "algunas notas",
+      });
+    });
+
+    it("uses languageOf to make a languageMap", async () => {
+      const [, observation] = await getTinyLoadedDatasetWithLanguageTags();
+      const languageMap = languagesOf(observation, "langNotes");
+      expect(languageMap).toEqual({
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "Notas Geniales",
+        fr: "Notes Sympas",
+      });
+    });
+
+    it("uses languageOf to set values on a languageMap", async () => {
+      const [dataset, observation] =
+        await getTinyLoadedDatasetWithLanguageTags();
+      const languageMap = languagesOf(observation, "langNotes");
+      languageMap.zh = "很酷的笔记";
+      languageMap.fr = "notes plus fraîches";
+      expect(languageMap).toEqual({
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "Notas Geniales",
+        fr: "notes plus fraîches",
+        zh: "很酷的笔记",
+      });
+      const langNoteQuads = dataset.match(
+        namedNode("http://example.com/Observation1"),
+        namedNode("http://hl7.org/fhir/langNotes")
+      );
+      expect(langNoteQuads.size).toBe(5);
+      expect(
+        langNoteQuads.some(
+          (quad) =>
+            quad.object.termType === "Literal" &&
+            quad.object.language === "fr" &&
+            quad.object.value === "notes plus fraîches"
+        )
+      ).toBe(true);
+      expect(
+        langNoteQuads.some(
+          (quad) =>
+            quad.object.termType === "Literal" &&
+            quad.object.language === "zh" &&
+            quad.object.value === "很酷的笔记"
+        )
+      ).toBe(true);
+    });
+
+    it("uses languageOf to delete values on a languageMap", async () => {
+      const [dataset, observation] =
+        await getTinyLoadedDatasetWithLanguageTags();
+      const languageMap = languagesOf(observation, "langNotes");
+      delete languageMap.fr;
+      expect(languageMap).toEqual({
+        "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "Notas Geniales",
+      });
+      const langNoteQuads = dataset.match(
+        namedNode("http://example.com/Observation1"),
+        namedNode("http://hl7.org/fhir/langNotes")
+      );
+      expect(langNoteQuads.size).toBe(3);
+      expect(
+        langNoteQuads.every(
+          (quad) =>
+            !(
+              quad.object.termType === "Literal" &&
+              quad.object.language === "fr"
+            )
+        )
+      ).toBe(true);
     });
   });
 });

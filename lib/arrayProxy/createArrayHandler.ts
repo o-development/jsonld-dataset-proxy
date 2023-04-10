@@ -23,7 +23,7 @@ import {
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
 import { NodeSet } from "../util/NodeSet";
-import { filterDatasetByLanguageOrdering } from "../util/filterDatasetByLanguageOrdering";
+import { filterDatasetByLanguageOrdering } from "../util/languageUtils";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
