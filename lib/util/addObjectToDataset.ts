@@ -7,7 +7,11 @@ import { RawObject, RawValue } from "./RawObject";
 import { ProxyContext } from "../ProxyContext";
 import { isSubjectProxy } from "../subjectProxy/isSubjectProxy";
 import { NodeSet } from "./NodeSet";
-import { languageMatch, languageValueToSet } from "./languageUtils";
+import {
+  getLanguageKeyForWriteOperation,
+  languageDeleteMatch,
+  languageKeyToLiteralLanguage,
+} from "../language/languageUtils";
 
 export function addRawValueToDatasetRecursive(
   subject: NamedNode | BlankNode,
@@ -27,9 +31,14 @@ export function addRawValueToDatasetRecursive(
     let languageAppliedObject = object;
     // Handle language use case
     if (contextUtil.isLangString(key)) {
-      const languageValue = languageValueToSet(proxyContext);
-      if (!languageValue) return;
-      languageAppliedObject = literal(object.value, languageValue);
+      const languageKey = getLanguageKeyForWriteOperation(
+        proxyContext.languageOrdering
+      );
+      if (!languageKey) return;
+      languageAppliedObject = literal(
+        object.value,
+        languageKeyToLiteralLanguage(languageKey)
+      );
     }
     proxyContext.writeGraphs.forEach((graph) => {
       proxyContext.dataset.add(
@@ -82,17 +91,11 @@ export function addRawObjectToDatasetRecursive(
     const predicate = namedNode(proxyContext.contextUtil.keyToIri(key));
     if (shouldDeleteOldTriples) {
       if (proxyContext.contextUtil.isLangString(key)) {
-        const languageValue = languageValueToSet(proxyContext);
-        if (languageValue) {
-          const quadsToDelete = languageMatch(
-            dataset,
-            subject,
-            predicate,
-            languageValue
-          );
-          quadsToDelete.forEach((quad) => {
-            dataset.delete(quad);
-          });
+        const languageKey = getLanguageKeyForWriteOperation(
+          proxyContext.languageOrdering
+        );
+        if (languageKey) {
+          languageDeleteMatch(dataset, subject, predicate, languageKey);
         }
       } else {
         dataset.deleteMatches(subject, predicate);

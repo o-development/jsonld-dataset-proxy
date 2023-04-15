@@ -6,13 +6,9 @@ import {
 import { createSubjectHander } from "./subjectProxy/createSubjectHandler";
 import { SubjectProxy } from "./subjectProxy/SubjectProxy";
 import { ArrayProxy } from "./arrayProxy/ArrayProxy";
-import {
-  GraphType,
-  LanguageOrdering,
-  QuadMatch,
-  _getUnderlyingArrayTarget,
-} from "./types";
+import { GraphType, QuadMatch, _getUnderlyingArrayTarget } from "./types";
 import { ContextUtil } from "./ContextUtil";
+import { LanguageOrdering } from "./language/languageTypes";
 
 interface ProxyContextOptions {
   dataset: Dataset;

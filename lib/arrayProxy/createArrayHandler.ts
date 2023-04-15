@@ -23,7 +23,7 @@ import {
 import { modifyArray } from "./modifyArray";
 import { ProxyContext } from "../ProxyContext";
 import { NodeSet } from "../util/NodeSet";
-import { filterDatasetByLanguageOrdering } from "../util/languageUtils";
+import { filterQuadsByLanguageOrdering } from "../language/languageUtils";
 
 export type ArrayProxyTarget = [
   quadMatch: QuadMatch,
@@ -39,7 +39,7 @@ function updateArrayOrder(
   let quads = proxyContext.dataset.match(...target[0]);
   if (target[3]) {
     // Is lang string array
-    quads = filterDatasetByLanguageOrdering(quads, proxyContext);
+    quads = filterQuadsByLanguageOrdering(quads, proxyContext.languageOrdering);
   }
   const datasetObjects = new NodeSet();
   quads.toArray().forEach((quad) => {

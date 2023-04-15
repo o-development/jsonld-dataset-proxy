@@ -1,7 +1,8 @@
 import { blankNode, namedNode } from "@rdfjs/data-model";
 import { BlankNode, NamedNode } from "@rdfjs/types";
+import { LanguageOrdering } from "./language/languageTypes";
 import { ProxyContext } from "./ProxyContext";
-import { GraphType, LanguageOrdering, ObjectLike, QuadMatch } from "./types";
+import { GraphType, ObjectLike, QuadMatch } from "./types";
 
 /**
  * Helps build JSON LD Dataset Proxies for a specific dataset and context

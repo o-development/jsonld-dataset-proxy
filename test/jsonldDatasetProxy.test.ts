@@ -14,6 +14,7 @@ import {
   _isSubjectOriented,
   _proxyContext,
   _writeGraphs,
+  LanguageSet,
 } from "../lib";
 import {
   ObservationShape,
@@ -1477,12 +1478,11 @@ describe("jsonldDatasetProxy", () => {
       });
       const patient = observation.subject as PatientShape;
       patient.langName?.push("Luc");
-      expect(languagesOf(patient, "langName")).toEqual({
-        fr: ["Jean", "Luc"],
-        "@none": ["Jon"],
-        en: ["John"],
-        es: ["Juan"],
-      });
+      expect(languagesOf(patient, "langName").fr?.has("Jean")).toBe(true);
+      expect(languagesOf(patient, "langName").fr?.has("Luc")).toBe(true);
+      expect(languagesOf(patient, "langName")["@none"]?.has("Jon")).toBe(true);
+      expect(languagesOf(patient, "langName").en?.has("John")).toBe(true);
+      expect(languagesOf(patient, "langName").es?.has("Juan")).toBe(true);
 
       // Skips other in favor of setting the next language
       setLanguagePreferences("@other", "es").using(observation, patient);
@@ -1510,6 +1510,16 @@ describe("jsonldDatasetProxy", () => {
       expect(languagesOf(observation, "langNotes")).toEqual({
         fr: "quelques notes",
         "@none": "Cool Notes",
+        en: "Cooler Notes",
+        es: "algunas notas",
+      });
+
+      // Sets @none
+      setLanguagePreferences("@none").using(observation, patient);
+      observation.langNotes = "Other notes";
+      expect(languagesOf(observation, "langNotes")).toEqual({
+        fr: "quelques notes",
+        "@none": "Other notes",
         en: "Cooler Notes",
         es: "algunas notas",
       });
@@ -1586,6 +1596,66 @@ describe("jsonldDatasetProxy", () => {
             )
         )
       ).toBe(true);
+    });
+
+    it("executes the methods of the LanguageSet", async () => {
+      const [dataset, observation] =
+        await getTinyLoadedDatasetWithLanguageTags();
+
+      const subject = namedNode("http://example.com/Patient1");
+      const predicate = namedNode("http://hl7.org/fhir/langName");
+
+      const patient = observation.subject as PatientShape;
+
+      const enSet = languagesOf(patient, "langName").en as LanguageSet;
+
+      expect(enSet.size).toBe(1);
+
+      enSet.add("Doe");
+      expect(enSet.size).toBe(2);
+      expect(enSet.has("Doe")).toBe(true);
+      expect(dataset.has(quad(subject, predicate, literal("Doe", "en")))).toBe(
+        true
+      );
+
+      const callbackMock = jest.fn();
+      enSet.forEach(callbackMock);
+      expect(callbackMock).toHaveBeenCalledTimes(2);
+      expect(callbackMock).toHaveBeenCalledWith("John", "John", enSet);
+
+      const entries = enSet.entries();
+      const entriesVal1 = entries.next();
+      const entriesVal2 = entries.next();
+      const entriesVal3 = entries.next();
+      expect(entriesVal1.value).toEqual(["John", "John"]);
+      expect(entriesVal2.value).toEqual(["Doe", "Doe"]);
+      expect(entriesVal3.done).toBe(true);
+
+      const keys = enSet.keys();
+      const keysVal1 = keys.next();
+      const keysVal2 = keys.next();
+      const keysVal3 = keys.next();
+      expect(keysVal1.value).toBe("John");
+      expect(keysVal2.value).toBe("Doe");
+      expect(keysVal3.done).toBe(true);
+
+      const values = enSet.values();
+      const valuesVal1 = values.next();
+      const valuesVal2 = values.next();
+      const valuesVal3 = values.next();
+      expect(valuesVal1.value).toBe("John");
+      expect(valuesVal2.value).toBe("Doe");
+      expect(valuesVal3.done).toBe(true);
+
+      enSet.delete("John");
+      expect(enSet.size).toBe(1);
+      expect(enSet.has("John")).toBe(false);
+      expect(dataset.has(quad(subject, predicate, literal("John", "en")))).toBe(
+        false
+      );
+
+      enSet.clear();
+      expect(enSet.size).toBe(0);
     });
   });
 });

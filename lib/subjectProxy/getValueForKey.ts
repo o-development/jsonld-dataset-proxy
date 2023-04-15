@@ -4,7 +4,7 @@ import { nodeToJsonldRepresentation } from "../util/nodeToJsonldRepresentation";
 import { SubjectProxy } from "./SubjectProxy";
 import { ArrayProxy } from "../arrayProxy/ArrayProxy";
 import { ProxyContext } from "../ProxyContext";
-import { filterDatasetByLanguageOrdering } from "../util/languageUtils";
+import { filterQuadsByLanguageOrdering } from "../language/languageUtils";
 
 /**
  * Given a subject target and a key return the correct value
@@ -43,9 +43,9 @@ export function getValueForKey(
   }
   let objectDataset = dataset.match(subject, predicate);
   if (contextUtil.isLangString(key)) {
-    objectDataset = filterDatasetByLanguageOrdering(
+    objectDataset = filterQuadsByLanguageOrdering(
       objectDataset,
-      proxyContext
+      proxyContext.languageOrdering
     );
   }
   if (objectDataset.size === 0) {

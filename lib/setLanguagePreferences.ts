@@ -1,4 +1,4 @@
-import { LanguageOrdering } from "./types";
+import { LanguageOrdering } from "./language/languageTypes";
 import {
   createInteractOptions,
   InteractOptions,
