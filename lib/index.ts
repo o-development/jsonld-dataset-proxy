@@ -9,7 +9,12 @@ export * from "./jsonldDatasetProxy";
 export * from "./write";
 export * from "./graphOf";
 export * from "./setLanguagePreferences";
+
 export * from "./language/languagesOf";
+export * from "./language/languageMapProxy";
+export * from "./language/languageSet";
+export * from "./language/languageTypes";
+export * from "./language/languageUtils";
 
 export * from "./arrayProxy/createArrayHandler";
 export * from "./arrayProxy/arrayMethods";

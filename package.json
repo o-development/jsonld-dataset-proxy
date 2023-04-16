@@ -9,7 +9,8 @@
     "test": "jest --coverage",
     "docs": "typedoc",
     "prepublishOnly": "npm run test && npm run build && npm run docs",
-    "start": "ts-node ./example/example.ts"
+    "start": "ts-node ./example/example.ts",
+    "start:lang": "ts-node ./example/languageExample.ts"
   },
   "repository": {
     "type": "git",

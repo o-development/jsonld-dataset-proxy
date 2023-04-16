@@ -648,6 +648,157 @@ graphOf(person, "name", 0); // returns defaultGraph()
 graphOf(person, "age"); // returns defaultGraph()
 ```
 
+## Managing Language Tags
+
+RDF includes a special attribute for string literals called a [language tag](https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal). Lanugage tags let developers provide string representations for many different translations and JSON-LD Dataset Proxy helps you manage them.
+
+To use language tags, RDF requires the datatype of a literal to be `http://www.w3.org/1999/02/22-rdf-syntax-ns#langString`, and LDO's functions will only work on literals of type that type.
+
+For the following examples, we'll use this context and dataset, typescript typing and JSON-LD Context. Notice that there is a field called "label" with translations for French and Korean and one language string that doesn't have a language tag. There's also a field called "description" that holds multiple strings per language.
+
+```typescript
+// Define initial data
+const initialData = `
+  @prefix example: <http://example.com/> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix ns: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  
+  example:Hospital
+    rdfs:label "Hospital"^^ns:langString;
+    rdfs:label "Hôpital"@fr;
+    rdfs:label "병원"@ko;
+    rdfs:description "Heals patients"^^ns:langString;
+    rdfs:description "Has doctors"^^ns:langString;
+    rdfs:description "Guérit les malades"@fr;
+    rdfs:description "A des médecins"@fr;
+    rdfs:description "환자를 치료하다"@ko;
+    rdfs:description "의사 있음"@ko.
+`;
+
+// Typescript Typing
+interface IThing {
+  label: string;
+  description: string[];
+}
+
+// Define JSON-LD Context
+const PersonContext: ContextDefinition = {
+  label: {
+    "@id": "http://www.w3.org/2000/01/rdf-schema#label",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+  },
+  description: {
+    "@id": "http://www.w3.org/2000/01/rdf-schema#description",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+    "@container": "@set",
+  },
+};
+```
+
+### Language Preferences
+A language preference is an ordered list telling the JSON-LD Dataset Proxy the language you prefer as well as callbacks. 
+
+Valid values for the language preferences includes any [IETF Language Tag](https://en.wikipedia.org/wiki/IETF_language_tag) as well as the special tags `@none` and `@other`. `@none` represents any language literal that doesn't have a language tag. `@other` represents any language literal that isn't listed among the language preferences.
+
+For read operations, the JSON-LD Dataset Proxy will search for values in order of the preference. Write operations will choose the first language in the language preference, unless that language is `@other`, in which case it will choose the next language.
+
+```typescript
+// Read Spansih first, then Korean, then language strings with no language
+// New writes are in Spanish
+["es", "ko", "@none"]
+
+// Read any language other than french, then french
+// New writes are in French
+["@other", "fr"]
+```
+
+Language preferences can be set when a JSON-LD Dataset Proxy is created using the `setLanguagePreferences` method.
+
+```typescript
+// Create a dataset loaded with initial data
+const dataset = await serializedToDataset(initialData);
+// Make a JSONLD Dataset Proxy
+const hospitalInfo = jsonldDatasetProxy(dataset, PersonContext)
+  .setLanguagePreferences("es", "ko", "@none")
+  .fromSubject<IThing>(namedNode("http://example.com/Hospital"));
+
+console.log(hospitalInfo.label); // Logs "병원"
+console.log(hospitalInfo.description.length); // Logs "2" for the 2 korean entries
+console.log(hospitalInfo.description[0]); // Logs "환자를 치료하다"
+console.log(hospitalInfo.description[1]); // Logs "의사 있음"
+
+// Adds a string to the description in spanish, because spanish if the first
+// language in the language preference
+hospitalInfo.description.push("Cura a las pacientes");
+
+// Now that a spanish entry exists, JSON-LD dataset proxy focuses on that
+console.log(hospitalInfo.description.length); // Logs "1" for the 1 spanish entry
+console.log(hospitalInfo.description[0]); // Logs "Cura a las pacientes"
+```
+
+### `setLanguagePreferences(...languagePreferences).using(...jsonldDatasetProxies)`
+The `setLanguagePreferences(...).using(...)` function sets the language preferences for a set of JSON-LD Dataset Proxies. It follows roughly the same paridigms as the `write(...).using(...)` function.
+
+```typescript
+import { setLanguagePreferences } from "jsonld-dataset-proxy";
+
+setLanguagePreferences("fr", "ko").using(hospitalInfo);
+console.log(hospitalInfo.label); // Logs "Hôpital"
+setLanguagePreferences("@none").using(hospitalInfo);
+console.log(hospitalInfo.label); // Logs "Hospital"
+```
+
+### `setLanguagePreferences(...languagePreferences).usingCopy(...jsonldDatasetProxies)`
+The `setLanguagePreferences(...).usingCopy(...)` function returns a copy of the provided JSON-LD Dataset Proxies with the given language preferences. It follows roughly the same paridigms as the `write(...).usingCopy(...)` function.
+
+```typescript
+import { setLanguagePreferences } from "jsonld-dataset-proxy";
+
+// ...
+
+const [frenchPreference] = setLanguagePreferences("fr").usingCopy(hospitalInfo);
+const [koreanPreference] = setLanguagePreferences("ko").usingCopy(hospitalInfo);
+console.log(frenchPreference.label); // Logs "Hôpital"
+console.log(koreanPreference.label); // Logs "병원"
+```
+
+### `languageOf(jsonldDatasetProxy, key)`
+The `languageOf` function lets you view and modify the languages more directly. `languageOf` takes two properties:
+
+ - `jsonldDatasetProxy`: A JSON-LD dataset proxy
+ - `key`: A key on the JSON-LD dataset proxy pointing to a language string.
+
+It returns a mapping of languages to strings or sets of strings depending on the cardinality of the JSON-LD context.
+
+```typescript
+const labelLanguages = languagesOf(hospitalInfo, "label");
+// labelLanguages: { '@none': 'Hospital', fr: 'Hôpital', ko: '병원' }
+const descriptionLanguages = languagesOf(hospitalInfo, "description");
+// descriptionLanguages:
+// {
+//   '@none': Set(2) { 'Heals patients', 'Has doctors' },
+//   fr: Set(2) { 'Guérit les malades', 'A des médecins' },
+//   ko: Set(2) { '환자를 치료하다', '의사 있음' }
+// }
+```
+
+You can also modify languauages by changing the mappings. Mappings with sets of strings follow the JavaScript [`Set` interface](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set).
+
+```typescript
+// Adds a Chinese label
+labelLanguages.zh = "医院";
+// Changes the no-language label from to "Super Hospital"
+labelLanguages["@none"] = "Super Hospital";
+// Removes the French label
+delete labelLanguages.fr;
+// Adds a Hindi description
+descriptionLanguages.hi?.add("रोगियों को ठीक करता है");
+// Checks to see if the korean label contains "의사 있음"
+descriptionLanguages.ko?.has("의사 있음"); // returns true
+// Removes "Has Doctors" from the no-language description
+descriptionLanguages["@none"]?.delete("Has Doctors");
+```
+
 ## Limitations
  - Currently this library only supports the following features of JSON-LD context:
    - "@id",
