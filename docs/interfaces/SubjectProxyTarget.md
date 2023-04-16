@@ -16,4 +16,4 @@
 
 #### Defined in
 
-[lib/subjectProxy/createSubjectHandler.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/subjectProxy/createSubjectHandler.ts#L15)
+[lib/subjectProxy/createSubjectHandler.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/subjectProxy/createSubjectHandler.ts#L15)

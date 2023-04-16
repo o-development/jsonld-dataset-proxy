@@ -1,5 +1,5 @@
 import { BlankNode, NamedNode } from "@rdfjs/types";
-import { namedNode, quad } from "@rdfjs/data-model";
+import { literal, namedNode, quad } from "@rdfjs/data-model";
 import { _getUnderlyingNode } from "../types";
 import { SubjectProxy } from "../subjectProxy/SubjectProxy";
 import { getNodeFromRawObject, getNodeFromRawValue } from "./getNodeFromRaw";
@@ -7,6 +7,11 @@ import { RawObject, RawValue } from "./RawObject";
 import { ProxyContext } from "../ProxyContext";
 import { isSubjectProxy } from "../subjectProxy/isSubjectProxy";
 import { NodeSet } from "./NodeSet";
+import {
+  getLanguageKeyForWriteOperation,
+  languageDeleteMatch,
+  languageKeyToLiteralLanguage,
+} from "../language/languageUtils";
 
 export function addRawValueToDatasetRecursive(
   subject: NamedNode | BlankNode,
@@ -23,8 +28,22 @@ export function addRawValueToDatasetRecursive(
   if (object == undefined) {
     dataset.deleteMatches(subject, predicate);
   } else if (object.termType === "Literal") {
+    let languageAppliedObject = object;
+    // Handle language use case
+    if (contextUtil.isLangString(key)) {
+      const languageKey = getLanguageKeyForWriteOperation(
+        proxyContext.languageOrdering
+      );
+      if (!languageKey) return;
+      languageAppliedObject = literal(
+        object.value,
+        languageKeyToLiteralLanguage(languageKey)
+      );
+    }
     proxyContext.writeGraphs.forEach((graph) => {
-      proxyContext.dataset.add(quad(subject, predicate, object, graph));
+      proxyContext.dataset.add(
+        quad(subject, predicate, languageAppliedObject, graph)
+      );
     });
   } else {
     // Delete any triples if the id is the same
@@ -71,7 +90,16 @@ export function addRawObjectToDatasetRecursive(
     }
     const predicate = namedNode(proxyContext.contextUtil.keyToIri(key));
     if (shouldDeleteOldTriples) {
-      dataset.deleteMatches(subject, predicate);
+      if (proxyContext.contextUtil.isLangString(key)) {
+        const languageKey = getLanguageKeyForWriteOperation(
+          proxyContext.languageOrdering
+        );
+        if (languageKey) {
+          languageDeleteMatch(dataset, subject, predicate, languageKey);
+        }
+      } else {
+        dataset.deleteMatches(subject, predicate);
+      }
     }
     if (Array.isArray(value)) {
       value.forEach((valueItem) => {

@@ -6,6 +6,7 @@ export interface ObservationShape {
   "@context"?: ContextDefinition;
   subject?: PatientShape;
   notes?: string;
+  langNotes?: string;
 }
 
 export type PatientShape = {
@@ -13,6 +14,7 @@ export type PatientShape = {
   "@context"?: ContextDefinition;
   type?: { "@id": "Patient" };
   name?: string[];
+  langName?: string[];
   birthdate?: string;
   age?: number;
   isHappy?: boolean;
@@ -120,6 +122,11 @@ export const patientContext: ContextDefinition = {
     "@type": "http://www.w3.org/2001/XMLSchema#string",
     "@container": "@set",
   },
+  langName: {
+    "@id": "http://hl7.org/fhir/langName",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+    "@container": "@set",
+  },
   birthdate: {
     "@id": "http://hl7.org/fhir/birthdate",
     "@type": "http://www.w3.org/2001/XMLSchema#date",
@@ -140,6 +147,10 @@ export const patientContext: ContextDefinition = {
   notes: {
     "@id": "http://hl7.org/fhir/notes",
     "@type": "http://www.w3.org/2001/XMLSchema#string",
+  },
+  langNotes: {
+    "@id": "http://hl7.org/fhir/langNotes",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
   },
 };
 
@@ -248,4 +259,23 @@ _:Patient1
 _:Patient2
   fhir:name "Rob"^^xsd:string ;
   fhir:roommate _:Patient1 .
+`;
+
+export const tinyPatientDataWithLanguageTags = `
+@prefix example: <http://example.com/> .
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+example:Observation1
+  fhir:subject example:Patient1 ;
+  fhir:langNotes "Cool Notes" ;
+  fhir:langNotes "Cooler Notes"@en ;
+  fhir:langNotes "Notas Geniales"@es ;
+  fhir:langNotes "Notes Sympas"@fr .
+
+example:Patient1
+  fhir:langName "Jon" ;
+  fhir:langName "John"@en ;
+  fhir:langName "Juan"@es ;
+  fhir:langName "Jean"@fr .
 `;

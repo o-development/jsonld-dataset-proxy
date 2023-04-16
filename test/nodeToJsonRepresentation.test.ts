@@ -9,6 +9,7 @@ describe("objectToJsonRepresentation", () => {
     dataset: createDataset(),
     contextUtil: new ContextUtil({}),
     writeGraphs: [defaultGraph()],
+    languageOrdering: ["@none", "@other"],
   });
 
   it("returns a string for hexBinary", () => {
@@ -18,6 +19,18 @@ describe("objectToJsonRepresentation", () => {
         extraParams
       )
     ).toBe("F03493");
+  });
+
+  it("returns a string for HTML", () => {
+    expect(
+      nodeToJsonldRepresentation(
+        literal(
+          "<body></body>",
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        ),
+        extraParams
+      )
+    ).toBe("<body></body>");
   });
 
   it("returns a string for anyUri", () => {

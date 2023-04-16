@@ -18,7 +18,7 @@
 ### Interfaces
 
 - [ArrayMethodBuildersType](interfaces/ArrayMethodBuildersType.md)
-- [InteractOptions](interfaces/InteractOptions.md)
+- [LiteralObjectQuad](interfaces/LiteralObjectQuad.md)
 - [SubjectProxyTarget](interfaces/SubjectProxyTarget.md)
 
 ### Type Aliases
@@ -26,6 +26,12 @@
 - [ArrayProxy](modules.md#arrayproxy)
 - [ArrayProxyTarget](modules.md#arrayproxytarget)
 - [GraphType](modules.md#graphtype)
+- [LanguageKey](modules.md#languagekey)
+- [LanguageMap](modules.md#languagemap)
+- [LanguageOfConditionalReturn](modules.md#languageofconditionalreturn)
+- [LanguageOrdering](modules.md#languageordering)
+- [LanguageSet](modules.md#languageset)
+- [LanguageSetMap](modules.md#languagesetmap)
 - [ObjectJsonRepresentation](modules.md#objectjsonrepresentation)
 - [ObjectLike](modules.md#objectlike)
 - [ObjectType](modules.md#objecttype)
@@ -57,8 +63,11 @@
 - [addRawValueToDatasetRecursive](modules.md#addrawvaluetodatasetrecursive)
 - [checkArrayModification](modules.md#checkarraymodification)
 - [createArrayHandler](modules.md#createarrayhandler)
+- [createLanguageMapProxy](modules.md#createlanguagemapproxy)
 - [createSubjectHander](modules.md#createsubjecthander)
 - [deleteValueFromDataset](modules.md#deletevaluefromdataset)
+- [filterQuadsByLanguageOrdering](modules.md#filterquadsbylanguageordering)
+- [getLanguageKeyForWriteOperation](modules.md#getlanguagekeyforwriteoperation)
 - [getNodeFromRawObject](modules.md#getnodefromrawobject)
 - [getNodeFromRawValue](modules.md#getnodefromrawvalue)
 - [getProxyFromObject](modules.md#getproxyfromobject)
@@ -66,13 +75,21 @@
 - [getValueForKey](modules.md#getvalueforkey)
 - [graphOf](modules.md#graphof)
 - [isArrayProxy](modules.md#isarrayproxy)
+- [isLanguageLiteral](modules.md#islanguageliteral)
 - [isProxy](modules.md#isproxy)
 - [isSubjectProxy](modules.md#issubjectproxy)
 - [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
+- [languageDeleteMatch](modules.md#languagedeletematch)
+- [languageKeyToLiteralLanguage](modules.md#languagekeytoliterallanguage)
+- [languageMatch](modules.md#languagematch)
+- [languagesOf](modules.md#languagesof)
+- [literalLanguageToLanguageKey](modules.md#literallanguagetolanguagekey)
 - [literalToJsonldRepresentation](modules.md#literaltojsonldrepresentation)
 - [modifyArray](modules.md#modifyarray)
 - [nodeToJsonldRepresentation](modules.md#nodetojsonldrepresentation)
 - [nodeToString](modules.md#nodetostring)
+- [quadsToLanguageQuadMap](modules.md#quadstolanguagequadmap)
+- [setLanguagePreferences](modules.md#setlanguagepreferences)
 - [write](modules.md#write)
 
 ## References
@@ -89,17 +106,17 @@ Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
 
 #### Defined in
 
-[lib/arrayProxy/ArrayProxy.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/ArrayProxy.ts#L14)
+[lib/arrayProxy/ArrayProxy.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/ArrayProxy.ts#L14)
 
 ___
 
 ### ArrayProxyTarget
 
-Ƭ **ArrayProxyTarget**: [quadMatch: QuadMatch, curArray: ObjectType[], isSubjectOriented?: boolean]
+Ƭ **ArrayProxyTarget**: [quadMatch: QuadMatch, curArray: ObjectType[], isSubjectOriented?: boolean, isLangStringArray?: boolean]
 
 #### Defined in
 
-[lib/arrayProxy/createArrayHandler.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/createArrayHandler.ts#L27)
+[lib/arrayProxy/createArrayHandler.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/createArrayHandler.ts#L28)
 
 ___
 
@@ -109,7 +126,98 @@ ___
 
 #### Defined in
 
-[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L18)
+[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L18)
+
+___
+
+### LanguageKey
+
+Ƭ **LanguageKey**: ``"@none"`` \| `string`
+
+#### Defined in
+
+[lib/language/languageTypes.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languageTypes.ts#L3)
+
+___
+
+### LanguageMap
+
+Ƭ **LanguageMap**: `Object`
+
+-----------------------------------------------------------------------------
+Types
+-----------------------------------------------------------------------------
+
+#### Index signature
+
+▪ [language: `string`]: `string` \| `undefined`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `@none?` | `string` |
+
+#### Defined in
+
+[lib/language/languagesOf.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L12)
+
+___
+
+### LanguageOfConditionalReturn
+
+Ƭ **LanguageOfConditionalReturn**<`SubjectObject`, `Key`\>: `NonNullable`<`SubjectObject`[`Key`]\> extends `unknown`[] ? [`LanguageSetMap`](modules.md#languagesetmap) : [`LanguageMap`](modules.md#languagemap)
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `SubjectObject` | extends [`ObjectLike`](modules.md#objectlike) |
+| `Key` | extends keyof `SubjectObject` |
+
+#### Defined in
+
+[lib/language/languagesOf.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L24)
+
+___
+
+### LanguageOrdering
+
+Ƭ **LanguageOrdering**: (``"@none"`` \| ``"@other"`` \| `string`)[]
+
+#### Defined in
+
+[lib/language/languageTypes.ts:1](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languageTypes.ts#L1)
+
+___
+
+### LanguageSet
+
+Ƭ **LanguageSet**: `Set`<`string`\>
+
+#### Defined in
+
+[lib/language/languagesOf.ts:22](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L22)
+
+___
+
+### LanguageSetMap
+
+Ƭ **LanguageSetMap**: `Object`
+
+#### Index signature
+
+▪ [language: `string`]: [`LanguageSet`](modules.md#languageset) \| `undefined`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `@none?` | [`LanguageSet`](modules.md#languageset) |
+
+#### Defined in
+
+[lib/language/languagesOf.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L17)
 
 ___
 
@@ -119,7 +227,7 @@ ___
 
 #### Defined in
 
-[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/nodeToJsonldRepresentation.ts#L5)
+[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/nodeToJsonldRepresentation.ts#L5)
 
 ___
 
@@ -129,7 +237,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L13)
+[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L13)
 
 ___
 
@@ -139,7 +247,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L17)
+[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L17)
 
 ___
 
@@ -149,7 +257,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L16)
+[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L16)
 
 ___
 
@@ -159,7 +267,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L20)
+[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L20)
 
 ___
 
@@ -169,7 +277,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/RawObject.ts#L5)
+[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/RawObject.ts#L5)
 
 ___
 
@@ -179,7 +287,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/util/RawObject.ts#L13)
+[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/RawObject.ts#L13)
 
 ___
 
@@ -204,7 +312,7 @@ ___
 
 #### Defined in
 
-[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/subjectProxy/SubjectProxy.ts#L12)
+[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/subjectProxy/SubjectProxy.ts#L12)
 
 ___
 
@@ -214,7 +322,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L15)
+[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L15)
 
 ___
 
@@ -246,7 +354,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L9)
+[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L9)
 
 ## Variables
 
@@ -256,7 +364,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L6)
+[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L6)
 
 ___
 
@@ -266,7 +374,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L8)
+[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L8)
 
 ___
 
@@ -276,7 +384,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L7)
+[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L7)
 
 ___
 
@@ -286,7 +394,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L4)
+[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L4)
 
 ___
 
@@ -296,7 +404,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L3)
+[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L3)
 
 ___
 
@@ -306,7 +414,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L5)
+[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L5)
 
 ___
 
@@ -316,7 +424,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L9)
+[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L9)
 
 ___
 
@@ -326,7 +434,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/types.ts#L10)
+[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L10)
 
 ___
 
@@ -336,7 +444,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L39)
+[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L39)
 
 ___
 
@@ -346,7 +454,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/arrayProxy/arrayMethods.ts#L27)
+[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L27)
 
 ## Functions
 
@@ -442,6 +550,31 @@ ___
 
 ___
 
+### createLanguageMapProxy
+
+▸ **createLanguageMapProxy**<`Target`\>(`subject`, `predicate`, `proxyContext`, `isArray`): `Target`
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `Target` | extends [`LanguageMap`](modules.md#languagemap) \| [`LanguageSetMap`](modules.md#languagesetmap) |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subject` | [`SubjectType`](modules.md#subjecttype) |
+| `predicate` | [`PredicateType`](modules.md#predicatetype) |
+| `proxyContext` | [`ProxyContext`](classes/ProxyContext.md) |
+| `isArray` | `boolean` |
+
+#### Returns
+
+`Target`
+
+___
+
 ### createSubjectHander
 
 ▸ **createSubjectHander**(`initialProxyContext`): `ProxyHandler`<[`SubjectProxyTarget`](interfaces/SubjectProxyTarget.md)\>
@@ -473,6 +606,39 @@ ___
 #### Returns
 
 `boolean`
+
+___
+
+### filterQuadsByLanguageOrdering
+
+▸ **filterQuadsByLanguageOrdering**(`quads`, `languageOrdering`): `Dataset`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `quads` | `Dataset`<`Quad`, `Quad`\> |
+| `languageOrdering` | [`LanguageOrdering`](modules.md#languageordering) |
+
+#### Returns
+
+`Dataset`
+
+___
+
+### getLanguageKeyForWriteOperation
+
+▸ **getLanguageKeyForWriteOperation**(`languageOrdering`): [`LanguageKey`](modules.md#languagekey) \| `undefined`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `languageOrdering` | [`LanguageOrdering`](modules.md#languageordering) |
+
+#### Returns
+
+[`LanguageKey`](modules.md#languagekey) \| `undefined`
 
 ___
 
@@ -608,6 +774,27 @@ someObject is ArrayProxy
 
 ___
 
+### isLanguageLiteral
+
+▸ **isLanguageLiteral**(`node`): node is Literal
+
+Given a node, will return true if that node is a literal that could have a
+language. This does not guarantee that it is a language literal.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `node` | `Quad_Object` | the node to test |
+
+#### Returns
+
+node is Literal
+
+boolean
+
+___
+
 ### isProxy
 
 ▸ **isProxy**(`someObject?`): someObject is SubjectProxy \| ArrayProxy
@@ -658,6 +845,100 @@ Creates a JSON-LD Dataset Proxy
 [`JsonldDatasetProxyBuilder`](classes/JsonldDatasetProxyBuilder.md)
 
 a JSON-LD Dataset proxy
+
+___
+
+### languageDeleteMatch
+
+▸ **languageDeleteMatch**(`dataset`, `subject`, `predicate`, `languageKey`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `dataset` | `Dataset`<`Quad`, `Quad`\> |
+| `subject` | [`SubjectType`](modules.md#subjecttype) |
+| `predicate` | [`PredicateType`](modules.md#predicatetype) |
+| `languageKey` | `string` |
+
+#### Returns
+
+`void`
+
+___
+
+### languageKeyToLiteralLanguage
+
+▸ **languageKeyToLiteralLanguage**(`languageKey`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `languageKey` | `string` \| `symbol` |
+
+#### Returns
+
+`string`
+
+___
+
+### languageMatch
+
+▸ **languageMatch**(`dataset`, `subject`, `predicate`, `languageKey`): `Dataset`<[`LiteralObjectQuad`](interfaces/LiteralObjectQuad.md)\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `dataset` | `Dataset`<`Quad`, `Quad`\> |
+| `subject` | [`SubjectType`](modules.md#subjecttype) |
+| `predicate` | [`PredicateType`](modules.md#predicatetype) |
+| `languageKey` | `string` |
+
+#### Returns
+
+`Dataset`<[`LiteralObjectQuad`](interfaces/LiteralObjectQuad.md)\>
+
+___
+
+### languagesOf
+
+▸ **languagesOf**<`SubjectObject`, `Key`\>(`subjectObject`, `key`): [`LanguageOfConditionalReturn`](modules.md#languageofconditionalreturn)<`SubjectObject`, `Key`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `SubjectObject` | extends [`ObjectLike`](modules.md#objectlike) |
+| `Key` | extends `string` \| `number` \| `symbol` |
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `subjectObject` | `SubjectObject` |
+| `key` | `Key` |
+
+#### Returns
+
+[`LanguageOfConditionalReturn`](modules.md#languageofconditionalreturn)<`SubjectObject`, `Key`\>
+
+___
+
+### literalLanguageToLanguageKey
+
+▸ **literalLanguageToLanguageKey**(`literalLanguage`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `literalLanguage` | `string` |
+
+#### Returns
+
+`string`
 
 ___
 
@@ -738,9 +1019,45 @@ ___
 
 ___
 
+### quadsToLanguageQuadMap
+
+▸ **quadsToLanguageQuadMap**(`quads`): `Record`<[`LanguageKey`](modules.md#languagekey), `Dataset`<[`LiteralObjectQuad`](interfaces/LiteralObjectQuad.md)\>\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `quads` | `Dataset`<`Quad`, `Quad`\> |
+
+#### Returns
+
+`Record`<[`LanguageKey`](modules.md#languagekey), `Dataset`<[`LiteralObjectQuad`](interfaces/LiteralObjectQuad.md)\>\>
+
+___
+
+### setLanguagePreferences
+
+▸ **setLanguagePreferences**(...`languageOrdering`): `InteractOptions`
+
+Set the default language pr
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `...languageOrdering` | [`LanguageOrdering`](modules.md#languageordering) |
+
+#### Returns
+
+`InteractOptions`
+
+a write builder
+
+___
+
 ### write
 
-▸ **write**(...`graphs`): [`InteractOptions`](interfaces/InteractOptions.md)
+▸ **write**(...`graphs`): `InteractOptions`
 
 Set the graphs that should be written to
 
@@ -752,6 +1069,6 @@ Set the graphs that should be written to
 
 #### Returns
 
-[`InteractOptions`](interfaces/InteractOptions.md)
+`InteractOptions`
 
 a write builder

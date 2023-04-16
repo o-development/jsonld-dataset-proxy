@@ -8,11 +8,13 @@ import { SubjectProxy } from "./subjectProxy/SubjectProxy";
 import { ArrayProxy } from "./arrayProxy/ArrayProxy";
 import { GraphType, QuadMatch, _getUnderlyingArrayTarget } from "./types";
 import { ContextUtil } from "./ContextUtil";
+import { LanguageOrdering } from "./language/languageTypes";
 
 interface ProxyContextOptions {
   dataset: Dataset;
   contextUtil: ContextUtil;
   writeGraphs: GraphType[];
+  languageOrdering: LanguageOrdering;
   prefilledArrayTargets?: ArrayProxyTarget[];
   state?: Record<string, unknown>;
 }
@@ -29,12 +31,14 @@ export class ProxyContext {
   readonly dataset: Dataset;
   readonly contextUtil: ContextUtil;
   readonly writeGraphs: GraphType[];
+  readonly languageOrdering: LanguageOrdering;
   public state: Record<string, unknown>;
 
   constructor(options: ProxyContextOptions) {
     this.dataset = options.dataset;
     this.contextUtil = options.contextUtil;
     this.writeGraphs = options.writeGraphs;
+    this.languageOrdering = options.languageOrdering;
     this.state = options.state || {};
     if (options.prefilledArrayTargets) {
       options.prefilledArrayTargets.forEach((target) => {
@@ -65,12 +69,13 @@ export class ProxyContext {
   public createArrayProxy(
     quadMatch: QuadMatch,
     isSubjectOriented = false,
-    initialTarget?: ArrayProxyTarget
+    initialTarget?: ArrayProxyTarget,
+    isLangStringArray?: boolean
   ): ArrayProxy {
     const key = this.getArrayKey(...quadMatch);
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
-        initialTarget || [quadMatch, [], isSubjectOriented],
+        initialTarget || [quadMatch, [], isSubjectOriented, isLangStringArray],
         createArrayHandler(this)
       ) as unknown as ArrayProxy;
       this.arrayMap.set(key, proxy);
@@ -88,6 +93,7 @@ export class ProxyContext {
         dataset: this.dataset,
         contextUtil: this.contextUtil,
         writeGraphs: this.writeGraphs,
+        languageOrdering: this.languageOrdering,
         prefilledArrayTargets,
       },
       ...alternativeOptions,
