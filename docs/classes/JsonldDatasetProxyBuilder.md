@@ -43,7 +43,7 @@ Helps build JSON LD Dataset Proxies for a specific dataset and context
 
 #### Defined in
 
-[lib/JsonldDatasetProxyBuilder.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/JsonldDatasetProxyBuilder.ts#L11)
+[lib/JsonldDatasetProxyBuilder.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/JsonldDatasetProxyBuilder.ts#L11)
 
 ## Methods
 

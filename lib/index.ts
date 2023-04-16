@@ -34,3 +34,4 @@ export * from "./util/RawObject";
 export * from "./util/getNodeFromRaw";
 export * from "./util/NodeSet";
 export * from "./util/isProxy";
+export * from "./util/createInteractOptions";

@@ -18,6 +18,7 @@
 ### Interfaces
 
 - [ArrayMethodBuildersType](interfaces/ArrayMethodBuildersType.md)
+- [InteractOptions](interfaces/InteractOptions.md)
 - [LiteralObjectQuad](interfaces/LiteralObjectQuad.md)
 - [SubjectProxyTarget](interfaces/SubjectProxyTarget.md)
 
@@ -63,6 +64,7 @@
 - [addRawValueToDatasetRecursive](modules.md#addrawvaluetodatasetrecursive)
 - [checkArrayModification](modules.md#checkarraymodification)
 - [createArrayHandler](modules.md#createarrayhandler)
+- [createInteractOptions](modules.md#createinteractoptions)
 - [createLanguageMapProxy](modules.md#createlanguagemapproxy)
 - [createSubjectHander](modules.md#createsubjecthander)
 - [deleteValueFromDataset](modules.md#deletevaluefromdataset)
@@ -106,7 +108,7 @@ Renames and re-exports [jsonldDatasetProxy](modules.md#jsonlddatasetproxy)
 
 #### Defined in
 
-[lib/arrayProxy/ArrayProxy.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/ArrayProxy.ts#L14)
+[lib/arrayProxy/ArrayProxy.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/arrayProxy/ArrayProxy.ts#L14)
 
 ___
 
@@ -116,7 +118,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/createArrayHandler.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/createArrayHandler.ts#L28)
+[lib/arrayProxy/createArrayHandler.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/arrayProxy/createArrayHandler.ts#L28)
 
 ___
 
@@ -126,7 +128,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L18)
+[lib/types.ts:18](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L18)
 
 ___
 
@@ -136,7 +138,7 @@ ___
 
 #### Defined in
 
-[lib/language/languageTypes.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languageTypes.ts#L3)
+[lib/language/languageTypes.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languageTypes.ts#L3)
 
 ___
 
@@ -160,7 +162,7 @@ Types
 
 #### Defined in
 
-[lib/language/languagesOf.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L12)
+[lib/language/languagesOf.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languagesOf.ts#L12)
 
 ___
 
@@ -177,7 +179,7 @@ ___
 
 #### Defined in
 
-[lib/language/languagesOf.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L24)
+[lib/language/languagesOf.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languagesOf.ts#L24)
 
 ___
 
@@ -187,7 +189,7 @@ ___
 
 #### Defined in
 
-[lib/language/languageTypes.ts:1](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languageTypes.ts#L1)
+[lib/language/languageTypes.ts:1](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languageTypes.ts#L1)
 
 ___
 
@@ -197,7 +199,7 @@ ___
 
 #### Defined in
 
-[lib/language/languagesOf.ts:22](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L22)
+[lib/language/languagesOf.ts:22](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languagesOf.ts#L22)
 
 ___
 
@@ -217,7 +219,7 @@ ___
 
 #### Defined in
 
-[lib/language/languagesOf.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/language/languagesOf.ts#L17)
+[lib/language/languagesOf.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/language/languagesOf.ts#L17)
 
 ___
 
@@ -227,7 +229,7 @@ ___
 
 #### Defined in
 
-[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/nodeToJsonldRepresentation.ts#L5)
+[lib/util/nodeToJsonldRepresentation.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/util/nodeToJsonldRepresentation.ts#L5)
 
 ___
 
@@ -237,7 +239,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L13)
+[lib/types.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L13)
 
 ___
 
@@ -247,7 +249,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L17)
+[lib/types.ts:17](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L17)
 
 ___
 
@@ -257,7 +259,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L16)
+[lib/types.ts:16](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L16)
 
 ___
 
@@ -267,7 +269,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L20)
+[lib/types.ts:20](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L20)
 
 ___
 
@@ -277,7 +279,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/RawObject.ts#L5)
+[lib/util/RawObject.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/util/RawObject.ts#L5)
 
 ___
 
@@ -287,7 +289,7 @@ ___
 
 #### Defined in
 
-[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/util/RawObject.ts#L13)
+[lib/util/RawObject.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/util/RawObject.ts#L13)
 
 ___
 
@@ -312,7 +314,7 @@ ___
 
 #### Defined in
 
-[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/subjectProxy/SubjectProxy.ts#L12)
+[lib/subjectProxy/SubjectProxy.ts:12](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/subjectProxy/SubjectProxy.ts#L12)
 
 ___
 
@@ -322,7 +324,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L15)
+[lib/types.ts:15](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L15)
 
 ___
 
@@ -354,7 +356,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L9)
+[lib/arrayProxy/arrayMethods.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/arrayProxy/arrayMethods.ts#L9)
 
 ## Variables
 
@@ -364,7 +366,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L6)
+[lib/types.ts:6](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L6)
 
 ___
 
@@ -374,7 +376,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L8)
+[lib/types.ts:8](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L8)
 
 ___
 
@@ -384,7 +386,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L7)
+[lib/types.ts:7](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L7)
 
 ___
 
@@ -394,7 +396,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L4)
+[lib/types.ts:4](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L4)
 
 ___
 
@@ -404,7 +406,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L3)
+[lib/types.ts:3](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L3)
 
 ___
 
@@ -414,7 +416,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L5)
+[lib/types.ts:5](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L5)
 
 ___
 
@@ -424,7 +426,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L9)
+[lib/types.ts:9](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L9)
 
 ___
 
@@ -434,7 +436,7 @@ ___
 
 #### Defined in
 
-[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/types.ts#L10)
+[lib/types.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/types.ts#L10)
 
 ___
 
@@ -444,7 +446,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L39)
+[lib/arrayProxy/arrayMethods.ts:39](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/arrayProxy/arrayMethods.ts#L39)
 
 ___
 
@@ -454,7 +456,7 @@ ___
 
 #### Defined in
 
-[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/arrayProxy/arrayMethods.ts#L27)
+[lib/arrayProxy/arrayMethods.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/arrayProxy/arrayMethods.ts#L27)
 
 ## Functions
 
@@ -547,6 +549,23 @@ ___
 #### Returns
 
 `ProxyHandler`<[`ArrayProxyTarget`](modules.md#arrayproxytarget)\>
+
+___
+
+### createInteractOptions
+
+▸ **createInteractOptions**(`paramKey`, `parameter`): [`InteractOptions`](interfaces/InteractOptions.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `paramKey` | `string` |
+| `parameter` | `unknown` |
+
+#### Returns
+
+[`InteractOptions`](interfaces/InteractOptions.md)
 
 ___
 
@@ -1037,7 +1056,7 @@ ___
 
 ### setLanguagePreferences
 
-▸ **setLanguagePreferences**(...`languageOrdering`): `InteractOptions`
+▸ **setLanguagePreferences**(...`languageOrdering`): [`InteractOptions`](interfaces/InteractOptions.md)
 
 Set the default language pr
 
@@ -1049,7 +1068,7 @@ Set the default language pr
 
 #### Returns
 
-`InteractOptions`
+[`InteractOptions`](interfaces/InteractOptions.md)
 
 a write builder
 
@@ -1057,7 +1076,7 @@ ___
 
 ### write
 
-▸ **write**(...`graphs`): `InteractOptions`
+▸ **write**(...`graphs`): [`InteractOptions`](interfaces/InteractOptions.md)
 
 Set the graphs that should be written to
 
@@ -1069,6 +1088,6 @@ Set the graphs that should be written to
 
 #### Returns
 
-`InteractOptions`
+[`InteractOptions`](interfaces/InteractOptions.md)
 
 a write builder
