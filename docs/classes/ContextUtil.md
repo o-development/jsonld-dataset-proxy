@@ -21,6 +21,7 @@ Handles the JSON-LD context and allows conversion between IRIs and terms
 - [getType](ContextUtil.md#gettype)
 - [iriToKey](ContextUtil.md#iritokey)
 - [isArray](ContextUtil.md#isarray)
+- [isLangString](ContextUtil.md#islangstring)
 - [keyIdToIri](ContextUtil.md#keyidtoiri)
 - [keyToIri](ContextUtil.md#keytoiri)
 
@@ -44,7 +45,7 @@ Handles the JSON-LD context and allows conversion between IRIs and terms
 
 #### Defined in
 
-[lib/ContextUtil.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ContextUtil.ts#L13)
+[lib/ContextUtil.ts:13](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ContextUtil.ts#L13)
 
 ___
 
@@ -54,7 +55,7 @@ ___
 
 #### Defined in
 
-[lib/ContextUtil.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ContextUtil.ts#L14)
+[lib/ContextUtil.ts:14](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ContextUtil.ts#L14)
 
 ## Methods
 
@@ -93,6 +94,22 @@ ___
 ### isArray
 
 ▸ **isArray**(`key`): `boolean`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `key` | `string` |
+
+#### Returns
+
+`boolean`
+
+___
+
+### isLangString
+
+▸ **isLangString**(`key`): `boolean`
 
 #### Parameters
 

@@ -20,6 +20,7 @@ Helps build JSON LD Dataset Proxies for a specific dataset and context
 - [fromSubject](JsonldDatasetProxyBuilder.md#fromsubject)
 - [matchObject](JsonldDatasetProxyBuilder.md#matchobject)
 - [matchSubject](JsonldDatasetProxyBuilder.md#matchsubject)
+- [setLanguagePreferences](JsonldDatasetProxyBuilder.md#setlanguagepreferences)
 - [write](JsonldDatasetProxyBuilder.md#write)
 
 ## Constructors
@@ -42,7 +43,7 @@ Helps build JSON LD Dataset Proxies for a specific dataset and context
 
 #### Defined in
 
-[lib/JsonldDatasetProxyBuilder.ts:10](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/JsonldDatasetProxyBuilder.ts#L10)
+[lib/JsonldDatasetProxyBuilder.ts:11](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/JsonldDatasetProxyBuilder.ts#L11)
 
 ## Methods
 
@@ -146,6 +147,25 @@ JSON LD Dataset that can be read an modified.
 #### Returns
 
 `T`[]
+
+___
+
+### setLanguagePreferences
+
+▸ **setLanguagePreferences**(...`languageOrdering`): [`JsonldDatasetProxyBuilder`](JsonldDatasetProxyBuilder.md)
+
+List the language tags in the order they should be used. When a langString
+is accessed, LDO will search for values in the order of language given.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...languageOrdering` | [`LanguageOrdering`](../modules.md#languageordering) | The ordering of languages. For example ("en", "fr", "none", "other"). Defaults to ("none", "en", "other") |
+
+#### Returns
+
+[`JsonldDatasetProxyBuilder`](JsonldDatasetProxyBuilder.md)
 
 ___
 

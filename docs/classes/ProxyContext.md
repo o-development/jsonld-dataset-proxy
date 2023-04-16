@@ -17,6 +17,7 @@ when it encounters a circular object.
 - [arrayMap](ProxyContext.md#arraymap)
 - [contextUtil](ProxyContext.md#contextutil)
 - [dataset](ProxyContext.md#dataset)
+- [languageOrdering](ProxyContext.md#languageordering)
 - [state](ProxyContext.md#state)
 - [subjectMap](ProxyContext.md#subjectmap)
 - [writeGraphs](ProxyContext.md#writegraphs)
@@ -48,7 +49,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyContext.ts:27](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L27)
+[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L29)
 
 ___
 
@@ -58,7 +59,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:30](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L30)
+[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L32)
 
 ___
 
@@ -68,7 +69,17 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L29)
+[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L31)
+
+___
+
+### languageOrdering
+
+• `Readonly` **languageOrdering**: [`LanguageOrdering`](../modules.md#languageordering)
+
+#### Defined in
+
+[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L34)
 
 ___
 
@@ -78,7 +89,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L32)
+[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L35)
 
 ___
 
@@ -88,7 +99,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:26](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L26)
+[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L28)
 
 ___
 
@@ -98,13 +109,13 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/26f2384/lib/ProxyContext.ts#L31)
+[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L33)
 
 ## Methods
 
 ### createArrayProxy
 
-▸ **createArrayProxy**(`quadMatch`, `isSubjectOriented?`, `initialTarget?`): [`ArrayProxy`](../modules.md#arrayproxy)
+▸ **createArrayProxy**(`quadMatch`, `isSubjectOriented?`, `initialTarget?`, `isLangStringArray?`): [`ArrayProxy`](../modules.md#arrayproxy)
 
 #### Parameters
 
@@ -113,6 +124,7 @@ ___
 | `quadMatch` | [`QuadMatch`](../modules.md#quadmatch) | `undefined` |
 | `isSubjectOriented` | `boolean` | `false` |
 | `initialTarget?` | [`ArrayProxyTarget`](../modules.md#arrayproxytarget) | `undefined` |
+| `isLangStringArray?` | `boolean` | `undefined` |
 
 #### Returns
 
