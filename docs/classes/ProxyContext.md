@@ -49,7 +49,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L29)
+[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L29)
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L32)
+[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L32)
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L31)
+[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L31)
 
 ___
 
@@ -79,7 +79,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L34)
+[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L34)
 
 ___
 
@@ -89,7 +89,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L35)
+[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L35)
 
 ___
 
@@ -99,7 +99,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L28)
+[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L28)
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/f2c6b0c/lib/ProxyContext.ts#L33)
+[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L33)
 
 ## Methods
 
