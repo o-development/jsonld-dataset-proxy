@@ -3,7 +3,7 @@ import {
   ArrayProxyTarget,
   createArrayHandler,
 } from "./arrayProxy/createArrayHandler";
-import { createSubjectHander } from "./subjectProxy/createSubjectHandler";
+import { createSubjectHandler } from "./subjectProxy/createSubjectHandler";
 import { SubjectProxy } from "./subjectProxy/SubjectProxy";
 import { ArrayProxy } from "./arrayProxy/ArrayProxy";
 import { GraphType, QuadMatch, _getUnderlyingArrayTarget } from "./types";
@@ -51,11 +51,15 @@ export class ProxyContext {
     if (!this.subjectMap.has(node.value)) {
       const proxy = new Proxy(
         { "@id": node },
-        createSubjectHander(this)
+        this.createSubjectHandler()
       ) as unknown as SubjectProxy;
       this.subjectMap.set(node.value, proxy);
     }
     return this.subjectMap.get(node.value) as SubjectProxy;
+  }
+
+  protected createSubjectHandler() {
+    return createSubjectHandler(this);
   }
 
   private getArrayKey(...quadMatch: QuadMatch) {
@@ -76,11 +80,15 @@ export class ProxyContext {
     if (!this.arrayMap.has(key)) {
       const proxy = new Proxy(
         initialTarget || [quadMatch, [], isSubjectOriented, isLangStringArray],
-        createArrayHandler(this)
+        this.createArrayHandler()
       ) as unknown as ArrayProxy;
       this.arrayMap.set(key, proxy);
     }
     return this.arrayMap.get(key) as ArrayProxy;
+  }
+
+  protected createArrayHandler() {
+    return createArrayHandler(this);
   }
 
   public duplicate(alternativeOptions: Partial<ProxyContextOptions>) {
