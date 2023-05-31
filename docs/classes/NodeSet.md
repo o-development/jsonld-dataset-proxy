@@ -34,7 +34,7 @@
 
 #### Defined in
 
-[lib/util/NodeSet.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/util/NodeSet.ts#L24)
+[lib/util/NodeSet.ts:24](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/util/NodeSet.ts#L24)
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 #### Defined in
 
-[lib/util/NodeSet.ts:23](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/util/NodeSet.ts#L23)
+[lib/util/NodeSet.ts:23](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/util/NodeSet.ts#L23)
 
 ## Methods
 

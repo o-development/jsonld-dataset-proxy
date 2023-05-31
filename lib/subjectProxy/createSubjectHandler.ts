@@ -15,7 +15,7 @@ export interface SubjectProxyTarget {
   "@id": NamedNode | BlankNode;
 }
 
-export function createSubjectHander(
+export function createSubjectHandler(
   initialProxyContext: ProxyContext
 ): ProxyHandler<SubjectProxyTarget> {
   let proxyContext = initialProxyContext;

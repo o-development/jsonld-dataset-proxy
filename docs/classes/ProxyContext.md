@@ -24,7 +24,9 @@ when it encounters a circular object.
 
 ### Methods
 
+- [createArrayHandler](ProxyContext.md#createarrayhandler)
 - [createArrayProxy](ProxyContext.md#createarrayproxy)
+- [createSubjectHandler](ProxyContext.md#createsubjecthandler)
 - [createSubjectProxy](ProxyContext.md#createsubjectproxy)
 - [duplicate](ProxyContext.md#duplicate)
 - [getArrayKey](ProxyContext.md#getarraykey)
@@ -49,7 +51,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L29)
+[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L29)
 
 ___
 
@@ -59,7 +61,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L32)
+[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L32)
 
 ___
 
@@ -69,7 +71,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L31)
+[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L31)
 
 ___
 
@@ -79,7 +81,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L34)
+[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L34)
 
 ___
 
@@ -89,7 +91,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L35)
+[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L35)
 
 ___
 
@@ -99,7 +101,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L28)
+[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L28)
 
 ___
 
@@ -109,9 +111,19 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/188f397/lib/ProxyContext.ts#L33)
+[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L33)
 
 ## Methods
+
+### createArrayHandler
+
+▸ `Protected` **createArrayHandler**(): `ProxyHandler`<[`ArrayProxyTarget`](../modules.md#arrayproxytarget)\>
+
+#### Returns
+
+`ProxyHandler`<[`ArrayProxyTarget`](../modules.md#arrayproxytarget)\>
+
+___
 
 ### createArrayProxy
 
@@ -129,6 +141,16 @@ ___
 #### Returns
 
 [`ArrayProxy`](../modules.md#arrayproxy)
+
+___
+
+### createSubjectHandler
+
+▸ `Protected` **createSubjectHandler**(): `ProxyHandler`<[`SubjectProxyTarget`](../interfaces/SubjectProxyTarget.md)\>
+
+#### Returns
+
+`ProxyHandler`<[`SubjectProxyTarget`](../interfaces/SubjectProxyTarget.md)\>
 
 ___
 
