@@ -55,7 +55,7 @@ Quad.object
 
 #### Defined in
 
-[lib/language/languageUtils.ts:63](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/language/languageUtils.ts#L63)
+[lib/language/languageUtils.ts:63](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/language/languageUtils.ts#L63)
 
 ___
 
