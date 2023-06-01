@@ -10,7 +10,7 @@ import { GraphType, QuadMatch, _getUnderlyingArrayTarget } from "./types";
 import { ContextUtil } from "./ContextUtil";
 import { LanguageOrdering } from "./language/languageTypes";
 
-interface ProxyContextOptions {
+export interface ProxyContextOptions {
   dataset: Dataset;
   contextUtil: ContextUtil;
   writeGraphs: GraphType[];

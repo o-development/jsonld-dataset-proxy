@@ -41,7 +41,7 @@ when it encounters a circular object.
 
 | Name | Type |
 | :------ | :------ |
-| `options` | `ProxyContextOptions` |
+| `options` | [`ProxyContextOptions`](../interfaces/ProxyContextOptions.md) |
 
 ## Properties
 
@@ -51,7 +51,7 @@ when it encounters a circular object.
 
 #### Defined in
 
-[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L29)
+[lib/ProxyContext.ts:29](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L29)
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L32)
+[lib/ProxyContext.ts:32](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L32)
 
 ___
 
@@ -71,7 +71,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L31)
+[lib/ProxyContext.ts:31](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L31)
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L34)
+[lib/ProxyContext.ts:34](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L34)
 
 ___
 
@@ -91,7 +91,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L35)
+[lib/ProxyContext.ts:35](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L35)
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L28)
+[lib/ProxyContext.ts:28](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L28)
 
 ___
 
@@ -111,7 +111,7 @@ ___
 
 #### Defined in
 
-[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/e8dd237/lib/ProxyContext.ts#L33)
+[lib/ProxyContext.ts:33](https://github.com/o-development/jsonld-dataset-proxy/blob/813009a/lib/ProxyContext.ts#L33)
 
 ## Methods
 
@@ -178,7 +178,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `alternativeOptions` | `Partial`<`ProxyContextOptions`\> |
+| `alternativeOptions` | `Partial`<[`ProxyContextOptions`](../interfaces/ProxyContextOptions.md)\> |
 
 #### Returns
 
